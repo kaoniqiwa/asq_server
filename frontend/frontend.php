@@ -14,7 +14,7 @@ $user2->password = '13917805407';
 
 $users = [
   $user1,
-  // $user2
+  $user2
 ];
 $username = '';
 $password = '';
@@ -36,7 +36,7 @@ if (!authenticate($_SERVER["PHP_AUTH_DIGEST"])) {
 
   $pass = md5($password);
 
-  $result = $mysqli->query("select * from adminuser where adminname='12345' and password='$pass' limit 1");
+  $result = $mysqli->query("select * from user where username='${username}' and password='$pass' limit 1");
 
   $datas = array();
 
@@ -47,7 +47,7 @@ if (!authenticate($_SERVER["PHP_AUTH_DIGEST"])) {
     }
     echo json_encode(array(
       'Code' => 0,
-      'Username' => $datas[0]['adminname'],
+      'Username' => $datas[0]['username'],
       "Name" => $datas[0]['name'],
       "Grade" => $datas[0]['grade']
     ));
