@@ -1,5 +1,8 @@
 <?php
 
+date_default_timezone_set("Asia/Shanghai");
+
+
 function GUID()
 {
   if (function_exists('com_create_guid') === true) {
@@ -20,4 +23,12 @@ function string_make_guid()
   return sprintf('%04x%04x%04x%04x%04x%04x%04x%04x', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
 }
 
-// echo GUID();
+
+function getTime($time_str)
+{
+  $time = strtotime($time_str);
+  $date = date_create();
+
+  date_timestamp_set($date, $time);
+  return  date_format($date, "Y-m-d H:i:s");
+}
