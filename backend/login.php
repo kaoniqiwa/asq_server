@@ -1,6 +1,17 @@
 <?php
 
-include "../lib/connect.php";
+
+
+if (!isset($conn)) {
+  $conn = new mysqli('localhost', 'root', 'root');
+  if ($conn->connect_errno) {
+    die('database connect fail');
+  }
+
+  $conn->set_charset('utf8');
+  $conn->select_db('asq');
+}
+
 
 $realm = "neoballoon.com";
 
@@ -25,27 +36,25 @@ if (!authenticate($_SERVER["PHP_AUTH_DIGEST"])) {
 } else {
 
 
-  $result = $mysqli->query("select * from user where username='$user->username' and password='$user->password' limit 1");
-
-  $datas = array();
+  $result = $conn->query("select * from user where username='$user->username' and password='$user->password' limit 1");
 
 
-  if ($mysqli->affected_rows != 0) {
-    while ($rs = $result->fetch_assoc()) {
-      array_push($datas, $rs);
-    }
+
+  if ($conn->affected_rows != 0) {
+    $data =  $result->fetch_assoc();
     echo json_encode(array(
-      "FatalCode" => 0,
-      'FatalReson' => 'OK',
-      'Id' => $datas[0]['id'],
-      'Username' => $datas[0]['username'],
-      "Name" => $datas[0]['name'],
-      "Grade" => $datas[0]['grade']
+      "faultCode" => 0,
+      "fatalReson" => 'OK',
+      "data" => $data
+      // 'Id' => $datas[0]['id'],
+      // 'Username' => $datas[0]['username'],
+      // "Name" => $datas[0]['name'],
+      // "Grade" => $datas[0]['grade']
     ));
   } else {
     echo json_encode(array(
-      "FatalCode" => 1,
-      'FatalReson' => 'Error',
+      "faultCode" => 1,
+      'fatalReson' => 'Error',
     ));
   }
 }

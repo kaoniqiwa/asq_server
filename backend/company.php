@@ -140,6 +140,10 @@ if ($method == 'post') {
     $result =  $conn->query($sql);
     if ($conn->affected_rows != 0) {
       $model  =  $result->fetch_assoc();
+
+      $doctors = getDoctor($id);
+      $model['doctors'] = $doctors;
+
       echo json_encode(
         [
           "faultCode" => 0,
@@ -213,5 +217,3 @@ function getDoctor(string $cid)
   }
   return $data;
 }
-
-//SELECT * FROM `company` WHERE create_time BETWEEN '2022-08-19 00:00:00' and '2022-08-20 23:59:59'

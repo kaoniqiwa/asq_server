@@ -103,6 +103,8 @@ if ($method == 'post') {
     ]
   );
 }
+
+
 function getDoctor(string $id)
 {
   global $conn;
