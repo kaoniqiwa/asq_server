@@ -117,9 +117,8 @@ if ($method == 'post') {
     } else {
       echo json_encode(
         [
-          "faultCode" => 0,
-          'faultReason' => 'OK',
-          "data" => $model
+          "faultCode" => 1,
+          'faultReason' => 'Error',
         ]
       );
     }

@@ -35,9 +35,9 @@ if ($method == 'post') {
     $start = ($pageIndex - 1) * $pageSize;
 
 
-    $sql = "select id,name,account_name,account_pass,asq_total,asq_left,asq_se_total,asq_se_left,asq_se_2_total,asq_se_2_left,create_time,update_time from company  where name like '%$name%'  or account_name like '%$name%' limit $start,$pageSize";
+    $sql = "select id,name,username,password,asq_total,asq_left,asq_se_total,asq_se_left,asq_se_2_total,asq_se_2_left,create_time,update_time from company  where name like '%$name%'  or username like '%$name%' limit $start,$pageSize";
 
-    $totalRecortCount = $conn->query("select count(*) from company  where name like '%$name%' or account_name like '%$name%'")->fetch_assoc()['count(*)'];
+    $totalRecortCount = $conn->query("select count(*) from company  where name like '%$name%' or username like '%$name%'")->fetch_assoc()['count(*)'];
 
 
     $totalRecortCount = intval($totalRecortCount);
@@ -82,8 +82,8 @@ if ($method == 'post') {
   } else if ($flow == 'addCompany') {
     $id = GUID();
     $name = $input->name;
-    $account_name = $input->account_name;
-    $account_pass = $input->account_pass;
+    $username = $input->username;
+    $password = $input->password;
     $asq_total = $input->asq_total;
     $asq_left = $input->asq_left;
     $asq_se_total = $input->asq_se_total;
@@ -91,11 +91,11 @@ if ($method == 'post') {
     $asq_se_2_total = $input->asq_se_2_total;
     $asq_se_2_left = $input->asq_se_2_total;
 
-    $sql = "insert into company ( id,name,account_name,account_pass,asq_total,asq_left,asq_se_total,asq_se_left,asq_se_2_total,asq_se_2_left) values ('$id','$name','$account_name','$account_pass','$asq_total','$asq_left','$asq_se_total','$asq_se_left','$asq_se_2_total','$asq_se_2_left')";
+    $sql = "insert into company ( id,name,username,password,asq_total,asq_left,asq_se_total,asq_se_left,asq_se_2_total,asq_se_2_left) values ('$id','$name','$username','$password','$asq_total','$asq_left','$asq_se_total','$asq_se_left','$asq_se_2_total','$asq_se_2_left')";
 
     $result = $conn->query($sql);
 
-    $sql  = "select id,name,account_name,account_pass,asq_total,asq_left,asq_se_total,asq_se_left,asq_se_2_total,asq_se_2_left,create_time,update_time from company where id='$id'";
+    $sql  = "select id,name,username,password,asq_total,asq_left,asq_se_total,asq_se_left,asq_se_2_total,asq_se_2_left,create_time,update_time from company where id='$id'";
     $result =  $conn->query($sql);
     if ($conn->affected_rows != 0) {
       $model  =  $result->fetch_assoc();
@@ -110,20 +110,37 @@ if ($method == 'post') {
   } else if ($flow == 'deleteCompany') {
     $id = $input->id;
 
-    $conn->query("delete from doctor where cid='$id'");
-    $conn->query("delete from company where id='$id'");
+    $sql = "select id,name,username,password,asq_total,asq_left,asq_se_total,asq_se_left,asq_se_2_total,asq_se_2_left,create_time,update_time from company where id='$id'";
 
-    echo json_encode(
-      [
-        "faultCode" => 0,
-        'faultReason' => 'OK',
-      ]
-    );
+
+    $result = $conn->query($sql);
+
+    if ($conn->affected_rows != 0) {
+      $model = $result->fetch_assoc();
+
+      $conn->query("delete from doctor where cid='$id'");
+      $conn->query("delete from company where id='$id'");
+
+      echo json_encode(
+        [
+          "faultCode" => 0,
+          'faultReason' => 'OK',
+          "data" => $model
+        ]
+      );
+    } else {
+      echo json_encode(
+        [
+          "faultCode" => 1,
+          'faultReason' => 'Error',
+        ]
+      );
+    }
   } else if ($flow == 'editCompany') {
     $id = $input->id;
     $name = $input->name;
-    $account_name = $input->account_name;
-    $account_pass = $input->account_pass;
+    $username = $input->username;
+    $password = $input->password;
     $asq_total = $input->asq_total;
     $asq_left = $input->asq_left;
     $asq_se_total = $input->asq_se_total;
@@ -131,12 +148,12 @@ if ($method == 'post') {
     $asq_se_2_total = $input->asq_se_2_total;
     $asq_se_2_left = $input->asq_se_2_total;
 
-    $sql  = "update  company set name='$name',account_name='$account_name',account_pass='$account_pass',asq_total='$asq_total',asq_left='$asq_left',asq_se_total='$asq_se_total',asq_se_left='$asq_se_left',asq_se_2_total='$asq_se_2_total',
+    $sql  = "update  company set name='$name',username='$username',password='$password',asq_total='$asq_total',asq_left='$asq_left',asq_se_total='$asq_se_total',asq_se_left='$asq_se_left',asq_se_2_total='$asq_se_2_total',
     asq_se_2_left='$asq_se_2_left' where id='$id'";
     $conn->query($sql);
 
 
-    $sql  = "select id,name,account_name,account_pass,asq_total,asq_left,asq_se_total,asq_se_left,asq_se_2_total,asq_se_2_left,create_time,update_time from company where id='$id'";
+    $sql  = "select id,name,username,password,asq_total,asq_left,asq_se_total,asq_se_left,asq_se_2_total,asq_se_2_left,create_time,update_time from company where id='$id'";
     $result =  $conn->query($sql);
     if ($conn->affected_rows != 0) {
       $model  =  $result->fetch_assoc();
@@ -156,7 +173,7 @@ if ($method == 'post') {
     $beginTime = getTime($input->beginTime);
     $endTime = getTime($input->endTime);
 
-    $sql  = "select id,name,account_name,account_pass,asq_total,asq_left,asq_se_total,asq_se_left,asq_se_2_total,asq_se_2_left,create_time,update_time from company where create_time between '$beginTime' and '$endTime'";
+    $sql  = "select id,name,username,password,asq_total,asq_left,asq_se_total,asq_se_left,asq_se_2_total,asq_se_2_left,create_time,update_time from company where create_time between '$beginTime' and '$endTime'";
 
     $result = $conn->query($sql);
     $Data = [];
@@ -185,7 +202,7 @@ if ($method == 'post') {
   }
 } else if ($method == 'get') {
   $id = $_GET['id'];
-  $sql = "select id,name,account_name,account_pass,asq_total,asq_left,asq_se_total,asq_se_left,asq_se_2_total,asq_se_2_left,create_time,update_time from company where id='$id'";
+  $sql = "select id,name,username,password,asq_total,asq_left,asq_se_total,asq_se_left,asq_se_2_total,asq_se_2_left,create_time,update_time from company where id='$id'";
 
   $result = $conn->query($sql);
   if ($conn->affected_rows != 0) {

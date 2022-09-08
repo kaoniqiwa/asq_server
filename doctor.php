@@ -27,12 +27,21 @@ if ($method == 'post') {
 
   if ($flow == 'listDoctor') {
     $cid = $input->cid;
-    $doctors = listDoctor($cid);
+    $data = [];
+
+    $sql = "select id,cid,name,level,dept,phone,create_time,update_time from doctor where cid='$cid' ";
+    $result = $conn->query($sql);
+    if ($conn->affected_rows != 0) {
+      while ($tmp = $result->fetch_assoc()) {
+        array_push($data, $tmp);
+      }
+    }
+
     echo json_encode(
       [
         "faultCode" => 0,
         'faultReason' => 'OK',
-        "data" =>  $doctors
+        "data" =>  $data
       ]
     );
   } else if ($flow == 'addDoctor') {
@@ -45,7 +54,7 @@ if ($method == 'post') {
     $sql = "insert into doctor (id,cid,name,level,dept,phone) values ('$id','$cid','$name','$level','$dept','$phone')";
 
     $conn->query($sql);
-    $result = $conn->query("select id,cid,name,level,dept,create_time,update_time from doctor where id='$id'");
+    $result = $conn->query("select id,cid,name,level,dept,phone,create_time,update_time from doctor where id='$id'");
 
     if ($conn->affected_rows != 0) {
       $model  =  $result->fetch_assoc();
@@ -78,7 +87,7 @@ if ($method == 'post') {
     $sql  = "update doctor set name='$name',level='$level',dept='$dept',phone='$phone' where id='$id'";
     $conn->query($sql);
 
-    $result = $conn->query("select id,cid,name,level,dept,create_time,update_time from doctor where id='$id'");
+    $result = $conn->query("select id,cid,name,level,dept,phone,create_time,update_time from doctor where id='$id'");
 
     if ($conn->affected_rows != 0) {
       $model  =  $result->fetch_assoc();
@@ -108,24 +117,10 @@ if ($method == 'post') {
 function getDoctor(string $id)
 {
   global $conn;
-  $sql =  "select id,cid,name,level,dept,create_time,update_time from doctor where id='$id'";
+  $sql =  "select id,cid,name,level,dept,phone,create_time,update_time from doctor where id='$id'";
   $result = $conn->query($sql);
   if ($conn->affected_rows != 0) {
     return $result->fetch_assoc();
   }
   return null;
-}
-
-function listDoctor(string $cid)
-{
-  global $conn;
-  $data = [];
-  $sql = "select id,cid,name,level,dept,create_time,update_time from doctor where cid='$cid' ";
-  $result = $conn->query($sql);
-  if ($conn->affected_rows != 0) {
-    while ($tmp = $result->fetch_assoc()) {
-      array_push($data, $tmp);
-    }
-  }
-  return $data;
 }

@@ -1,23 +1,28 @@
 <?php
 
-include "./lib/home.php";
+
+
+if (!isset($conn)) {
+  $conn = new mysqli('localhost', 'root', 'root');
+  if ($conn->connect_errno) {
+    die('database connect fail');
+  }
+
+  $conn->set_charset('utf8');
+  $conn->select_db('asq');
+}
+
 
 $realm = "neoballoon.com";
 
-$user1 = new stdClass();
-$user1->username = '12345';
-$user1->password = '26314548';
-
-$user2 = new stdClass();
-$user2->username = 'Neoballoon';
-$user2->password = '13917805407';
-
-$users = [
-  $user1,
-  $user2
-];
 $username = '';
 $password = '';
+
+
+// $user = new stdClass();
+// $user->username = 'Neoballoon';
+// $user->password = '13917805407';
+
 
 if (empty($_SERVER["PHP_AUTH_DIGEST"])) {
   header('WWW-Authenticate: Digest realm="' . $realm .
@@ -34,45 +39,47 @@ if (!authenticate($_SERVER["PHP_AUTH_DIGEST"])) {
   die('登录失败');
 } else {
 
-  $pass = md5($password);
-
-  $result = $mysqli->query("select * from user where username='${username}' and password='$pass' limit 1");
-
-  $datas = array();
+  $result = $conn->query("select id,username,name,name,grade,status,create_time,update_time from adminuser where username='$username' and password='$password' limit 1");
 
 
-  if ($mysqli->affected_rows != 0) {
-    while ($rs = $result->fetch_assoc()) {
-      array_push($datas, $rs);
-    }
+
+  if ($conn->affected_rows != 0) {
+    $data =  $result->fetch_assoc();
     echo json_encode(array(
-      'Code' => 0,
-      'Username' => $datas[0]['username'],
-      "Name" => $datas[0]['name'],
-      "Grade" => $datas[0]['grade']
+      "faultCode" => 0,
+      "fatalReson" => 'OK',
+      "data" => $data
     ));
   } else {
     echo json_encode(array(
-      "Code" => 1
+      "faultCode" => 1,
+      'fatalReson' => 'Error',
     ));
   }
 }
 
 function authenticate($digest)
 {
-  global $realm, $nonce, $opaque, $users, $username, $password;
+  global $realm,  $conn, $username, $password;
   $headers  = getallheaders();
+
 
   if (isset($headers["x-webbrowser-authentication"]) && $headers["x-webbrowser-authentication"] == 'Forbidden') {
 
     $data = http_digest_parse($digest);
     $username = $data['username'];
 
-    foreach ($users as $key => $value) {
-      if ($value->username == $username) {
-        $password = $value->password;
-      }
+    $sql = "select password from  adminuser where username='$username'";
+
+    $result = $conn->query($sql);
+
+    if ($conn->affected_rows != 0) {
+      $password = $result->fetch_assoc()['password'];
+    } else {
+      return false;
     }
+
+
     if (empty($password)) return false;
 
     if (isset($data) && isset($password)) {
