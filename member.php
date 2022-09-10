@@ -78,19 +78,16 @@ if ($method == 'post') {
     );
   } else if ($flow == 'addMember') {
     $id = GUID();
+    $did = $input->did;
     $name = $input->name;
-    $gender = $input->gender;
     $phone = $input->phone;
-    $email = $input->email;
-    $post_code = $input->post_code;
-    $address = $input->address;
-    $survey_left = $input->survey_left;
+    $role  = $input->member_role;
 
-    $sql = "insert into member ( id,name,gender,phone,email,post_code,address,survey_left) values ('$id','$name','$gender','$phone','$email','$post_code','$address','$survey_left')";
+    $sql = "insert into member ( id,did,name,phone,member_role) values ('$id','$did','$name','$phone','$role')";
 
     $result = $conn->query($sql);
+    $sql  = "select id,name,phone,member_role,create_time,update_time from member where id='$id'";
 
-    $sql  = "select id,name,gender,phone,email,post_code,address,survey_left,create_time,update_time from member where id='$id'";
     $result =  $conn->query($sql);
     if ($conn->affected_rows != 0) {
       $model  =  $result->fetch_assoc();
