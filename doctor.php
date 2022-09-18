@@ -29,7 +29,7 @@ if ($method == 'post') {
     $cid = $input->cid;
     $data = [];
 
-    $sql = "select id,cid,name,level,dept,phone,create_time,update_time from doctor where cid='$cid' ";
+    $sql = "select id,cid,name,level,dept,phone,create_time,update_time from doctor where cid like '%$cid%' ";
     $result = $conn->query($sql);
     if ($conn->affected_rows != 0) {
       while ($tmp = $result->fetch_assoc()) {
@@ -102,7 +102,13 @@ if ($method == 'post') {
   }
 } else if ($method == 'get') {
   $id = $_GET['id'];
-  $doctor = getDoctor($id);
+  $doctor  = null;
+
+  $sql =  "select id,cid,name,level,dept,phone,create_time,update_time from doctor where id='$id'";
+  $result = $conn->query($sql);
+  if ($conn->affected_rows != 0) {
+    $doctor =  $result->fetch_assoc();
+  }
 
   echo json_encode(
     [
@@ -111,16 +117,4 @@ if ($method == 'post') {
       "data" =>  $doctor
     ]
   );
-}
-
-
-function getDoctor(string $id)
-{
-  global $conn;
-  $sql =  "select id,cid,name,level,dept,phone,create_time,update_time from doctor where id='$id'";
-  $result = $conn->query($sql);
-  if ($conn->affected_rows != 0) {
-    return $result->fetch_assoc();
-  }
-  return null;
 }

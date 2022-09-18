@@ -21,4 +21,8 @@ function string_make_guid()
 }
 
 
-echo GUID();
+// echo GUID();
+$a = "";
+$b = $a ? $a :  null;
+
+var_dump($b);
