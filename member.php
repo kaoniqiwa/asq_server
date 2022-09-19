@@ -1,16 +1,17 @@
 <?php
-include('./util.php');
+include('./tool.php');
+include("./mysql.php");
 
 
-if (!isset($conn)) {
-  $conn = new mysqli('localhost', 'root', 'root');
-  if ($conn->connect_errno) {
-    die('database connect fail');
-  }
+// if (!isset($conn)) {
+//   $conn = new mysqli('localhost', 'root', 'root');
+//   if ($conn->connect_errno) {
+//     die('database connect fail');
+//   }
 
-  $conn->set_charset('utf8');
-  $conn->select_db('asq');
-}
+//   $conn->set_charset('utf8');
+//   $conn->select_db('asq');
+// }
 
 
 $method = strtolower($_SERVER['REQUEST_METHOD']);

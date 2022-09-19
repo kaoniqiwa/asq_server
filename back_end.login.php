@@ -1,16 +1,6 @@
 <?php
 
-
-
-if (!isset($conn)) {
-  $conn = new mysqli('localhost', 'root', 'root');
-  if ($conn->connect_errno) {
-    die('database connect fail');
-  }
-
-  $conn->set_charset('utf8');
-  $conn->select_db('asq');
-}
+include("./mysql.php");
 
 
 $realm = "neoballoon.com";

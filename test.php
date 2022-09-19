@@ -19,10 +19,3 @@ function string_make_guid()
 
   return sprintf('%04x%04x%04x%04x%04x%04x%04x%04x', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
 }
-
-
-// echo GUID();
-$a = "";
-$b = $a ? $a :  null;
-
-var_dump($b);
