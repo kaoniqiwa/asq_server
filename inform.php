@@ -1,17 +1,8 @@
 <?php
 
-include('./tool.php');
+include('./utility/tool.php');
+include('./utility/mysql.php');
 
-
-// if (!isset($conn)) {
-//   $conn = new mysqli('localhost', 'root', 'root');
-//   if ($conn->connect_errno) {
-//     die('database connect fail');
-//   }
-
-//   $conn->set_charset('utf8');
-//   $conn->select_db('asq');
-// }
 
 
 $method = strtolower($_SERVER['REQUEST_METHOD']);

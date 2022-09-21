@@ -10,6 +10,8 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 
 function exportExcel($header = array(), $data = array(), $fileName = '', $savePath = '/', $isDown = false)
 {
+  // var_dump('header', $header);
+  // var_dump('data', $data);
 
   $spreadsheet = new Spreadsheet();
   $sheet = $spreadsheet->getActiveSheet();
@@ -21,11 +23,7 @@ function exportExcel($header = array(), $data = array(), $fileName = '', $savePa
 
   $_row = 1;   //设置纵向单元格标识
   if ($header) {
-    $_cnt = count($header);
 
-    // $sheet->mergeCells('A' . $_row . ':' . $cellName[$_cnt - 1] . $_row);
-    // $sheet->setCellValue('A' . $_row, '数据导出：' . date('Y-m-d H:i:s'));
-    // $_row++;
 
     $i = 0;
     foreach ($header as $v) {   //设置列标题
@@ -47,26 +45,27 @@ function exportExcel($header = array(), $data = array(), $fileName = '', $savePa
     }
   }
 
+
   $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
 
-  if ($isDown) {
-    // Redirect output to a client’s web browser (Xlsx)
-    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    header('Content-Disposition: attachment;filename="01simple.xlsx"');
-    header('Cache-Control: max-age=0');
-    // If you're serving to IE 9, then the following may be needed
-    header('Cache-Control: max-age=1');
+  // if ($isDown) {
+  //   // Redirect output to a client’s web browser (Xlsx)
+  //   header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  //   header('Content-Disposition: attachment;filename="01simple.xlsx"');
+  //   header('Cache-Control: max-age=0');
+  //   // If you're serving to IE 9, then the following may be needed
+  //   header('Cache-Control: max-age=1');
 
-    // If you're serving to IE over SSL, then the following may be needed
-    header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
-    header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
-    header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
-    header('Pragma: public'); // HTTP/1.0
+  //   // If you're serving to IE over SSL, then the following may be needed
+  //   header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+  //   header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
+  //   header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+  //   header('Pragma: public'); // HTTP/1.0
 
-    $writer->save('php://output');
-    exit;
-  }
-  $_fileName = $fileName; //iconv("utf-8", "gb2312", $fileName);   //转码
+  //   $writer->save('php://output');
+  //   exit;
+  // }
+  $_fileName = $fileName; // iconv("utf-8", "gb2312", $fileName);   //转码
   $_savePath = $savePath . $_fileName . '.xlsx';
   $writer->save($_savePath);
   return $savePath . $fileName . '.xlsx';

@@ -1,17 +1,12 @@
 <?php
 
-include("./mysql.php");
+include('./utility/mysql.php');
 
 
 $realm = "neoballoon.com";
 
 $username = '';
 $password = '';
-
-
-// $user = new stdClass();
-// $user->username = 'Neoballoon';
-// $user->password = '13917805407';
 
 
 if (empty($_SERVER["PHP_AUTH_DIGEST"])) {

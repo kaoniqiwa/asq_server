@@ -1,7 +1,7 @@
 <?php
 
-include("./mysql.php");
-
+include('./utility/tool.php');
+include('./utility/mysql.php');
 
 // if (!isset($conn)) {
 //   $conn = new mysqli('localhost', 'root', 'root');

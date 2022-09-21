@@ -1,6 +1,6 @@
 <?php
-include('./tool.php');
-include("./mysql.php");
+include('./utility/tool.php');
+include('./utility/mysql.php');
 
 
 // if (!isset($conn)) {

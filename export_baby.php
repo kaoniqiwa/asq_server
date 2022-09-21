@@ -10,25 +10,42 @@ include('./export/PHPExcel.php');
 
 
 
-// $sql = "select name,gender,birthday from baby";
+$sql = "select name,gender,birthday ,survey_time,premature,is_shun,identity_info,identity_type,weight from baby";
 
 
-// $babys = [];
+$babys = [];
 
-// $result = $conn->query($sql);
-// if ($conn->affected_rows != 0) {
-//   while ($tmp = $result->fetch_assoc()) {
-//     array_push($babys, $tmp);
-//   }
+$result = $conn->query($sql);
+if ($conn->affected_rows != 0) {
+  while ($tmp = $result->fetch_assoc()) {
+    array_push($babys, $tmp);
+  }
 
-// var_dump($babys);
-// }
+  foreach ($babys as &$baby) {
+    $baby['gender'] = $baby['gender'] == '0' ? '男' : '女';
+    $baby['premature'] = $baby['premature'] == '0' ? '是' : '否';
+    $baby['is_shun'] = $baby['is_shun'] == '0' ? '是' : '否';
+  }
+}
+var_dump($babys);
+
+// exportExcel(['姓名', '性别', '生日', '筛查时间', '是否早产', '是否顺产',], $babys, "宝宝信息： " . date('Y-m-d'), "./", true);
 
 
 
 
 
-exportExcel(['a', 'b'], [[
-  "name" => 'sdf',
-  "age" => 12
-]], '宝宝', "./", true);
+
+
+
+
+// exportExcel(['a', 'b'], [
+//   [
+//     "name" => 'A2',
+//     "age" => "B2",
+//   ],
+//   [
+//     "name" => 'A3',
+//     "age" => "B3",
+//   ],
+// ], '宝宝', "./", true);
