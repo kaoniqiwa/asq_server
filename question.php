@@ -1,6 +1,6 @@
 
 <?php
-
+header('content-type:text/json;charset=utf-8');
 include('./utility/tool.php');
 include('./utility/mysql.php');
 
@@ -17,24 +17,31 @@ if ($method == 'post') {
 
 
   if ($flow == 'addQuestion') {
-
-    $Id = GUID();
+    $Id = $input->Id;
+    $oldId = $Id;
+    if($Id == ''){
+      $Id = GUID();
+    }
 
     $Bid = $input->Bid;
     $QuestType = $input->QuestType;
     $QuestMonth = $input->QuestMonth;
     $QuestResult = json_encode($input->QuestResult);
+    $QuestScore = $input->QuestScore;
 
-
-    $sql = "insert into asq_test (Id,Bid,QuestType,QuestMonth,QuestResult) values ('$Id','$Bid','$QuestType','$QuestMonth','$QuestResult')";
-
+    if($oldId == ''){
+      $sql = "insert into asq_test (Id,Bid,QuestType,QuestMonth,QuestResult,QuestScore) values ('$Id','$Bid','$QuestType','$QuestMonth','$QuestResult','$QuestScore')";
+    }else{
+      $sql = "update asq_test set Bid='$Bid',QuestType='$QuestType',QuestMonth='$QuestMonth',QuestResult='$QuestResult',QuestScore='$QuestScore' where Id='$Id'";
+    }
 
     $conn->query($sql);
 
-    $sql = "select Id,Bid,QuestType,QuestMonth,QuestResult ,CreateTime,UpdateTime from asq_test where Id = '$Id'";
+    $sql = "select Id,Bid,QuestType,QuestMonth,QuestResult,QuestScore ,CreateTime,UpdateTime from asq_test where Id = '$Id'";
     $result = $conn->query($sql);
     if ($conn->affected_rows != 0) {
       $model  =  $result->fetch_assoc();
+      //$model['QuestScore'] =  json_decode($model['QuestScore']);
       echo json_encode(
         [
           "faultCode" => 0,
