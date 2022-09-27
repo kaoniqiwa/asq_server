@@ -1,6 +1,6 @@
 
 <?php
-
+header('content-type:text/json;charset=utf-8');
 include('./utility/tool.php');
 include('./utility/mysql.php');
 
@@ -27,7 +27,7 @@ if ($method == 'post') {
     $QuestType = $input->QuestType;
     $QuestMonth = $input->QuestMonth;
     $QuestResult = json_encode($input->QuestResult);
-    $QuestScore = json_encode($input->QuestScore);
+    $QuestScore = $input->QuestScore;
 
     if($oldId == ''){
       $sql = "insert into asq_test (Id,Bid,QuestType,QuestMonth,QuestResult,QuestScore) values ('$Id','$Bid','$QuestType','$QuestMonth','$QuestResult','$QuestScore')";
@@ -41,6 +41,7 @@ if ($method == 'post') {
     $result = $conn->query($sql);
     if ($conn->affected_rows != 0) {
       $model  =  $result->fetch_assoc();
+      //$model['QuestScore'] =  json_decode($model['QuestScore']);
       echo json_encode(
         [
           "faultCode" => 0,
