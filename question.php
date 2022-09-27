@@ -23,10 +23,11 @@ if ($method == 'post') {
     $Bid = $input->Bid;
     $QuestType = $input->QuestType;
     $QuestMonth = $input->QuestMonth;
-    $QuestResult = json_encode($input->Questresult);
+    $QuestResult = json_encode($input->QuestResult);
 
 
     $sql = "insert into asq_test (Id,Bid,QuestType,QuestMonth,QuestResult) values ('$Id','$Bid','$QuestType','$QuestMonth','$QuestResult')";
+
 
     $conn->query($sql);
 
