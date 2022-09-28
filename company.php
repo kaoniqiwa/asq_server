@@ -10,28 +10,28 @@ $method = strtolower($_SERVER['REQUEST_METHOD']);
 if ($method == 'post') {
   $input = json_decode(file_get_contents('php://input'));
 
-  if (!isset($input->flow)) {
+  if (!isset($input->Flow)) {
     die('Operation Denied!');
   }
 
-  $flow = $input->flow;
-  if ($flow == 'listCompany') {
-    $pageSize = $input->pageSize;
-    $pageIndex = $input->pageIndex;
-    $name = '';
-    if (isset($input->name)) {
-      $name = $input->name;
+  $Flow = $input->Flow;
+  if ($Flow == 'listCompany') {
+    $PageSize = $input->PageSize;
+    $PageIndex = $input->PageIndex;
+    $Name = '';
+    if (isset($input->Name)) {
+      $Name = $input->Name;
     }
-    $start = ($pageIndex - 1) * $pageSize;
+    $Start = ($PageIndex - 1) * $PageSize;
 
 
-    $sql = "select id,name,username,password,asq_total,asq_left,asq_se_total,asq_se_left,asq_se_2_total,asq_se_2_left,create_time,update_time from company  where name like '%$name%'  or username like '%$name%' limit $start,$pageSize";
+    $sql = "select Id,Name,Username,Password,AsqTotal,AsqLeft,AsqSeTotal,AsqSeLeft,AsqSe2Total,AsqSe2Left,CreateTime,UpdateTime from company  where Name like '%$Name%'  or Username like '%$Name%' limit $Start,$PageSize";
 
-    $totalRecortCount = $conn->query("select count(*) from company  where name like '%$name%' or username like '%$name%'")->fetch_assoc()['count(*)'];
+    $TotalRecortCount = $conn->query("select count(*) from company  where Name like '%$Name%' or Username like '%$Name%'")->fetch_assoc()['count(*)'];
 
 
-    $totalRecortCount = intval($totalRecortCount);
-    $PageCount  = ceil($totalRecortCount / $pageSize);
+    $TotalRecortCount = intval($TotalRecortCount);
+    $PageCount  = ceil($TotalRecortCount / $PageSize);
     $RecordCount = 0;
 
     $result = $conn->query($sql);
@@ -45,14 +45,6 @@ if ($method == 'post') {
     }
 
 
-    foreach ($Data as &$value) {
-      $id = $value['id'];
-      $doctors = getDoctor($id);
-      $value['doctors'] = $doctors;
-    }
-
-
-
     echo json_encode(
       array(
         "faultCode" => 0,
@@ -61,31 +53,31 @@ if ($method == 'post') {
           "data" => $Data,
           "page" => array(
             "pageCount" => $PageCount,
-            "pageSize" => $pageSize,
-            "pageIndex" => $pageIndex,
+            "PageSize" => $PageSize,
+            "PageIndex" => $PageIndex,
             "recordCount" => $RecordCount,
-            "totalRecordCount" => $totalRecortCount
+            "totalRecordCount" => $TotalRecortCount
           )
         ]
       )
     );
-  } else if ($flow == 'addCompany') {
-    $id = GUID();
-    $name = $input->name;
-    $username = $input->username;
-    $password = $input->password;
-    $asq_total = $input->asq_total;
-    $asq_left = $input->asq_left;
-    $asq_se_total = $input->asq_se_total;
-    $asq_se_left = $input->asq_se_left;
-    $asq_se_2_total = $input->asq_se_2_total;
-    $asq_se_2_left = $input->asq_se_2_total;
+  } else if ($Flow == 'addCompany') {
+    $Id = GUID();
+    $Name = $input->Name;
+    $Username = $input->Username;
+    $Password = $input->Password;
+    $AsqTotal = $input->AsqTotal;
+    $AsqLeft = $input->AsqLeft;
+    $AsqSeTotal = $input->AsqSeTotal;
+    $AsqSeLeft = $input->AsqSeLeft;
+    $AsqSe2Total = $input->AsqSe2Total;
+    $AsqSe2Left = $input->AsqSe2Total;
 
-    $sql = "insert into company ( id,name,username,password,asq_total,asq_left,asq_se_total,asq_se_left,asq_se_2_total,asq_se_2_left) values ('$id','$name','$username','$password','$asq_total','$asq_left','$asq_se_total','$asq_se_left','$asq_se_2_total','$asq_se_2_left')";
+    $sql = "insert into company ( Id,Name,Username,Password,AsqTotal,AsqLeft,AsqSeTotal,AsqSeLeft,AsqSe2Total,AsqSe2Left) values ('$Id','$Name','$Username','$Password','$AsqTotal','$AsqLeft','$AsqSeTotal','$AsqSeLeft','$AsqSe2Total','$AsqSe2Left')";
 
     $result = $conn->query($sql);
 
-    $sql  = "select id,name,username,password,asq_total,asq_left,asq_se_total,asq_se_left,asq_se_2_total,asq_se_2_left,create_time,update_time from company where id='$id'";
+    $sql  = "select Id,Name,Username,Password,AsqTotal,AsqLeft,AsqSeTotal,AsqSeLeft,AsqSe2Total,AsqSe2Left,CreateTime,UpdateTime from company where Id='$Id'";
     $result =  $conn->query($sql);
     if ($conn->affected_rows != 0) {
       $model  =  $result->fetch_assoc();
@@ -97,10 +89,10 @@ if ($method == 'post') {
         ]
       );
     }
-  } else if ($flow == 'deleteCompany') {
-    $id = $input->id;
+  } else if ($Flow == 'deleteCompany') {
+    $Id = $input->Id;
 
-    $sql = "select id,name,username,password,asq_total,asq_left,asq_se_total,asq_se_left,asq_se_2_total,asq_se_2_left,create_time,update_time from company where id='$id'";
+    $sql = "select Id,Name,Username,Password,AsqTotal,AsqLeft,AsqSeTotal,AsqSeLeft,AsqSe2Total,AsqSe2Left,CreateTime,UpdateTime from company where Id='$Id'";
 
 
     $result = $conn->query($sql);
@@ -108,8 +100,8 @@ if ($method == 'post') {
     if ($conn->affected_rows != 0) {
       $model = $result->fetch_assoc();
 
-      $conn->query("delete from doctor where cid='$id'");
-      $conn->query("delete from company where id='$id'");
+      $conn->query("delete from doctor where cid='$Id'");
+      $conn->query("delete from company where Id='$Id'");
 
       echo json_encode(
         [
@@ -126,29 +118,29 @@ if ($method == 'post') {
         ]
       );
     }
-  } else if ($flow == 'editCompany') {
-    $id = $input->id;
-    $name = $input->name;
-    $username = $input->username;
-    $password = $input->password;
-    $asq_total = $input->asq_total;
-    $asq_left = $input->asq_left;
-    $asq_se_total = $input->asq_se_total;
-    $asq_se_left = $input->asq_se_left;
-    $asq_se_2_total = $input->asq_se_2_total;
-    $asq_se_2_left = $input->asq_se_2_total;
+  } else if ($Flow == 'editCompany') {
+    $Id = $input->Id;
+    $Name = $input->Name;
+    $Username = $input->Username;
+    $Password = $input->Password;
+    $AsqTotal = $input->AsqTotal;
+    $AsqLeft = $input->AsqLeft;
+    $AsqSeTotal = $input->AsqSeTotal;
+    $AsqSeLeft = $input->AsqSeLeft;
+    $AsqSe2Total = $input->AsqSe2Total;
+    $AsqSe2Left = $input->AsqSe2Total;
 
-    $sql  = "update  company set name='$name',username='$username',password='$password',asq_total='$asq_total',asq_left='$asq_left',asq_se_total='$asq_se_total',asq_se_left='$asq_se_left',asq_se_2_total='$asq_se_2_total',
-    asq_se_2_left='$asq_se_2_left' where id='$id'";
+    $sql  = "update  company set Name='$Name',Username='$Username',Password='$Password',AsqTotal='$AsqTotal',AsqLeft='$AsqLeft',AsqSeTotal='$AsqSeTotal',AsqSeLeft='$AsqSeLeft',AsqSe2Total='$AsqSe2Total',
+    AsqSe2Left='$AsqSe2Left' where Id='$Id'";
     $conn->query($sql);
 
 
-    $sql  = "select id,name,username,password,asq_total,asq_left,asq_se_total,asq_se_left,asq_se_2_total,asq_se_2_left,create_time,update_time from company where id='$id'";
+    $sql  = "select Id,Name,Username,Password,AsqTotal,AsqLeft,AsqSeTotal,AsqSeLeft,AsqSe2Total,AsqSe2Left,CreateTime,UpdateTime from company where Id='$Id'";
     $result =  $conn->query($sql);
     if ($conn->affected_rows != 0) {
       $model  =  $result->fetch_assoc();
 
-      $doctors = getDoctor($id);
+      $doctors = getDoctor($Id);
       $model['doctors'] = $doctors;
 
       echo json_encode(
@@ -159,11 +151,11 @@ if ($method == 'post') {
         ]
       );
     }
-  } else if ($flow == 'exportCompany') {
+  } else if ($Flow == 'exportCompany') {
     $beginTime = getTime($input->beginTime);
     $endTime = getTime($input->endTime);
 
-    $sql  = "select id,name,username,password,asq_total,asq_left,asq_se_total,asq_se_left,asq_se_2_total,asq_se_2_left,create_time,update_time from company where create_time between '$beginTime' and '$endTime'";
+    $sql  = "select Id,Name,Username,Password,AsqTotal,AsqLeft,AsqSeTotal,AsqSeLeft,AsqSe2Total,AsqSe2Left,CreateTime,UpdateTime from company where CreateTime between '$beginTime' and '$endTime'";
 
     $result = $conn->query($sql);
     $Data = [];
@@ -177,8 +169,8 @@ if ($method == 'post') {
 
 
     foreach ($Data as &$value) {
-      $id = $value['id'];
-      $doctors = getDoctor($id);
+      $Id = $value['Id'];
+      $doctors = getDoctor($Id);
       $value['doctors'] = $doctors;
     }
 
@@ -191,15 +183,12 @@ if ($method == 'post') {
     );
   }
 } else if ($method == 'get') {
-  $id = $_GET['id'];
-  $sql = "select id,name,username,password,asq_total,asq_left,asq_se_total,asq_se_left,asq_se_2_total,asq_se_2_left,create_time,update_time from company where id='$id'";
+  $Id = $_GET['Id'];
+  $sql = "select Id,Name,Username,Password,AsqTotal,AsqLeft,AsqSeTotal,AsqSeLeft,AsqSe2Total,AsqSe2Left,CreateTime,UpdateTime from company where Id='$Id'";
 
   $result = $conn->query($sql);
   if ($conn->affected_rows != 0) {
     $model  = $result->fetch_assoc();
-    $doctors = getDoctor($id);
-    $model['doctors'] = $doctors;
-
     echo json_encode(
       [
         "faultCode" => 0,
@@ -208,19 +197,4 @@ if ($method == 'post') {
       ]
     );
   }
-}
-
-
-function getDoctor(string $cid)
-{
-  global $conn;
-  $data = [];
-  $sql = "select id,cid,name,level,dept,phone,create_time,update_time from doctor where cid='$cid' ";
-  $result = $conn->query($sql);
-  if ($conn->affected_rows != 0) {
-    while ($tmp = $result->fetch_assoc()) {
-      array_push($data, $tmp);
-    }
-  }
-  return $data;
 }

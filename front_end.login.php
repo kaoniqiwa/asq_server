@@ -3,15 +3,6 @@
 include('./utility/tool.php');
 include('./utility/mysql.php');
 
-// if (!isset($conn)) {
-//   $conn = new mysqli('localhost', 'root', 'root');
-//   if ($conn->connect_errno) {
-//     die('database connect fail');
-//   }
-
-//   $conn->set_charset('utf8');
-//   $conn->select_db('asq');
-// }
 
 
 $realm = "neoballoon.com";
@@ -37,11 +28,10 @@ if (!authenticate($_SERVER["PHP_AUTH_DIGEST"])) {
   die('登录失败');
 } else {
 
-  $sql  = "select id,name,username,create_time,update_time from company where username='$username' and password='$password' limit 1";
+  $sql  = "select Id,Name,Username,Password,CreateTime,UpdateTime from company where Username='$username' and Password='$password' limit 1";
 
 
   $result = $conn->query($sql);
-
 
   if ($conn->affected_rows != 0) {
     $data =  $result->fetch_assoc();
@@ -69,13 +59,13 @@ function authenticate($digest)
     $data = http_digest_parse($digest);
     $username = $data['username'];
 
-    $sql = "select password from  company where username='$username'";
+    $sql = "select Password from  company where Username='$username'";
 
 
     $result = $conn->query($sql);
 
     if ($conn->affected_rows != 0) {
-      $password = $result->fetch_assoc()['password'];
+      $password = $result->fetch_assoc()['Password'];
     } else {
       return false;
     }
@@ -93,6 +83,8 @@ function authenticate($digest)
         return true;
       }
     }
+
+    return false;
   }
 
   return false;

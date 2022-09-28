@@ -8,17 +8,18 @@ $method = strtolower($_SERVER['REQUEST_METHOD']);
 if ($method == 'post') {
   $input = json_decode(file_get_contents('php://input'));
 
-  if (!isset($input->flow)) {
+  if (!isset($input->Flow)) {
     die('Operation Denied!');
   }
 
-  $flow = $input->flow;
+  $Flow = $input->Flow;
 
-  if ($flow == 'listDoctor') {
-    $cid = $input->cid;
+  if ($Flow == 'listDoctor') {
+    $Cid = $input->Cid;
     $data = [];
 
-    $sql = "select id,cid,name,level,dept,phone,create_time,update_time from doctor where cid like '%$cid%' ";
+    $sql = "select Id,Cid,Name,Level,Dept,Phone,CreateTime,UpdateTime from doctor where Cid like '%$Cid%'";
+
     $result = $conn->query($sql);
     if ($conn->affected_rows != 0) {
       while ($tmp = $result->fetch_assoc()) {
@@ -33,17 +34,17 @@ if ($method == 'post') {
         "data" =>  $data
       ]
     );
-  } else if ($flow == 'addDoctor') {
-    $id = GUID();
-    $cid = $input->cid;
-    $name = $input->name;
-    $level = $input->level;
-    $dept = $input->dept;
-    $phone =  $input->phone;
-    $sql = "insert into doctor (id,cid,name,level,dept,phone) values ('$id','$cid','$name','$level','$dept','$phone')";
+  } else if ($Flow == 'addDoctor') {
+    $Id = GUId();
+    $Cid = $input->Cid;
+    $Name = $input->Name;
+    $Level = $input->Level;
+    $Dept = $input->Dept;
+    $Phone =  $input->Phone;
+    $sql = "insert into doctor (Id,Cid,Name,Level,Dept,Phone) values ('$Id','$Cid','$Name','$Level','$Dept','$Phone')";
 
     $conn->query($sql);
-    $result = $conn->query("select id,cid,name,level,dept,phone,create_time,update_time from doctor where id='$id'");
+    $result = $conn->query("select Id,Cid,Name,Level,Dept,Phone,CreateTime,UpdateTime from doctor where Id='$Id'");
 
     if ($conn->affected_rows != 0) {
       $model  =  $result->fetch_assoc();
@@ -55,11 +56,11 @@ if ($method == 'post') {
         ]
       );
     }
-  } else if ($flow == 'deleteDoctor') {
-    $id = $input->id;
-    $cid = $input->cid;
+  } else if ($Flow == 'deleteDoctor') {
+    $Id = $input->Id;
+    $Cid = $input->Cid;
 
-    $sql = "delete from doctor where id='$id'";
+    $sql = "delete from doctor where Id='$Id'";
     $result = $conn->query($sql);
     echo json_encode(
       [
@@ -67,16 +68,16 @@ if ($method == 'post') {
         'faultReason' => 'OK',
       ]
     );
-  } else if ($flow == 'editDoctor') {
-    $id = $input->id;
-    $name = $input->name;
-    $level = $input->level;
-    $dept = $input->dept;
-    $phone =  $input->phone;
-    $sql  = "update doctor set name='$name',level='$level',dept='$dept',phone='$phone' where id='$id'";
+  } else if ($Flow == 'editDoctor') {
+    $Id = $input->Id;
+    $Name = $input->Name;
+    $Level = $input->Level;
+    $Dept = $input->Dept;
+    $Phone =  $input->Phone;
+    $sql  = "update doctor set Name='$Name',Level='$Level',Dept='$Dept',Phone='$Phone' where Id='$Id'";
     $conn->query($sql);
 
-    $result = $conn->query("select id,cid,name,level,dept,phone,create_time,update_time from doctor where id='$id'");
+    $result = $conn->query("select Id,Cid,Name,Level,Dept,Phone,CreateTime,UpdateTime from doctor where Id='$Id'");
 
     if ($conn->affected_rows != 0) {
       $model  =  $result->fetch_assoc();
@@ -90,10 +91,10 @@ if ($method == 'post') {
     }
   }
 } else if ($method == 'get') {
-  $id = $_GET['id'];
+  $Id = $_GET['Id'];
   $doctor  = null;
 
-  $sql =  "select id,cid,name,level,dept,phone,create_time,update_time from doctor where id='$id'";
+  $sql =  "select Id,Cid,Name,Level,Dept,Phone,CreateTime,UpdateTime from doctor where Id='$Id'";
   $result = $conn->query($sql);
   if ($conn->affected_rows != 0) {
     $doctor =  $result->fetch_assoc();

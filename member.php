@@ -7,29 +7,29 @@ $method = strtolower($_SERVER['REQUEST_METHOD']);
 if ($method == 'post') {
   $input = json_decode(file_get_contents('php://input'));
 
-  if (!isset($input->flow)) {
+  if (!isset($input->Flow)) {
     die('Operation Denied!');
   }
 
-  $flow = $input->flow;
+  $Flow = $input->Flow;
 
-  if ($flow == 'listMember') {
-    $pageSize = $input->pageSize;
-    $pageIndex = $input->pageIndex;
-    $name = '';
-    if (isset($input->name)) {
-      $name = $input->name;
+  if ($Flow == 'listMember') {
+    $PageSize = $input->PageSize;
+    $PageIndex = $input->PageIndex;
+    $Name = '';
+    if (isset($input->Name)) {
+      $Name = $input->Name;
     }
-    $start = ($pageIndex - 1) * $pageSize;
+    $start = ($PageIndex - 1) * $PageSize;
 
 
-    $sql = "select id,did,name,phone,member_role,province,city,county,email,post_code,address,mother_job,father_job,mother_degree,father_degree,other_degree,mother_birth,father_birth,create_time,update_time from member  where name like '%$name%'  limit $start,$pageSize";
+    $sql = "select Id,Did,Name,Phone,Province,City,County,Email,PostCode,Address,MotherJob,FatherJob,MotherDegree,FatherDegree,OtherDegree,MotherBirth,FatherBirth,CreateTime,UpdateTime from member  where Name like '%$Name%'  limit $start,$PageSize";
 
 
-    $totalRecortCount = $conn->query("select count(*) from member  where name like '%$name%'")->fetch_assoc()['count(*)'];
+    $totalRecortCount = $conn->query("select count(*) from member  where Name like '%$Name%'")->fetch_assoc()['count(*)'];
 
     $totalRecortCount = intval($totalRecortCount);
-    $PageCount  = ceil($totalRecortCount / $pageSize);
+    $PageCount  = ceil($totalRecortCount / $PageSize);
     $RecordCount = 0;
 
     $result = $conn->query($sql);
@@ -43,12 +43,6 @@ if ($method == 'post') {
     }
 
 
-    foreach ($Data as &$value) {
-      $id = $value['id'];
-      $babys = getBaby($id);
-      $value['babys'] = $babys;
-    }
-
 
     echo json_encode(
       array(
@@ -58,40 +52,39 @@ if ($method == 'post') {
           "data" => $Data,
           "page" => array(
             "pageCount" => $PageCount,
-            "pageSize" => $pageSize,
-            "pageIndex" => $pageIndex,
+            "PageSize" => $PageSize,
+            "PageIndex" => $PageIndex,
             "recordCount" => $RecordCount,
             "totalRecordCount" => $totalRecortCount
           )
         ]
       )
     );
-  } else if ($flow == 'addMember') {
-    $id = GUID();
-    $did = $input->did;
-    $name = $input->name;
-    $phone = $input->phone;
-    $role  = $input->member_role;
+  } else if ($Flow == 'addMember') {
+    $Id = GUID();
+    $Did = $input->Did;
+    $Name = $input->Name;
+    $Phone = $input->Phone;
 
 
-    $province  = $input->province;
-    $city  = $input->city;
-    $county  = $input->county;
-    $email  = $input->email;
-    $post_code  = $input->post_code;
-    $address  = $input->address;
-    $mother_job  = $input->mother_job;
-    $father_job  = $input->father_job;
-    $mother_degree  = $input->mother_degree;
-    $father_degree  = $input->father_degree;
-    $other_degree  = $input->other_degree;
-    $mother_birth  = $input->mother_birth;
-    $father_birth  = $input->father_birth;
+    $Province  = $input->Province;
+    $City  = $input->City;
+    $County  = $input->County;
+    $Email  = $input->Email;
+    $PostCode  = $input->PostCode;
+    $Address  = $input->Address;
+    $MotherJob  = $input->MotherJob;
+    $FatherJob  = $input->FatherJob;
+    $MotherDegree  = $input->MotherDegree;
+    $FatherDegree  = $input->FatherDegree;
+    $OtherDegree  = $input->OtherDegree;
+    $MotherBirth  = $input->MotherBirth;
+    $FatherBirth  = $input->FatherBirth;
 
-    $sql = "insert into member ( id,did,name,phone,member_role,province,city,county,email,post_code,address,mother_job,father_job,mother_degree,father_degree,other_degree,mother_birth,father_birth) values ('$id','$did','$name','$phone','$role','$province','$city','$county','$email','$post_code','$address','$mother_job','$father_job','$mother_degree','$father_degree','$other_degree','$mother_birth','$father_birth')";
+    $sql = "insert into member ( Id,Did,Name,Phone,Province,City,County,Email,PostCode,Address,MotherJob,FatherJob,MotherDegree,FatherDegree,OtherDegree,MotherBirth,FatherBirth) values ('$Id','$Did','$Name','$Phone','$role','$Province','$City','$County','$Email','$PostCode','$Address','$MotherJob','$FatherJob','$MotherDegree','$FatherDegree','$OtherDegree','$MotherBirth','$FatherBirth')";
 
     $result = $conn->query($sql);
-    $sql  = "select id,did,name,phone,member_role,province,city,county,email,post_code,address,mother_job,father_job,mother_degree,father_degree,other_degree,mother_birth,father_birth,create_time,update_time from member where id='$id'";
+    $sql  = "select Id,Did,Name,Phone,Province,City,County,Email,PostCode,Address,MotherJob,FatherJob,MotherDegree,FatherDegree,OtherDegree,MotherBirth,FatherBirth,CreateTime,UpdateTime from member where Id='$Id'";
 
     $result =  $conn->query($sql);
     if ($conn->affected_rows != 0) {
@@ -104,11 +97,11 @@ if ($method == 'post') {
         ]
       );
     }
-  } else if ($flow == 'deleteMember') {
-    $id = $input->id;
+  } else if ($Flow == 'deleteMember') {
+    $Id = $input->Id;
 
-    $conn->query("delete from baby where mid='$id'");
-    $conn->query("delete from member where id='$id'");
+    $conn->query("delete from baby where Mid='$Id'");
+    $conn->query("delete from member where Id='$Id'");
 
     echo json_encode(
       [
@@ -116,28 +109,26 @@ if ($method == 'post') {
         'faultReason' => 'OK',
       ]
     );
-  } else if ($flow == 'editMember') {
-    $id = $input->id;
-    $name = $input->name;
+  } else if ($Flow == 'editMember') {
+    $Id = $input->Id;
+    $Name = $input->Name;
     $gender = $input->gender;
-    $phone = $input->phone;
-    $email = $input->email;
-    $post_code = $input->post_code;
-    $address = $input->address;
+    $Phone = $input->Phone;
+    $Email = $input->Email;
+    $PostCode = $input->PostCode;
+    $Address = $input->Address;
     $survey_left = $input->survey_left;
 
 
-    $sql  = "update  member set name='$name',phone='$phone',email='$email',post_code='$post_code',address='$address'  where id='$id'";
+    $sql  = "update  member set Name='$Name',Phone='$Phone',Email='$Email',PostCode='$PostCode',Address='$Address'  where Id='$Id'";
     $conn->query($sql);
 
 
-    $sql  = "selectid,did,name,phone,member_role,province,city,county,email,post_code,address,mother_job,father_job,mother_degree,father_degree,other_degree,mother_birth,father_birth,create_time,update_time from member where id='$id'";
+    $sql  = "selectId,Did,Name,Phone,Province,City,County,Email,PostCode,Address,MotherJob,FatherJob,MotherDegree,FatherDegree,OtherDegree,MotherBirth,FatherBirth,CreateTime,UpdateTime from member where Id='$Id'";
     $result =  $conn->query($sql);
     if ($conn->affected_rows != 0) {
       $model  =  $result->fetch_assoc();
 
-      $babys = getBaby($id);
-      $model['babys'] = $babys;
 
       echo json_encode(
         [
@@ -149,16 +140,13 @@ if ($method == 'post') {
     }
   }
 } else if ($method == 'get') {
-  $id = $_GET['id'];
+  $Id = $_GET['Id'];
 
-  $sql  = "select id,did,name,phone,member_role,province,city,county,email,post_code,address,mother_job,father_job,mother_degree,father_degree,other_degree,mother_birth,father_birth,create_time,update_time  from member where id='$id'";
+  $sql  = "select Id,Did,Name,Phone,Province,City,County,Email,PostCode,Address,MotherJob,FatherJob,MotherDegree,FatherDegree,OtherDegree,MotherBirth,FatherBirth,CreateTime,UpdateTime  from member where Id='$Id'";
 
   $result = $conn->query($sql);
   if ($conn->affected_rows != 0) {
     $model  = $result->fetch_assoc();
-
-    $babys = getBaby($id);
-    $model['babys'] = $babys;
 
     echo json_encode(
       [
@@ -168,20 +156,4 @@ if ($method == 'post') {
       ]
     );
   }
-}
-
-
-
-function getBaby(string $mid)
-{
-  global $conn;
-  $data = [];
-  $sql = "select id,mid,name,gender,birthday,survey_time,premature,is_shun,identity_info,identity_type,weight,is_help,is_multi,other_abnormal,create_time,update_time from baby where mid='$mid'";
-  $result = $conn->query($sql);
-  if ($conn->affected_rows != 0) {
-    while ($tmp = $result->fetch_assoc()) {
-      array_push($data, $tmp);
-    }
-  }
-  return $data;
 }

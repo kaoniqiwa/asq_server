@@ -13,13 +13,13 @@ if ($method == 'post') {
     die('Operation Denied!');
   }
 
-  $flow = $input->Flow;
+  $Flow = $input->Flow;
 
 
-  if ($flow == 'addQuestion') {
+  if ($Flow == 'addQuestion') {
     $Id = $input->Id;
     $oldId = $Id;
-    if($Id == ''){
+    if ($Id == '') {
       $Id = GUID();
     }
 
@@ -29,15 +29,15 @@ if ($method == 'post') {
     $QuestResult = json_encode($input->QuestResult);
     $QuestScore = $input->QuestScore;
 
-    if($oldId == ''){
-      $sql = "insert into asq_test (Id,Bid,QuestType,QuestMonth,QuestResult,QuestScore) values ('$Id','$Bid','$QuestType','$QuestMonth','$QuestResult','$QuestScore')";
-    }else{
-      $sql = "update asq_test set Bid='$Bid',QuestType='$QuestType',QuestMonth='$QuestMonth',QuestResult='$QuestResult',QuestScore='$QuestScore' where Id='$Id'";
+    if ($oldId == '') {
+      $sql = "insert into question (Id,Bid,QuestType,QuestMonth,QuestResult,QuestScore) values ('$Id','$Bid','$QuestType','$QuestMonth','$QuestResult','$QuestScore')";
+    } else {
+      $sql = "update question set Bid='$Bid',QuestType='$QuestType',QuestMonth='$QuestMonth',QuestResult='$QuestResult',QuestScore='$QuestScore' where Id='$Id'";
     }
 
     $conn->query($sql);
 
-    $sql = "select Id,Bid,QuestType,QuestMonth,QuestResult,QuestScore ,CreateTime,UpdateTime from asq_test where Id = '$Id'";
+    $sql = "select Id,Bid,QuestType,QuestMonth,QuestResult,QuestScore ,CreateTime,UpdateTime from question where Id = '$Id'";
     $result = $conn->query($sql);
     if ($conn->affected_rows != 0) {
       $model  =  $result->fetch_assoc();
@@ -50,13 +50,13 @@ if ($method == 'post') {
         ]
       );
     }
-  } else if ($flow == 'getQuestion') {
-    $Bid = $input->Bid;
+  } else if ($Flow == 'getQuestion') {
+    $Bid = isset($input->Bid) ? $input->Bid : "";
     $QuestType =  isset($input->QuestType) ? $input->QuestType : "";
     $QuestMonth =  isset($input->QuestMonth) ? $input->QuestMonth : "";
 
 
-    $sql = "select Id,Bid,QuestType,QuestMonth,QuestResult ,CreateTime,UpdateTime  from asq_test where Bid = '$Bid' and QuestType like '%$QuestType%' and QuestMonth like '%$QuestMonth%'";
+    $sql = "select Id,Bid,QuestType,QuestMonth,QuestResult ,CreateTime,UpdateTime  from question where Bid like '%$Bid%' and QuestType like '%$QuestType%' and QuestMonth like '%$QuestMonth%'";
 
     $model = [];
 
@@ -73,5 +73,20 @@ if ($method == 'post') {
         'data' => $model
       ]
     );
+  } else if ($Flow == 'listQuestion') {
+
+    // $PageSize = $input->PageSize;
+    // $PageIndex = $input->PageIndex;
+    // $Name  = isset($input->Name) ? $input->Name : "";
+    // $Start = ($PageIndex - 1) * $PageSize;
+
+
+
+    // $TotalRecortCount = $conn->query("select count(*) from question")->fetch_assoc()['count(*)'];
+
+
+
+    // $sql = "select id,name,username,password,asq_total,asq_left,asq_se_total,asq_se_left,asq_se_2_total,asq_se_2_left,create_time,update_time from company  where name like '%$name%'  or username like '%$name%' limit $start,$pageSize";
+
   }
 }
