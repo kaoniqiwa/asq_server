@@ -26,10 +26,10 @@ if ($method == 'post') {
     $sql = "select Id,Did,Name,Phone,Province,City,County,Email,PostCode,Address,MotherJob,FatherJob,MotherDegree,FatherDegree,OtherDegree,MotherBirth,FatherBirth,CreateTime,UpdateTime from member  where Name like '%$Name%'  limit $start,$PageSize";
 
 
-    $totalRecortCount = $conn->query("select count(*) from member  where Name like '%$Name%'")->fetch_assoc()['count(*)'];
+    $TotalRecortCount = $conn->query("select count(*) from member  where Name like '%$Name%'")->fetch_assoc()['count(*)'];
 
-    $totalRecortCount = intval($totalRecortCount);
-    $PageCount  = ceil($totalRecortCount / $PageSize);
+    $TotalRecortCount = intval($TotalRecortCount);
+    $PageCount  = ceil($TotalRecortCount / $PageSize);
     $RecordCount = 0;
 
     $result = $conn->query($sql);
@@ -46,16 +46,16 @@ if ($method == 'post') {
 
     echo json_encode(
       array(
-        "faultCode" => 0,
-        'faultReason' => 'OK',
-        "data" => [
-          "data" => $Data,
-          "page" => array(
-            "pageCount" => $PageCount,
+        "FaultCode" => 0,
+        'FaultReason' => 'OK',
+        "Data" => [
+          "Data" => $Data,
+          "Page" => array(
+            "PageCount" => $PageCount,
             "PageSize" => $PageSize,
             "PageIndex" => $PageIndex,
-            "recordCount" => $RecordCount,
-            "totalRecordCount" => $totalRecortCount
+            "RecordCount" => $RecordCount,
+            "TotalRecordCount" => $TotalRecortCount
           )
         ]
       )
@@ -67,21 +67,23 @@ if ($method == 'post') {
     $Phone = $input->Phone;
 
 
-    $Province  = $input->Province;
-    $City  = $input->City;
-    $County  = $input->County;
-    $Email  = $input->Email;
-    $PostCode  = $input->PostCode;
-    $Address  = $input->Address;
-    $MotherJob  = $input->MotherJob;
-    $FatherJob  = $input->FatherJob;
-    $MotherDegree  = $input->MotherDegree;
-    $FatherDegree  = $input->FatherDegree;
-    $OtherDegree  = $input->OtherDegree;
-    $MotherBirth  = $input->MotherBirth;
-    $FatherBirth  = $input->FatherBirth;
+    $Province  = isset($input->Province) ? $input->Province : "";
+    $City  = isset($input->City) ? $input->City : "";
+    $County  = isset($input->County) ? $input->County : "";
+    $Email  = isset($input->Email) ? $input->Email : "";
+    $PostCode  = isset($input->PostCode) ? $input->PostCode : "";
+    $Address  = isset($input->Address) ? $input->Address : "";
+    $MotherJob  = isset($input->MotherJob) ? $input->MotherJob : "";
+    $FatherJob  = isset($input->FatherJob) ? $input->FatherJob : "";
+    $MotherDegree  = isset($input->MotherDegree) ? $input->MotherDegree : "";
+    $FatherDegree  = isset($input->FatherDegree) ? $input->FatherDegree : "";
+    $OtherDegree  = isset($input->OtherDegree) ? $input->OtherDegree : "";
+    $MotherBirth  = isset($input->MotherBirth) ? $input->MotherBirth : "";
+    $FatherBirth  = isset($input->FatherBirth) ? $input->FatherBirth : "";
 
-    $sql = "insert into member ( Id,Did,Name,Phone,Province,City,County,Email,PostCode,Address,MotherJob,FatherJob,MotherDegree,FatherDegree,OtherDegree,MotherBirth,FatherBirth) values ('$Id','$Did','$Name','$Phone','$role','$Province','$City','$County','$Email','$PostCode','$Address','$MotherJob','$FatherJob','$MotherDegree','$FatherDegree','$OtherDegree','$MotherBirth','$FatherBirth')";
+
+
+    $sql = "insert into member ( Id,Did,Name,Phone,Province,City,County,Email,PostCode,Address,MotherJob,FatherJob,MotherDegree,FatherDegree,OtherDegree,MotherBirth,FatherBirth) values ('$Id','$Did','$Name','$Phone','$Province','$City','$County','$Email','$PostCode','$Address','$MotherJob','$FatherJob','$MotherDegree','$FatherDegree','$OtherDegree','$MotherBirth','$FatherBirth')";
 
     $result = $conn->query($sql);
     $sql  = "select Id,Did,Name,Phone,Province,City,County,Email,PostCode,Address,MotherJob,FatherJob,MotherDegree,FatherDegree,OtherDegree,MotherBirth,FatherBirth,CreateTime,UpdateTime from member where Id='$Id'";
@@ -91,9 +93,9 @@ if ($method == 'post') {
       $model  =  $result->fetch_assoc();
       echo json_encode(
         [
-          "faultCode" => 0,
-          'faultReason' => 'OK',
-          'data' => $model
+          "FaultCode" => 0,
+          'FaultReason' => 'OK',
+          'Data' => $model
         ]
       );
     }
@@ -105,8 +107,8 @@ if ($method == 'post') {
 
     echo json_encode(
       [
-        "faultCode" => 0,
-        'faultReason' => 'OK',
+        "FaultCode" => 0,
+        'FaultReason' => 'OK',
       ]
     );
   } else if ($Flow == 'editMember') {
@@ -117,7 +119,6 @@ if ($method == 'post') {
     $Email = $input->Email;
     $PostCode = $input->PostCode;
     $Address = $input->Address;
-    $survey_left = $input->survey_left;
 
 
     $sql  = "update  member set Name='$Name',Phone='$Phone',Email='$Email',PostCode='$PostCode',Address='$Address'  where Id='$Id'";
@@ -132,9 +133,9 @@ if ($method == 'post') {
 
       echo json_encode(
         [
-          "faultCode" => 0,
-          'faultReason' => 'OK',
-          'data' => $model
+          "FaultCode" => 0,
+          'FaultReason' => 'OK',
+          'Data' => $model
         ]
       );
     }
@@ -150,9 +151,9 @@ if ($method == 'post') {
 
     echo json_encode(
       [
-        "faultCode" => 0,
-        'faultReason' => 'OK',
-        "data" =>  $model
+        "FaultCode" => 0,
+        'FaultReason' => 'OK',
+        "Data" =>  $model
       ]
     );
   }

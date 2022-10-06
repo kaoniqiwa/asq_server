@@ -29,9 +29,9 @@ if ($method == 'post') {
 
     echo json_encode(
       [
-        "faultCode" => 0,
-        'faultReason' => 'OK',
-        "data" =>  $data
+        "FaultCode" => 0,
+        'FaultReason' => 'OK',
+        "Data" =>  $data
       ]
     );
   } else if ($Flow == 'addDoctor') {
@@ -50,9 +50,9 @@ if ($method == 'post') {
       $model  =  $result->fetch_assoc();
       echo json_encode(
         [
-          "faultCode" => 0,
-          'faultReason' => 'OK',
-          'data' => $model
+          "FaultCode" => 0,
+          'FaultReason' => 'OK',
+          'Data' => $model
         ]
       );
     }
@@ -64,8 +64,8 @@ if ($method == 'post') {
     $result = $conn->query($sql);
     echo json_encode(
       [
-        "faultCode" => 0,
-        'faultReason' => 'OK',
+        "FaultCode" => 0,
+        'FaultReason' => 'OK',
       ]
     );
   } else if ($Flow == 'editDoctor') {
@@ -83,9 +83,9 @@ if ($method == 'post') {
       $model  =  $result->fetch_assoc();
       echo json_encode(
         [
-          "faultCode" => 0,
-          'faultReason' => 'OK',
-          'data' => $model
+          "FaultCode" => 0,
+          'FaultReason' => 'OK',
+          'Data' => $model
         ]
       );
     }
@@ -102,9 +102,9 @@ if ($method == 'post') {
 
   echo json_encode(
     [
-      "faultCode" => 0,
-      'faultReason' => 'OK',
-      "data" =>  $doctor
+      "FaultCode" => 0,
+      'FaultReason' => 'OK',
+      "Data" =>  $doctor
     ]
   );
 }

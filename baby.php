@@ -33,9 +33,9 @@ if ($method == 'post') {
 
     echo json_encode(
       [
-        "faultCode" => 0,
-        'faultReason' => 'OK',
-        "data" =>  $babys
+        "FaultCode" => 0,
+        'FaultReason' => 'OK',
+        "Data" =>  $babys
       ]
     );
   } else if ($Flow == 'addBaby') {
@@ -65,9 +65,9 @@ if ($method == 'post') {
       $model  =  $result->fetch_assoc();
       echo json_encode(
         [
-          "faultCode" => 0,
-          'faultReason' => 'OK',
-          'data' => $model
+          "FaultCode" => 0,
+          'FaultReason' => 'OK',
+          'Data' => $model
         ]
       );
     }
@@ -79,31 +79,11 @@ if ($method == 'post') {
     // $result = $conn->query($sql);
     // echo json_encode(
     //   [
-    //     "faultCode" => 0,
-    //     'faultReason' => 'OK',
+    //     "FaultCode" => 0,
+    //     'FaultReason' => 'OK',
     //   ]
     // );
-  } else if ($Flow == 'editDoctor') {
-    // $Id = $input->Id;
-    // $Name = $input->Name;
-    // $level = $input->level;
-    // $dept = $input->dept;
-    // $phone =  $input->phone;
-    // $sql  = "update doctor set Name='$Name',level='$level',dept='$dept',phone='$phone' where Id='$Id'";
-    // $conn->query($sql);
-
-    // $result = $conn->query("select Id,cId,Name,level,dept,CreateTime,UpdateTime from doctor where Id='$Id'");
-
-    // if ($conn->affected_rows != 0) {
-    //   $model  =  $result->fetch_assoc();
-    //   echo json_encode(
-    //     [
-    //       "faultCode" => 0,
-    //       'faultReason' => 'OK',
-    //       'data' => $model
-    //     ]
-    //   );
-    // }
+  } else if ($Flow == 'editBaby') {
   }
 } else if ($method == 'get') {
   $Id = $_GET['Id'];
@@ -116,9 +96,9 @@ if ($method == 'post') {
   }
   echo json_encode(
     [
-      "faultCode" => 0,
-      'faultReason' => 'OK',
-      "data" =>  $baby
+      "FaultCode" => 0,
+      'FaultReason' => 'OK',
+      "Data" =>  $baby
     ]
   );
 }

@@ -24,21 +24,21 @@ if (!authenticate($_SERVER["PHP_AUTH_DIGEST"])) {
   die('登录失败');
 } else {
 
-  $result = $conn->query("select id,username,name,name,grade,status,create_time,update_time from adminuser where username='$username' and password='$password' limit 1");
+  $result = $conn->query("select Id,Username,Name,Password,CreateTime,UpdateTime from adminuser where Username='$username' and Password='$password' limit 1");
 
 
 
   if ($conn->affected_rows != 0) {
     $data =  $result->fetch_assoc();
     echo json_encode(array(
-      "faultCode" => 0,
-      "fatalReson" => 'OK',
-      "data" => $data
+      "FaultCode" => 0,
+      "FatalReson" => 'OK',
+      "Data" => $data
     ));
   } else {
     echo json_encode(array(
-      "faultCode" => 1,
-      'fatalReson' => 'Error',
+      "FaultCode" => 1,
+      'FatalReson' => 'Error',
     ));
   }
 }
@@ -54,12 +54,12 @@ function authenticate($digest)
     $data = http_digest_parse($digest);
     $username = $data['username'];
 
-    $sql = "select password from  adminuser where username='$username'";
+    $sql = "select Password from  adminuser where username='$username'";
 
     $result = $conn->query($sql);
 
     if ($conn->affected_rows != 0) {
-      $password = $result->fetch_assoc()['password'];
+      $password = $result->fetch_assoc()['Password'];
     } else {
       return false;
     }

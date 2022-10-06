@@ -10,17 +10,17 @@ $method = strtolower($_SERVER['REQUEST_METHOD']);
 
 if ($method == 'post') {
 
-  $input = json_decode(file_get_contents('php://input'));
+  $input = json_decode(file_get_Contents('php://input'));
 
-  if (!isset($input->flow)) {
+  if (!isset($input->Flow)) {
     die('Operation Denied!');
   }
 
-  $flow = $input->flow;
+  $Flow = $input->Flow;
 
-  if ($flow == 'listInforms') {
+  if ($Flow == 'listInforms') {
 
-    $sql = "SELECT  id,content,create_time,update_time  FROM `inform`";
+    $sql = "SELECT  Id,Content,CreateTime,UpdateTime  FROM `inform`";
     $result = $conn->query($sql);
     $model = [];
     if ($conn->affected_rows != 0) {
@@ -30,13 +30,13 @@ if ($method == 'post') {
     }
     echo json_encode(
       [
-        "faultCode" => 0,
-        'faultReason' => 'OK',
-        "data" =>  $model
+        "FaultCode" => 0,
+        'FaultReason' => 'OK',
+        "Data" =>  $model
       ]
     );
-  } else if ($flow == 'getLatestInform') {
-    $sql = "SELECT id,content,create_time,update_time  FROM `inform` WHERE  is_latest='1'";
+  } else if ($Flow == 'getLatestInform') {
+    $sql = "select Id,Content,CreateTime,UpdateTime  FROM `inform` WHERE  IsLatest='是'";
     $result = $conn->query($sql);
     $model = null;
     if ($conn->affected_rows != 0) {
@@ -44,47 +44,47 @@ if ($method == 'post') {
     }
     echo json_encode(
       [
-        "faultCode" => 0,
-        'faultReason' => 'OK',
-        "data" =>  $model
+        "FaultCode" => 0,
+        'FaultReason' => 'OK',
+        "Data" =>  $model
       ]
     );
-  } else if ($flow == 'addInform') {
+  } else if ($Flow == 'addInform') {
 
-    $id = GUID();
-    $content = $input->content;
+    $Id = GUID();
+    $Content = $input->Content;
 
-    $sql = "update inform set is_latest ='0'";
+    $sql = "update inform set IsLatest ='否'";
 
     $conn->query($sql);
 
-    $sql = "insert into inform (id,content) values ('$id','$content')";
+    $sql = "insert into inform (Id,Content,IsLatest) values ('$Id','$Content','是')";
     $conn->query($sql);
-    $sql  = "select id,content,create_time,update_time  from inform where id='$id'";
+    $sql  = "select Id,Content,CreateTime,UpdatetIME  from inform where Id='$Id'";
     $result = $conn->query($sql);
 
     if ($conn->affected_rows != 0) {
       $model  =  $result->fetch_assoc();
       echo json_encode(
         [
-          "faultCode" => 0,
-          'faultReason' => 'OK',
-          'data' => $model
+          "FaultCode" => 0,
+          'FaultReason' => 'OK',
+          'Data' => $model
         ]
       );
     }
-  } else if ($flow == 'deleteInform') {
-    $id = $input->id;
+  } else if ($Flow == 'deleteInform') {
+    $Id = $input->Id;
 
 
-    $sql = "update inform set is_latest ='0'";
+    $sql = "delete from inform where Id='$Id'";
 
     $conn->query($sql);
 
     echo json_encode(
       [
-        "faultCode" => 0,
-        'faultReason' => 'OK',
+        "FaultCode" => 0,
+        'FaultReason' => 'OK',
       ]
     );
   }

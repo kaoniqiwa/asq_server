@@ -47,16 +47,16 @@ if ($method == 'post') {
 
     echo json_encode(
       array(
-        "faultCode" => 0,
-        'faultReason' => 'OK',
-        "data" => [
-          "data" => $Data,
-          "page" => array(
-            "pageCount" => $PageCount,
+        "FaultCode" => 0,
+        'FaultReason' => 'OK',
+        "Data" => [
+          "Data" => $Data,
+          "Page" => array(
+            "PageCount" => $PageCount,
             "PageSize" => $PageSize,
             "PageIndex" => $PageIndex,
-            "recordCount" => $RecordCount,
-            "totalRecordCount" => $TotalRecortCount
+            "RecordCount" => $RecordCount,
+            "TotalRecordCount" => $TotalRecortCount
           )
         ]
       )
@@ -105,16 +105,16 @@ if ($method == 'post') {
 
       echo json_encode(
         [
-          "faultCode" => 0,
-          'faultReason' => 'OK',
-          "data" => $model
+          "FaultCode" => 0,
+          'FaultReason' => 'OK',
+          "Data" => $model
         ]
       );
     } else {
       echo json_encode(
         [
-          "faultCode" => 1,
-          'faultReason' => 'Error',
+          "FaultCode" => 1,
+          'FaultReason' => 'Error',
         ]
       );
     }
@@ -145,9 +145,9 @@ if ($method == 'post') {
 
       echo json_encode(
         [
-          "faultCode" => 0,
-          'faultReason' => 'OK',
-          'data' => $model
+          "FaultCode" => 0,
+          'FaultReason' => 'OK',
+          'Data' => $model
         ]
       );
     }
@@ -176,9 +176,9 @@ if ($method == 'post') {
 
     echo json_encode(
       array(
-        "faultCode" => 0,
-        'faultReason' => 'OK',
-        "data" => $Data
+        "FaultCode" => 0,
+        'FaultReason' => 'OK',
+        "Data" => $Data
       )
     );
   }
@@ -191,9 +191,9 @@ if ($method == 'post') {
     $model  = $result->fetch_assoc();
     echo json_encode(
       [
-        "faultCode" => 0,
-        'faultReason' => 'OK',
-        "data" =>  $model
+        "FaultCode" => 0,
+        'FaultReason' => 'OK',
+        "Data" =>  $model
       ]
     );
   }

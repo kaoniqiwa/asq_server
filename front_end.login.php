@@ -36,14 +36,14 @@ if (!authenticate($_SERVER["PHP_AUTH_DIGEST"])) {
   if ($conn->affected_rows != 0) {
     $data =  $result->fetch_assoc();
     echo json_encode(array(
-      "faultCode" => 0,
-      "fatalReson" => 'OK',
-      "data" => $data
+      "FaultCode" => 0,
+      "FaultReason" => 'OK',
+      "Data" => $data
     ));
   } else {
     echo json_encode(array(
-      "faultCode" => 1,
-      'fatalReson' => 'Error',
+      "FaultCode" => 1,
+      'FaultReason' => 'Error',
     ));
   }
 }

@@ -9,30 +9,30 @@ $method = strtolower($_SERVER['REQUEST_METHOD']);
 if ($method == 'post') {
   $input = json_decode(file_get_contents('php://input'));
 
-  if (!isset($input->flow)) {
+  if (!isset($input->Flow)) {
     die('Operation Denied!');
   }
 
-  $flow = $input->flow;
+  $Flow = $input->Flow;
 
-  if ($flow == 'listOrder') {
+  if ($Flow == 'listOrder') {
 
-    $pageSize = $input->pageSize;
-    $pageIndex = $input->pageIndex;
-    $phone = '';
-    if (isset($input->phone)) {
-      $phone = $input->phone;
+    $PageSize = $input->PageSize;
+    $PageIndex = $input->PageIndex;
+    $Phone = '';
+    if (isset($input->Phone)) {
+      $Phone = $input->Phone;
     }
-    $start = ($pageIndex - 1) * $pageSize;
+    $start = ($PageIndex - 1) * $PageSize;
 
 
-    $sql = "select id,name,phone,order_type,price ,create_time from orders  where phone  like '%$phone%' limit $start,$pageSize";
+    $sql = "select Id,Name,Phone,OrderType,Price ,CreateTime from orders  where Phone  like '%$Phone%' limit $start,$PageSize";
 
-    $totalRecortCount = $conn->query("select count(*) from orders  where phone  like '%$phone%'")->fetch_assoc()['count(*)'];
+    $TotalRecortCount = $conn->query("select count(*) from orders  where Phone  like '%$Phone%'")->fetch_assoc()['count(*)'];
 
 
-    $totalRecortCount = intval($totalRecortCount);
-    $PageCount  = ceil($totalRecortCount / $pageSize);
+    $TotalRecortCount = intval($TotalRecortCount);
+    $PageCount  = ceil($TotalRecortCount / $PageSize);
     $RecordCount = 0;
 
     $result = $conn->query($sql);
@@ -50,94 +50,53 @@ if ($method == 'post') {
 
     echo json_encode(
       array(
-        "faultCode" => 0,
-        'faultReason' => 'OK',
-        "data" => [
-          "data" => $Data,
-          "page" => array(
-            "pageCount" => $PageCount,
-            "pageSize" => $pageSize,
-            "pageIndex" => $pageIndex,
-            "recordCount" => $RecordCount,
-            "totalRecordCount" => $totalRecortCount
+        "FaultCode" => 0,
+        'FaultReason' => 'OK',
+        "Data" => [
+          "Data" => $Data,
+          "Page" => array(
+            "PageCount" => $PageCount,
+            "PageSize" => $PageSize,
+            "PageIndex" => $PageIndex,
+            "RecordCount" => $RecordCount,
+            "TotalRecordCount" => $TotalRecortCount
           )
         ]
       )
     );
-  } else if ($flow == 'addOrder') {
-    // $id = GUID();
-    // $cid = $input->cid;
-    // $name = $input->name;
-    // $level = $input->level;
-    // $dept = $input->dept;
-    // $phone =  $input->phone;
-    // $sql = "insert into Order (id,cid,name,level,dept,phone) values ('$id','$cid','$name','$level','$dept','$phone')";
+  } else if ($Flow == 'addOrder') {
+  } else if ($Flow == 'deleteOrder') {
+    $Id = $input->Id;
 
-    // $conn->query($sql);
-    // $result = $conn->query("select id,cid,name,level,dept,create_time from Order where id='$id'");
-
-    // if ($conn->affected_rows != 0) {
-    //   $model  =  $result->fetch_assoc();
-    //   echo json_encode(
-    //     [
-    //       "faultCode" => 0,
-    //       'faultReason' => 'OK',
-    //       'data' => $model
-    //     ]
-    //   );
-    // }
-  } else if ($flow == 'deleteOrder') {
-    $id = $input->id;
-
-    $sql  = "select id,name,phone,order_type,price ,create_time from orders where id='$id' ";
+    $sql  = "select Id,Name,Phone,OrderType,Price ,CreateTime from orders where Id='$Id' ";
     $result = $conn->query($sql);
 
     if ($conn->affected_rows != 0) {
       $model = $result->fetch_assoc();
 
-      $sql = "delete from orders where id='$id'";
+      $sql = "delete from orders where Id='$Id'";
       $result = $conn->query($sql);
       echo json_encode(
         [
-          "faultCode" => 0,
-          'faultReason' => 'OK',
-          "data" => $model
+          "FaultCode" => 0,
+          'FaultReason' => 'OK',
+          "Data" => $model
         ]
       );
     } else {
       echo json_encode(
         [
-          "faultCode" => 1,
-          'faultReason' => 'Error',
+          "FaultCode" => 1,
+          'FaultReason' => 'Error',
         ]
       );
     }
-  } else if ($flow == 'editOrder') {
-    // $id = $input->id;
-    // $name = $input->name;
-    // $level = $input->level;
-    // $dept = $input->dept;
-    // $phone =  $input->phone;
-    // $sql  = "update Order set name='$name',level='$level',dept='$dept',phone='$phone' where id='$id'";
-    // $conn->query($sql);
+  } else if ($Flow == 'editOrder') {
+  } else if ($Flow == 'exportOrder') {
+    $BeginTime = getTime($input->BeginTime);
+    $EndTime = getTime($input->EndTime);
 
-    // $result = $conn->query("select id,cid,name,level,dept,create_time from Order where id='$id'");
-
-    // if ($conn->affected_rows != 0) {
-    //   $model  =  $result->fetch_assoc();
-    //   echo json_encode(
-    //     [
-    //       "faultCode" => 0,
-    //       'faultReason' => 'OK',
-    //       'data' => $model
-    //     ]
-    //   );
-    // }
-  } else if ($flow == 'exportOrder') {
-    $beginTime = getTime($input->beginTime);
-    $endTime = getTime($input->endTime);
-
-    $sql  = "select id,name,phone,order_type,price ,create_time from orders where create_time between '$beginTime' and '$endTime'";
+    $sql  = "select Id,Name,Phone,OrderType,Price ,CreateTime from orders where CreateTime between '$BeginTime' and '$EndTime'";
 
     $result = $conn->query($sql);
     $Data = [];
@@ -150,55 +109,14 @@ if ($method == 'post') {
     }
 
 
-    // foreach ($Data as &$value) {
-    //   $id = $value['id'];
-    //   $doctors = getDoctor($id);
-    //   $value['doctors'] = $doctors;
-    // }
 
     echo json_encode(
       array(
-        "faultCode" => 0,
-        'faultReason' => 'OK',
-        "data" => $Data
+        "FaultCode" => 0,
+        'FaultReason' => 'OK',
+        "Data" => $Data
       )
     );
   }
 } else if ($method == 'get') {
-  // $id = $_GET['id'];
-  // $Order = getOrder($id);
-
-  // echo json_encode(
-  //   [
-  //     "faultCode" => 0,
-  //     'faultReason' => 'OK',
-  //     "data" =>  $Order
-  //   ]
-  // );
-}
-
-
-function getOrder(string $id)
-{
-  global $conn;
-  $sql =  "select id,cid,name,level,dept,create_time from Order where id='$id'";
-  $result = $conn->query($sql);
-  if ($conn->affected_rows != 0) {
-    return $result->fetch_assoc();
-  }
-  return null;
-}
-
-function listOrder(string $cid)
-{
-  global $conn;
-  $data = [];
-  $sql = "select id,cid,name,level,dept,create_time from Order where cid='$cid' ";
-  $result = $conn->query($sql);
-  if ($conn->affected_rows != 0) {
-    while ($tmp = $result->fetch_assoc()) {
-      array_push($data, $tmp);
-    }
-  }
-  return $data;
 }
