@@ -16,33 +16,58 @@ if ($method == 'post') {
   if ($Flow == 'listMember') {
     $PageSize = $input->PageSize;
     $PageIndex = $input->PageIndex;
-    $Name = '';
-    if (isset($input->Name)) {
-      $Name = $input->Name;
-    }
-    $start = ($PageIndex - 1) * $PageSize;
+    $Name = isset($input->Name) ? $input->Name : "";
+    $Dids = isset($input->Dids) ? $input->Dids : [];
+    $Ids = isset($input->Ids) ? $input->Ids : [];
 
+    $Start = ($PageIndex - 1) * $PageSize;
 
-    $sql = "select Id,Did,Name,Phone,Province,City,County,Email,PostCode,Address,MotherJob,FatherJob,MotherDegree,FatherDegree,OtherDegree,MotherBirth,FatherBirth,CreateTime,UpdateTime from member  where Name like '%$Name%'  limit $start,$PageSize";
-
-
-    $TotalRecortCount = $conn->query("select count(*) from member  where Name like '%$Name%'")->fetch_assoc()['count(*)'];
-
-    $TotalRecortCount = intval($TotalRecortCount);
-    $PageCount  = ceil($TotalRecortCount / $PageSize);
-    $RecordCount = 0;
-
+    $sql = "select Id,Did,Name,Phone,Province,City,County,Email,PostCode,Address,MotherJob,FatherJob,MotherDegree,FatherDegree,OtherDegree,MotherBirth,FatherBirth,CreateTime,UpdateTime from member  where Name like '%$Name%' ";
     $result = $conn->query($sql);
-    $Data = array();
+
+    $tmp = array();
 
     if ($conn->affected_rows != 0) {
       $RecordCount = $conn->affected_rows;
       while ($rs = $result->fetch_assoc()) {
-        array_push($Data, $rs);
+        array_push($tmp, $rs);
+      }
+    }
+
+    if (count($Dids) == 0) {
+      $tmp2 = $tmp;
+    } else {
+      $tmp2 = [];
+      for ($i = 0; $i < count($tmp); $i++) {
+        for ($j = 0; $j < count($Dids); $j++) {
+          if ($tmp[$i]['Did'] == $Dids[$j]) {
+            array_push($tmp2, $tmp[$i]);
+            break;
+          }
+        }
+      }
+    }
+
+    if (count($Ids) == 0) {
+      $tmp3 = $tmp2;
+    } else {
+      $tmp3 = [];
+      for ($i = 0; $i < count($tmp2); $i++) {
+        for ($j = 0; $j < count($Ids); $j++) {
+          if ($tmp[$i]['Id'] == $Ids[$j]) {
+            array_push($tmp3, $tmp2[$i]);
+            break;
+          }
+        }
       }
     }
 
 
+
+    $TotalRecortCount = count($tmp3);
+    $Data =  array_slice($tmp3, $Start, $PageSize);
+    $PageCount  = ceil($TotalRecortCount / $PageSize);
+    $RecordCount = count($Data);
 
     echo json_encode(
       array(
@@ -101,16 +126,22 @@ if ($method == 'post') {
     }
   } else if ($Flow == 'deleteMember') {
     $Id = $input->Id;
+    $sql  = "select Id,Did,Name,Phone,Province,City,County,Email,PostCode,Address,MotherJob,FatherJob,MotherDegree,FatherDegree,OtherDegree,MotherBirth,FatherBirth,CreateTime,UpdateTime from member where Id='$Id'";
+    $result =  $conn->query($sql);
+    if ($conn->affected_rows != 0) {
+      $model  =  $result->fetch_assoc();
 
-    $conn->query("delete from baby where Mid='$Id'");
-    $conn->query("delete from member where Id='$Id'");
+      $conn->query("delete from baby where Mid='$Id'");
+      $conn->query("delete from member where Id='$Id'");
 
-    echo json_encode(
-      [
-        "FaultCode" => 0,
-        'FaultReason' => 'OK',
-      ]
-    );
+      echo json_encode(
+        [
+          "FaultCode" => 0,
+          'FaultReason' => 'OK',
+          'Data' => $model
+        ]
+      );
+    }
   } else if ($Flow == 'editMember') {
     $Id = $input->Id;
     $Name = $input->Name;

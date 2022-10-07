@@ -18,31 +18,50 @@ if ($method == 'post') {
   if ($Flow == 'listCompany') {
     $PageSize = $input->PageSize;
     $PageIndex = $input->PageIndex;
-    $Name = '';
-    if (isset($input->Name)) {
-      $Name = $input->Name;
-    }
+    $Name = isset($input->Name) ? $input->Name : "";
+    $Ids = isset($input->Ids) ? $input->Ids : [];
+
     $Start = ($PageIndex - 1) * $PageSize;
 
 
-    $sql = "select Id,Name,Username,Password,AsqTotal,AsqLeft,AsqSeTotal,AsqSeLeft,AsqSe2Total,AsqSe2Left,CreateTime,UpdateTime from company  where Name like '%$Name%'  or Username like '%$Name%' limit $Start,$PageSize";
+    $sql = "select Id,Name,Username,Password,AsqTotal,AsqLeft,AsqSeTotal,AsqSeLeft,AsqSe2Total,AsqSe2Left,CreateTime,UpdateTime from company  where Name like '%$Name%'  or Username like '%$Name%'";
 
-    $TotalRecortCount = $conn->query("select count(*) from company  where Name like '%$Name%' or Username like '%$Name%'")->fetch_assoc()['count(*)'];
-
-
-    $TotalRecortCount = intval($TotalRecortCount);
-    $PageCount  = ceil($TotalRecortCount / $PageSize);
-    $RecordCount = 0;
 
     $result = $conn->query($sql);
-    $Data = array();
+
+    $tmp = array();
 
     if ($conn->affected_rows != 0) {
       $RecordCount = $conn->affected_rows;
       while ($rs = $result->fetch_assoc()) {
-        array_push($Data, $rs);
+        array_push($tmp, $rs);
       }
     }
+    if (count($Ids) == 0) {
+      $tmp2 = $tmp;
+    } else {
+      $tmp2 = [];
+      for ($i = 0; $i < count($tmp); $i++) {
+        for ($j = 0; $j < count($Ids); $j++) {
+          if ($tmp[$i]['Id'] == $Ids[$j]) {
+            array_push($tmp2, $tmp[$i]);
+            break;
+          }
+        }
+      }
+    }
+
+
+    $TotalRecortCount = count($tmp2);
+
+
+    $Data =  array_slice($tmp2, $Start, $PageSize);
+
+    $PageCount  = ceil($TotalRecortCount / $PageSize);
+    $RecordCount = count($Data);
+
+
+
 
 
     echo json_encode(
@@ -83,41 +102,42 @@ if ($method == 'post') {
       $model  =  $result->fetch_assoc();
       echo json_encode(
         [
-          "faultCode" => 0,
-          'faultReason' => 'OK',
-          'data' => $model
+          "FaultCode" => 0,
+          'FaultReason' => 'OK',
+          'Data' => $model
         ]
       );
     }
   } else if ($Flow == 'deleteCompany') {
-    $Id = $input->Id;
+    // $Id = $input->Id;
 
-    $sql = "select Id,Name,Username,Password,AsqTotal,AsqLeft,AsqSeTotal,AsqSeLeft,AsqSe2Total,AsqSe2Left,CreateTime,UpdateTime from company where Id='$Id'";
+    // $sql = "select Id,Name,Username,Password,AsqTotal,AsqLeft,AsqSeTotal,AsqSeLeft,AsqSe2Total,AsqSe2Left,CreateTime,UpdateTime from company where Id='$Id'";
 
 
-    $result = $conn->query($sql);
+    // $result = $conn->query($sql);
 
-    if ($conn->affected_rows != 0) {
-      $model = $result->fetch_assoc();
+    // if ($conn->affected_rows != 0) {
+    //   $model = $result->fetch_assoc();
 
-      $conn->query("delete from doctor where cid='$Id'");
-      $conn->query("delete from company where Id='$Id'");
+    //   $conn->query("delete from doctor where cid='$Id'");
+    //   $conn->query("delete from company where Id='$Id'");
 
-      echo json_encode(
-        [
-          "FaultCode" => 0,
-          'FaultReason' => 'OK',
-          "Data" => $model
-        ]
-      );
-    } else {
-      echo json_encode(
-        [
-          "FaultCode" => 1,
-          'FaultReason' => 'Error',
-        ]
-      );
-    }
+    //   echo json_encode(
+    //     [
+    //       "FaultCode" => 0,
+    //       'FaultReason' => 'OK',
+    //       "Data" => $model
+    //     ]
+    //   );
+    // } else {
+    //   echo json_encode(
+    //     [
+    //       "FaultCode" => 1,
+    //       'FaultReason' => 'Error',
+    //     ]
+    //   );
+    // }
+    // var_dump('sdf');
   } else if ($Flow == 'editCompany') {
     $Id = $input->Id;
     $Name = $input->Name;
@@ -140,8 +160,6 @@ if ($method == 'post') {
     if ($conn->affected_rows != 0) {
       $model  =  $result->fetch_assoc();
 
-      $doctors = getDoctor($Id);
-      $model['doctors'] = $doctors;
 
       echo json_encode(
         [

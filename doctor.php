@@ -15,24 +15,73 @@ if ($method == 'post') {
   $Flow = $input->Flow;
 
   if ($Flow == 'listDoctor') {
-    $Cid = $input->Cid;
-    $data = [];
+    $PageSize = $input->PageSize;
+    $PageIndex = $input->PageIndex;
+    $Name = isset($input->Name) ? $input->Name : "";
+    $Cids = isset($input->Cids) ? $input->Cids : [];
+    $Ids = isset($input->Ids) ? $input->Ids : [];
 
-    $sql = "select Id,Cid,Name,Level,Dept,Phone,CreateTime,UpdateTime from doctor where Cid like '%$Cid%'";
+    $sql = "select Id,Cid,Name,Level,Dept,Phone,CreateTime,UpdateTime from doctor  where Name like '%$Name%'";
 
+    $Start = ($PageIndex - 1) * $PageSize;
     $result = $conn->query($sql);
+    $tmp = [];
+
     if ($conn->affected_rows != 0) {
-      while ($tmp = $result->fetch_assoc()) {
-        array_push($data, $tmp);
+      while ($rs = $result->fetch_assoc()) {
+        array_push($tmp, $rs);
       }
     }
 
+
+    if (count($Cids) == 0) {
+      $tmp2 = $tmp;
+    } else {
+      $tmp2 = [];
+      for ($i = 0; $i < count($tmp); $i++) {
+        for ($j = 0; $j < count($Cids); $j++) {
+          if ($tmp[$i]['Cid'] == $Cids[$j]) {
+            array_push($tmp2, $tmp[$i]);
+            break;
+          }
+        }
+      }
+    }
+
+    if (count($Ids) == 0) {
+      $tmp3 = $tmp2;
+    } else {
+      $tmp3 = [];
+      for ($i = 0; $i < count($tmp2); $i++) {
+        for ($j = 0; $j < count($Ids); $j++) {
+          if ($tmp[$i]['Id'] == $Ids[$j]) {
+            array_push($tmp3, $tmp2[$i]);
+            break;
+          }
+        }
+      }
+    }
+    $TotalRecortCount = count($tmp3);
+    $Data =  array_slice($tmp3, $Start, $PageSize);
+    $PageCount  = ceil($TotalRecortCount / $PageSize);
+    $RecordCount = count($Data);
+
+
     echo json_encode(
-      [
+      array(
         "FaultCode" => 0,
         'FaultReason' => 'OK',
-        "Data" =>  $data
-      ]
+        "Data" => [
+          "Data" => $Data,
+          "Page" => array(
+            "PageCount" => $PageCount,
+            "PageSize" => $PageSize,
+            "PageIndex" => $PageIndex,
+            "RecordCount" => $RecordCount,
+            "TotalRecordCount" => $TotalRecortCount
+          )
+        ]
+      )
     );
   } else if ($Flow == 'addDoctor') {
     $Id = GUId();
@@ -43,6 +92,7 @@ if ($method == 'post') {
     $Phone =  $input->Phone;
     $sql = "insert into doctor (Id,Cid,Name,Level,Dept,Phone) values ('$Id','$Cid','$Name','$Level','$Dept','$Phone')";
 
+    // var_dump($sql);
     $conn->query($sql);
     $result = $conn->query("select Id,Cid,Name,Level,Dept,Phone,CreateTime,UpdateTime from doctor where Id='$Id'");
 
@@ -89,6 +139,18 @@ if ($method == 'post') {
         ]
       );
     }
+  } else if ($Flow == 'listBaby') {
+    $Did = $input->Did;
+
+    $sql  = "select * from member where Did = '$Did'";
+    $result = $conn->query($sql);
+    $members = [];
+    if ($conn->affected_rows != 0) {
+      while ($tmp = $result->fetch_assoc()) {
+        array_push($members, $tmp);
+      }
+    }
+    var_dump($members);
   }
 } else if ($method == 'get') {
   $Id = $_GET['Id'];

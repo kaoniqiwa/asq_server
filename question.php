@@ -44,9 +44,9 @@ if ($method == 'post') {
       //$model['QuestScore'] =  json_decode($model['QuestScore']);
       echo json_encode(
         [
-          "faultCode" => 0,
-          'faultReason' => 'OK',
-          'data' => $model
+          "FaultCode" => 0,
+          'FaultReason' => 'OK',
+          'Data' => $model
         ]
       );
     }
@@ -68,13 +68,14 @@ if ($method == 'post') {
     }
     echo json_encode(
       [
-        "faultCode" => 0,
-        'faultReason' => 'OK',
-        'data' => $model
+        "FaultReason" => 0,
+        'FaultReason' => 'OK',
+        'Data' => $model
       ]
     );
   } else if ($Flow == 'listQuestion') {
 
+    var_dump('sdf');
     // $PageSize = $input->PageSize;
     // $PageIndex = $input->PageIndex;
     // $Name  = isset($input->Name) ? $input->Name : "";

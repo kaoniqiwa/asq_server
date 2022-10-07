@@ -32,17 +32,17 @@ $company = getCompany($p_Name, $p_pass);
 if (!is_null($company)) {
   $sql = "select Id,Phone,Name from member where Did in (  select Id from doctor where Cid='$company[Id]')";
   $result = $conn->query($sql);
-  $menbers = [];
+  $members = [];
   if ($conn->affected_rows != 0) {
     while ($tmp = $result->fetch_assoc()) {
-      array_push($menbers, $tmp);
+      array_push($members, $tmp);
     }
   }
 
-  for ($i = 0; $i < count($menbers); $i++) {
-    $menber = $menbers[$i];
+  for ($i = 0; $i < count($members); $i++) {
+    $member = $members[$i];
 
-    $sql = "select * from baby where Mid='$menber[Id]'";
+    $sql = "select * from baby where Mid='$member[Id]'";
     $result =  $conn->query($sql);
     if ($conn->affected_rows != 0) {
       while ($tmp1 = $result->fetch_assoc()) {
@@ -56,17 +56,17 @@ if (!is_null($company)) {
           }
         }
 
-        $menber['babys'] = array();
-        array_push($menber['babys'], $tmp1);
+        $member['babys'] = array();
+        array_push($member['babys'], $tmp1);
       }
     }
-    $menbers[$i] = $menber;
+    $members[$i] = $member;
   }
   echo json_encode(
     [
-      "faultCode" => 0,
-      'faultReason' => 'OK',
-      'data' => $menbers
+      "FaultCode" => 0,
+      'FaultReason' => 'OK',
+      'Data' => $members
     ]
   );
 } else {

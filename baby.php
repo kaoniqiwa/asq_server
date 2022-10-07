@@ -18,30 +18,82 @@ if ($method == 'post') {
   $Flow = $input->Flow;
 
   if ($Flow == 'listBaby') {
-    $Mid = isset($input->Mid) ? $input->Mid : "";
 
-    $sql = "select Id,Mid,Name,Gender,Birthday,SurveyTime,Premature,IsShun,IdentityInfo,IdentityType,Weight,IsHelp,IsMulti,OtherAbnormal,CreateTime,UpdateTime from baby where Mid like '%$Mid%'";
+    $PageSize = $input->PageSize;
+    $PageIndex = $input->PageIndex;
+    $Name = isset($input->Name) ? $input->Name : "";
+    $Mids = isset($input->Mids) ? $input->Mids : [];
+    $Ids = isset($input->Ids) ? $input->Ids : [];
 
-    $babys = [];
 
+    $sql = "select Id,Mid,Name,Gender,Birthday,SurveyTime,Premature,IsShun,IdentityInfo,IdentityType,Weight,IsHelp,IsMulti,OtherAbnormal,CreateTime,UpdateTime from baby where Name like '%$Name%'";
+
+
+    $Start = ($PageIndex - 1) * $PageSize;
     $result = $conn->query($sql);
+    $tmp = [];
+
     if ($conn->affected_rows != 0) {
-      while ($tmp = $result->fetch_assoc()) {
-        array_push($babys, $tmp);
+      while ($rs = $result->fetch_assoc()) {
+        array_push($tmp, $rs);
       }
     }
 
+
+    if (count($Mids) == 0) {
+      $tmp2 = $tmp;
+    } else {
+      $tmp2 = [];
+      for ($i = 0; $i < count($tmp); $i++) {
+        for ($j = 0; $j < count($Mids); $j++) {
+          if ($tmp[$i]['Mid'] == $Mids[$j]) {
+            array_push($tmp2, $tmp[$i]);
+            break;
+          }
+        }
+      }
+    }
+
+    if (count($Ids) == 0) {
+      $tmp3 = $tmp2;
+    } else {
+      $tmp3 = [];
+      for ($i = 0; $i < count($tmp2); $i++) {
+        for ($j = 0; $j < count($Ids); $j++) {
+          if ($tmp[$i]['Id'] == $Ids[$j]) {
+            array_push($tmp3, $tmp2[$i]);
+            break;
+          }
+        }
+      }
+    }
+    $TotalRecortCount = count($tmp3);
+    $Data =  array_slice($tmp3, $Start, $PageSize);
+    $PageCount  = ceil($TotalRecortCount / $PageSize);
+    $RecordCount = count($Data);
+
+
     echo json_encode(
-      [
+      array(
         "FaultCode" => 0,
         'FaultReason' => 'OK',
-        "Data" =>  $babys
-      ]
+        "Data" => [
+          "Data" => $Data,
+          "Page" => array(
+            "PageCount" => $PageCount,
+            "PageSize" => $PageSize,
+            "PageIndex" => $PageIndex,
+            "RecordCount" => $RecordCount,
+            "TotalRecordCount" => $TotalRecortCount
+          )
+        ]
+      )
     );
   } else if ($Flow == 'addBaby') {
     $Id = GUID();
     $Mid = $input->Mid;
     $Name = $input->Name;
+    $Relation = $input->Relation;
     $Gender = $input->Gender;
     $Birthday = getTime($input->Birthday);
     $SurveyTime =  getTime($input->SurveyTime);
@@ -56,10 +108,11 @@ if ($method == 'post') {
     $OtherAbnormal =  $input->OtherAbnormal;
 
 
-    $sql = "insert into baby (Id,Mid,Name,Gender,Birthday,SurveyTime,Premature,IsShun,IdentityInfo,IdentityType,Weight,IsHelp,IsMulti,OtherAbnormal) values ('$Id','$Mid','$Name','$Gender','$Birthday','$SurveyTime','$Premature','$IsShun','$IdentityInfo','$IdentityType','$Weight','$IsHelp','$IsMulti','$OtherAbnormal')";
+    $sql = "insert into baby (Id,Mid,Name,Gender,Relation,Birthday,SurveyTime,Premature,IsShun,IdentityInfo,IdentityType,Weight,IsHelp,IsMulti,OtherAbnormal) values ('$Id','$Mid','$Name','$Gender','$Relation','$Birthday','$SurveyTime','$Premature','$IsShun','$IdentityInfo','$IdentityType','$Weight','$IsHelp','$IsMulti','$OtherAbnormal')";
+
 
     $conn->query($sql);
-    $result = $conn->query("select Id,Mid,Name,Gender,Birthday,SurveyTime,Premature,IsShun,IdentityInfo,IdentityType,Weight,IsHelp,IsMulti,OtherAbnormal,CreateTime,UpdateTime from baby where Id='$Id'");
+    $result = $conn->query("select Id,Mid,Name,Gender,Relation,Birthday,SurveyTime,Premature,IsShun,IdentityInfo,IdentityType,Weight,IsHelp,IsMulti,OtherAbnormal,CreateTime,UpdateTime from baby where Id='$Id'");
 
     if ($conn->affected_rows != 0) {
       $model  =  $result->fetch_assoc();
@@ -71,18 +124,7 @@ if ($method == 'post') {
         ]
       );
     }
-  } else if ($Flow == 'deleteDoctor') {
-    // $Id = $input->Id;
-    // $cId = $input->cId;
-
-    // $sql = "delete from doctor where Id='$Id'";
-    // $result = $conn->query($sql);
-    // echo json_encode(
-    //   [
-    //     "FaultCode" => 0,
-    //     'FaultReason' => 'OK',
-    //   ]
-    // );
+  } else if ($Flow == 'deleteBaby') {
   } else if ($Flow == 'editBaby') {
   }
 } else if ($method == 'get') {
