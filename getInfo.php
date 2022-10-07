@@ -1,7 +1,7 @@
 <?php
 include('./utility/mysql.php');
 
-$p_Name = $_REQUEST['username'];
+$p_name = $_REQUEST['username'];
 $p_pass =  $_REQUEST['password'];
 // $p_Name = "changhekm";
 // $p_pass =  "changhekm";
