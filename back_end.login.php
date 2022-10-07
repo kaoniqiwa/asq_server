@@ -49,7 +49,7 @@ function authenticate($digest)
   $headers  = getallheaders();
 
 
-  if (isset($headers["x-webbrowser-authentication"]) && $headers["x-webbrowser-authentication"] == 'Forbidden') {
+  if (isset($headers["X-Webbrowser-Authentication"]) && $headers["X-Webbrowser-Authentication"] == 'Forbidden') {
 
     $data = http_digest_parse($digest);
     $username = $data['username'];
