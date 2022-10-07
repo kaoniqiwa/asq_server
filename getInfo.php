@@ -3,7 +3,7 @@ include('./utility/mysql.php');
 
 $p_name = $_REQUEST['username'];
 $p_pass =  $_REQUEST['password'];
-// $p_Name = "changhekm";
+// $p_name = "changhekm";
 // $p_pass =  "changhekm";
 
 $json_string = file_get_contents("./getInfo.json");
@@ -18,7 +18,7 @@ for ($i = 0; $i < count($grant); $i++) {
   $username = $account['username'];
   $password = $account['password'];
 
-  if ($username  == $p_Name && $password == $p_pass) {
+  if ($username  == $p_name && $password == $p_pass) {
     break;
   }
 }
@@ -27,7 +27,7 @@ if ($i >= count($grant)) {
   die('不在名单里');
 }
 
-$company = getCompany($p_Name, $p_pass);
+$company = getCompany($p_name, $p_pass);
 
 if (!is_null($company)) {
   $sql = "select Id,Phone,Name from member where Did in (  select Id from doctor where Cid='$company[Id]')";
