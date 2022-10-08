@@ -53,14 +53,17 @@ if ($method == 'post') {
 
     $Id = GUID();
     $Content = $input->Content;
+    $CreateTime = date('Y-m-d H:i:s', time());
+    $UpdateTime  = date('Y-m-d H:i:s', time());
 
     $sql = "update inform set IsLatest ='否'";
 
     $conn->query($sql);
 
-    $sql = "insert into inform (Id,Content,IsLatest) values ('$Id','$Content','是')";
+    $sql = "insert into inform (Id,Content,IsLatest,CreateTime,UpdateTime) values ('$Id','$Content','是','$CreateTime','$UpdateTime')";
+
     $conn->query($sql);
-    $sql  = "select Id,Content,CreateTime,UpdatetIME  from inform where Id='$Id'";
+    $sql  = "select Id,Content,CreateTime,UpdateTime  from inform where Id='$Id'";
     $result = $conn->query($sql);
 
     if ($conn->affected_rows != 0) {

@@ -90,7 +90,10 @@ if ($method == 'post') {
     $Level = $input->Level;
     $Dept = $input->Dept;
     $Phone =  $input->Phone;
-    $sql = "insert into doctor (Id,Cid,Name,Level,Dept,Phone) values ('$Id','$Cid','$Name','$Level','$Dept','$Phone')";
+    $CreateTime = date('Y-m-d H:i:s', time());
+    $UpdateTime  = date('Y-m-d H:i:s', time());
+
+    $sql = "insert into doctor (Id,Cid,Name,Level,Dept,Phone,CreateTime,UpdateTime) values ('$Id','$Cid','$Name','$Level','$Dept','$Phone','$CreateTime','$UpdateTime')";
 
     // var_dump($sql);
     $conn->query($sql);
@@ -124,7 +127,11 @@ if ($method == 'post') {
     $Level = $input->Level;
     $Dept = $input->Dept;
     $Phone =  $input->Phone;
-    $sql  = "update doctor set Name='$Name',Level='$Level',Dept='$Dept',Phone='$Phone' where Id='$Id'";
+    $UpdateTime  = date('Y-m-d H:i:s', time());
+
+
+
+    $sql  = "update doctor set Name='$Name',Level='$Level',Dept='$Dept',Phone='$Phone',UpdateTime='$UpdateTime' where Id='$Id'";
     $conn->query($sql);
 
     $result = $conn->query("select Id,Cid,Name,Level,Dept,Phone,CreateTime,UpdateTime from doctor where Id='$Id'");

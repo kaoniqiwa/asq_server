@@ -105,10 +105,12 @@ if ($method == 'post') {
     $OtherDegree  = isset($input->OtherDegree) ? $input->OtherDegree : "";
     $MotherBirth  = isset($input->MotherBirth) ? $input->MotherBirth : "";
     $FatherBirth  = isset($input->FatherBirth) ? $input->FatherBirth : "";
+    $CreateTime = date('Y-m-d H:i:s', time());
+    $UpdateTime  = date('Y-m-d H:i:s', time());
 
 
+    $sql = "insert into member ( Id,Did,Name,Phone,Province,City,County,Email,PostCode,Address,MotherJob,FatherJob,MotherDegree,FatherDegree,OtherDegree,MotherBirth,FatherBirth,CreateTime,UpdateTime) values ('$Id','$Did','$Name','$Phone','$Province','$City','$County','$Email','$PostCode','$Address','$MotherJob','$FatherJob','$MotherDegree','$FatherDegree','$OtherDegree','$MotherBirth','$FatherBirth','$CreateTime','$UpdateTime')";
 
-    $sql = "insert into member ( Id,Did,Name,Phone,Province,City,County,Email,PostCode,Address,MotherJob,FatherJob,MotherDegree,FatherDegree,OtherDegree,MotherBirth,FatherBirth) values ('$Id','$Did','$Name','$Phone','$Province','$City','$County','$Email','$PostCode','$Address','$MotherJob','$FatherJob','$MotherDegree','$FatherDegree','$OtherDegree','$MotherBirth','$FatherBirth')";
 
     $result = $conn->query($sql);
     $sql  = "select Id,Did,Name,Phone,Province,City,County,Email,PostCode,Address,MotherJob,FatherJob,MotherDegree,FatherDegree,OtherDegree,MotherBirth,FatherBirth,CreateTime,UpdateTime from member where Id='$Id'";
@@ -150,9 +152,9 @@ if ($method == 'post') {
     $Email = $input->Email;
     $PostCode = $input->PostCode;
     $Address = $input->Address;
+    $UpdateTime  = date('Y-m-d H:i:s', time());
 
-
-    $sql  = "update  member set Name='$Name',Phone='$Phone',Email='$Email',PostCode='$PostCode',Address='$Address'  where Id='$Id'";
+    $sql  = "update  member set Name='$Name',Phone='$Phone',Email='$Email',PostCode='$PostCode',Address='$Address' ,UpdateTime='$UpdateTime' where Id='$Id'";
     $conn->query($sql);
 
 

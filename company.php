@@ -91,8 +91,10 @@ if ($method == 'post') {
     $AsqSeLeft = $input->AsqSeLeft;
     $AsqSe2Total = $input->AsqSe2Total;
     $AsqSe2Left = $input->AsqSe2Total;
+    $CreateTime = date('Y-m-d H:i:s', time());
+    $UpdateTime  = date('Y-m-d H:i:s', time());
 
-    $sql = "insert into company ( Id,Name,Username,Password,AsqTotal,AsqLeft,AsqSeTotal,AsqSeLeft,AsqSe2Total,AsqSe2Left) values ('$Id','$Name','$Username','$Password','$AsqTotal','$AsqLeft','$AsqSeTotal','$AsqSeLeft','$AsqSe2Total','$AsqSe2Left')";
+    $sql = "insert into company ( Id,Name,Username,Password,AsqTotal,AsqLeft,AsqSeTotal,AsqSeLeft,AsqSe2Total,AsqSe2Left,CreateTime,UpdateTime) values ('$Id','$Name','$Username','$Password','$AsqTotal','$AsqLeft','$AsqSeTotal','$AsqSeLeft','$AsqSe2Total','$AsqSe2Left','$CreateTime','$UpdateTime')";
 
     $result = $conn->query($sql);
 
@@ -113,6 +115,7 @@ if ($method == 'post') {
 
     // $sql = "select Id,Name,Username,Password,AsqTotal,AsqLeft,AsqSeTotal,AsqSeLeft,AsqSe2Total,AsqSe2Left,CreateTime,UpdateTime from company where Id='$Id'";
 
+    // $model = null;
 
     // $result = $conn->query($sql);
 
@@ -121,23 +124,14 @@ if ($method == 'post') {
 
     //   $conn->query("delete from doctor where cid='$Id'");
     //   $conn->query("delete from company where Id='$Id'");
-
-    //   echo json_encode(
-    //     [
-    //       "FaultCode" => 0,
-    //       'FaultReason' => 'OK',
-    //       "Data" => $model
-    //     ]
-    //   );
-    // } else {
-    //   echo json_encode(
-    //     [
-    //       "FaultCode" => 1,
-    //       'FaultReason' => 'Error',
-    //     ]
-    //   );
     // }
-    // var_dump('sdf');
+    // echo json_encode(
+    //   [
+    //     "FaultCode" => 0,
+    //     'FaultReason' => 'OK',
+    //     "Data" => $model
+    //   ]
+    // );
   } else if ($Flow == 'editCompany') {
     $Id = $input->Id;
     $Name = $input->Name;
@@ -149,9 +143,11 @@ if ($method == 'post') {
     $AsqSeLeft = $input->AsqSeLeft;
     $AsqSe2Total = $input->AsqSe2Total;
     $AsqSe2Left = $input->AsqSe2Total;
+    $UpdateTime  = date('Y-m-d H:i:s', time());
+
 
     $sql  = "update  company set Name='$Name',Username='$Username',Password='$Password',AsqTotal='$AsqTotal',AsqLeft='$AsqLeft',AsqSeTotal='$AsqSeTotal',AsqSeLeft='$AsqSeLeft',AsqSe2Total='$AsqSe2Total',
-    AsqSe2Left='$AsqSe2Left' where Id='$Id'";
+    AsqSe2Left='$AsqSe2Left',UpdateTime='$UpdateTime' where Id='$Id'";
     $conn->query($sql);
 
 

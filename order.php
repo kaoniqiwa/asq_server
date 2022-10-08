@@ -65,6 +65,8 @@ if ($method == 'post') {
       )
     );
   } else if ($Flow == 'addOrder') {
+    $CreateTime = date('Y-m-d H:i:s', time());
+    $UpdateTime  = date('Y-m-d H:i:s', time());
   } else if ($Flow == 'deleteOrder') {
     $Id = $input->Id;
 

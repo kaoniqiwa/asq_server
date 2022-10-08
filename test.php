@@ -17,9 +17,11 @@ $arr = [
 
 $arr  = array_change_key_case($arr, CASE_LOWER);
 
-var_dump($arr);
+// var_dump($arr);
 
-
+// var_dump(
+//   date('Y-m-d H:i:s', time())
+// );
 
 if (!function_exists('getallheaders')) {
   function getallheaders()
@@ -32,3 +34,6 @@ if (!function_exists('getallheaders')) {
     return $headers;
   }
 }
+
+$str = "inser" . date('Y-m-d H:i:s', time());
+var_dump($str);

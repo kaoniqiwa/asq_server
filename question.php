@@ -28,11 +28,13 @@ if ($method == 'post') {
     $QuestMonth = $input->QuestMonth;
     $QuestResult = json_encode($input->QuestResult);
     $QuestScore = $input->QuestScore;
+    $CreateTime = date('Y-m-d H:i:s', time());
+    $UpdateTime  = date('Y-m-d H:i:s', time());
 
     if ($oldId == '') {
-      $sql = "insert into question (Id,Bid,QuestType,QuestMonth,QuestResult,QuestScore) values ('$Id','$Bid','$QuestType','$QuestMonth','$QuestResult','$QuestScore')";
+      $sql = "insert into question (Id,Bid,QuestType,QuestMonth,QuestResult,QuestScore,CreateTime,UpdateTime) values ('$Id','$Bid','$QuestType','$QuestMonth','$QuestResult','$QuestScore','$CreateTime','$UpdateTime')";
     } else {
-      $sql = "update question set Bid='$Bid',QuestType='$QuestType',QuestMonth='$QuestMonth',QuestResult='$QuestResult',QuestScore='$QuestScore' where Id='$Id'";
+      $sql = "update question set Bid='$Bid',QuestType='$QuestType',QuestMonth='$QuestMonth',QuestResult='$QuestResult',QuestScore='$QuestScore',UpdateTime='$UpdateTime' where Id='$Id'";
     }
 
     $conn->query($sql);

@@ -106,9 +106,11 @@ if ($method == 'post') {
     $IsHelp =  (int)$input->IsHelp;
     $IsMulti =  (int)$input->IsMulti;
     $OtherAbnormal =  $input->OtherAbnormal;
+    $CreateTime = date('Y-m-d H:i:s', time());
+    $UpdateTime  = date('Y-m-d H:i:s', time());
 
 
-    $sql = "insert into baby (Id,Mid,Name,Gender,Relation,Birthday,SurveyTime,Premature,IsShun,IdentityInfo,IdentityType,Weight,IsHelp,IsMulti,OtherAbnormal) values ('$Id','$Mid','$Name','$Gender','$Relation','$Birthday','$SurveyTime','$Premature','$IsShun','$IdentityInfo','$IdentityType','$Weight','$IsHelp','$IsMulti','$OtherAbnormal')";
+    $sql = "insert into baby (Id,Mid,Name,Gender,Relation,Birthday,SurveyTime,Premature,IsShun,IdentityInfo,IdentityType,Weight,IsHelp,IsMulti,OtherAbnormal,CreateTime,UpdateTime) values ('$Id','$Mid','$Name','$Gender','$Relation','$Birthday','$SurveyTime','$Premature','$IsShun','$IdentityInfo','$IdentityType','$Weight','$IsHelp','$IsMulti','$OtherAbnormal','$CreateTime','$UpdateTime')";
 
 
     $conn->query($sql);
