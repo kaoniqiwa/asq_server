@@ -47,9 +47,10 @@ function authenticate($digest)
 {
   global $realm,  $conn, $username, $password;
   $headers  = getallheaders();
+  $headers = array_change_key_case($headers, CASE_LOWER);
 
 
-  if (isset($headers["X-Webbrowser-Authentication"]) && $headers["X-Webbrowser-Authentication"] == 'Forbidden') {
+  if (isset($headers["x-webbrowser-authentication"]) && $headers["x-webbrowser-authentication"] == 'Forbidden') {
 
     $data = http_digest_parse($digest);
     $username = $data['username'];

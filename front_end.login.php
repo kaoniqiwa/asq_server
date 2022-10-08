@@ -3,6 +3,19 @@
 include('./utility/tool.php');
 include('./utility/mysql.php');
 
+if (!function_exists('getallheaders')) {
+  function getallheaders()
+  {
+    $headers = array();
+    foreach ($_SERVER as $name => $value) {
+      if (substr($name, 0, 5) == 'HTTP_') {
+        $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+      }
+    }
+    return $headers;
+  }
+}
+
 
 
 $realm = "neoballoon.com";
@@ -52,9 +65,10 @@ function authenticate($digest)
 {
   global $realm,  $conn, $username, $password;
   $headers  = getallheaders();
+  // var_dump($headers);
+  $headers = array_change_key_case($headers, CASE_LOWER);
 
-
-  if (isset($headers["X-Webbrowser-Authentication"]) && $headers["X-Webbrowser-Authentication"] == 'Forbidden') {
+  if (isset($headers["x-webbrowser-authentication"]) && $headers["x-webbrowser-authentication"] == 'Forbidden') {
 
     $data = http_digest_parse($digest);
     $username = $data['username'];
