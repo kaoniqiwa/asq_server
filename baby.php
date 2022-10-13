@@ -26,7 +26,7 @@ if ($method == 'post') {
     $Ids = isset($input->Ids) ? $input->Ids : [];
 
 
-    $sql = "select Id,Mid,Name,Gender,Birthday,SurveyTime,Premature,IsShun,IdentityInfo,IdentityType,Weight,IsHelp,IsMulti,OtherAbnormal,CreateTime,UpdateTime from baby where Name like '%$Name%'";
+    $sql = "select Id,Mid,Name,Gender,Birthday,SurveyTime,Premature,IsShun,IdentityInfo,IdentityType,Weight,IsChanqian,IsMulti,OtherAbnormal,CreateTime,UpdateTime from baby where Name like '%$Name%'";
 
 
     $Start = ($PageIndex - 1) * $PageSize;
@@ -93,28 +93,28 @@ if ($method == 'post') {
     $Id = GUID();
     $Mid = $input->Mid;
     $Name = $input->Name;
-    $Relation = $input->Relation;
     $Gender = $input->Gender;
     $Birthday = getTime($input->Birthday);
     $SurveyTime =  getTime($input->SurveyTime);
-    $Premature =  (int)$input->Premature;
-    $IsShun =  (int)$input->IsShun;
+    $Premature =  $input->Premature;
+    $IsShun =  $input->IsShun;
 
     $IdentityInfo =  $input->IdentityInfo;
     $IdentityType =  $input->IdentityType;
     $Weight =  $input->Weight;
-    $IsHelp =  (int)$input->IsHelp;
-    $IsMulti =  (int)$input->IsMulti;
+    $IsChanqian =  $input->IsChanqian;
+
+    $IsMulti =  $input->IsMulti;
     $OtherAbnormal =  $input->OtherAbnormal;
     $CreateTime = date('Y-m-d H:i:s', time());
     $UpdateTime  = date('Y-m-d H:i:s', time());
 
 
-    $sql = "insert into baby (Id,Mid,Name,Gender,Relation,Birthday,SurveyTime,Premature,IsShun,IdentityInfo,IdentityType,Weight,IsHelp,IsMulti,OtherAbnormal,CreateTime,UpdateTime) values ('$Id','$Mid','$Name','$Gender','$Relation','$Birthday','$SurveyTime','$Premature','$IsShun','$IdentityInfo','$IdentityType','$Weight','$IsHelp','$IsMulti','$OtherAbnormal','$CreateTime','$UpdateTime')";
+    $sql = "insert into baby (Id,Mid,Name,Gender,Birthday,SurveyTime,Premature,IsShun,IdentityInfo,IdentityType,Weight,IsChanqian,IsMulti,OtherAbnormal,CreateTime,UpdateTime) values ('$Id','$Mid','$Name','$Gender','$Birthday','$SurveyTime','$Premature','$IsShun','$IdentityInfo','$IdentityType','$Weight','$IsChanqian','$IsMulti','$OtherAbnormal','$CreateTime','$UpdateTime')";
 
 
     $conn->query($sql);
-    $result = $conn->query("select Id,Mid,Name,Gender,Relation,Birthday,SurveyTime,Premature,IsShun,IdentityInfo,IdentityType,Weight,IsHelp,IsMulti,OtherAbnormal,CreateTime,UpdateTime from baby where Id='$Id'");
+    $result = $conn->query("select Id,Mid,Name,Gender,Birthday,SurveyTime,Premature,IsShun,IdentityInfo,IdentityType,Weight,IsChanqian,IsMulti,OtherAbnormal,CreateTime,UpdateTime from baby where Id='$Id'");
 
     if ($conn->affected_rows != 0) {
       $model  =  $result->fetch_assoc();
@@ -127,13 +127,51 @@ if ($method == 'post') {
       );
     }
   } else if ($Flow == 'deleteBaby') {
-  } else if ($Flow == 'editBaby') {
+  } else if ($Flow == 'updateBaby') {
+
+    $Id = $input->Id;
+    $Name = $input->Name;
+    $Gender = $input->Gender;
+    $Birthday = getTime($input->Birthday);
+    $SurveyTime =  getTime($input->SurveyTime);
+    $Premature =  $input->Premature;
+    $IsShun =  $input->IsShun;
+
+    $IdentityInfo =  $input->IdentityInfo;
+    $IdentityType =  $input->IdentityType;
+    $Weight =  $input->Weight;
+    $IsChanqian =  $input->IsChanqian;
+
+    $IsMulti =  $input->IsMulti;
+    $OtherAbnormal =  $input->OtherAbnormal;
+    $UpdateTime  = date('Y-m-d H:i:s', time());
+
+
+    $sql  = "update  baby set Name='$Name',Gender='$Gender',Birthday='$Birthday',SurveyTime='$SurveyTime',Premature='$Premature',IsShun='$IsShun',IdentityType='$IdentityType',IdentityInfo='$IdentityInfo',Weight='$Weight',IsChanqian='$IsChanqian',IsMulti='$IsMulti',OtherAbnormal='$OtherAbnormal',UpdateTime='$UpdateTime' where Id='$Id'";
+
+    $conn->query($sql);
+
+
+    $sql  = " select Id,Mid,Name,Gender,Birthday,SurveyTime,Premature,IsShun,IdentityInfo,IdentityType,Weight,IsChanqian,IsMulti,OtherAbnormal,CreateTime,UpdateTime from baby where Id='$Id'";
+    $result =  $conn->query($sql);
+    if ($conn->affected_rows != 0) {
+      $model  =  $result->fetch_assoc();
+
+
+      echo json_encode(
+        [
+          "FaultCode" => 0,
+          'FaultReason' => 'OK',
+          'Data' => $model
+        ]
+      );
+    }
   }
 } else if ($method == 'get') {
   $Id = $_GET['Id'];
   $baby = null;
 
-  $sql =  "select Id,Mid,Name,Gender,Birthday,SurveyTime,Premature,IsShun,IdentityInfo,IdentityType,Weight,IsHelp,IsMulti,OtherAbnormal,CreateTime,UpdateTime from baby where Id='$Id'";
+  $sql =  "select Id,Mid,Name,Gender,Birthday,SurveyTime,Premature,IsShun,IdentityInfo,IdentityType,Weight,IsChanqian,IsMulti,OtherAbnormal,CreateTime,UpdateTime from baby where Id='$Id'";
   $result = $conn->query($sql);
   if ($conn->affected_rows != 0) {
     $baby =  $result->fetch_assoc();
