@@ -127,6 +127,10 @@ if ($method == 'post') {
       );
     }
   } else if ($Flow == 'deleteBaby') {
+    var_dump('delete');
+    $Ids = $input->Ids;
+
+    // $sql = 
   } else if ($Flow == 'updateBaby') {
 
     $Id = $input->Id;
