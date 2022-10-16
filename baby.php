@@ -19,8 +19,10 @@ if ($method == 'post') {
 
   if ($Flow == 'listBaby') {
 
-    $PageSize = $input->PageSize;
-    $PageIndex = $input->PageIndex;
+    $PageSize = isset($input->PageSize) ? $input->PageSize : 99999;
+    $PageIndex = isset($input->PageIndex) ? $input->PageIndex : 1;
+    $Start = ($PageIndex - 1) * $PageSize;
+
     $Name = isset($input->Name) ? $input->Name : "";
     $Mids = isset($input->Mids) ? $input->Mids : [];
     $Ids = isset($input->Ids) ? $input->Ids : [];
@@ -29,7 +31,6 @@ if ($method == 'post') {
     $sql = "select Id,Mid,Name,Gender,Birthday,SurveyTime,Premature,IsShun,IdentityInfo,IdentityType,Weight,IsChanqian,IsMulti,OtherAbnormal,CreateTime,UpdateTime from baby where Name like '%$Name%'";
 
 
-    $Start = ($PageIndex - 1) * $PageSize;
     $result = $conn->query($sql);
     $tmp = [];
 

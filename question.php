@@ -77,19 +77,64 @@ if ($method == 'post') {
     );
   } else if ($Flow == 'listQuestion') {
 
-    var_dump('sdf');
-    // $PageSize = $input->PageSize;
-    // $PageIndex = $input->PageIndex;
-    // $Name  = isset($input->Name) ? $input->Name : "";
-    // $Start = ($PageIndex - 1) * $PageSize;
+
+    $PageSize = isset($input->PageSize) ? $input->PageSize : 99999;
+    $PageIndex = isset($input->PageIndex) ? $input->PageIndex : 1;
+    $Start = ($PageIndex - 1) * $PageSize;
+    // $Bids = ['a26584f8-aa79-48b9-8fee-906025cd983c', 'c0a81994-8c98-4d8c-bff6-188f99503c11'];
+    $Bids = isset($input->Bids) ? $input->Bids : [];
+
+    $tmp = changeArr($Bids);
 
 
-
-    // $TotalRecortCount = $conn->query("select count(*) from question")->fetch_assoc()['count(*)'];
-
+    $sql  = "select Id,Bid,QuestType,QuestMonth,QuestResult,QuestScore,CreateTime,UpdateTime from question where Bid in ($tmp)";
 
 
-    // $sql = "select id,name,username,password,asq_total,asq_left,asq_se_total,asq_se_left,asq_se_2_total,asq_se_2_left,create_time,update_time from company  where name like '%$name%'  or username like '%$name%' limit $start,$pageSize";
+    // var_dump($sql);
+    $result = $conn->query($sql);
+    $tmp = [];
 
+
+    if ($conn->affected_rows != 0) {
+      while ($rs = $result->fetch_assoc()) {
+        array_push($tmp, $rs);
+      }
+    }
+
+    $TotalRecortCount = count($tmp);
+    $Data =  array_slice($tmp, $Start, $PageSize);
+    $PageCount  = ceil($TotalRecortCount / $PageSize);
+    $RecordCount = count($Data);
+
+
+    echo json_encode(
+      array(
+        "FaultCode" => 0,
+        'FaultReason' => 'OK',
+        "Data" => [
+          "Data" => $Data,
+          "Page" => array(
+            "PageCount" => $PageCount,
+            "PageSize" => $PageSize,
+            "PageIndex" => $PageIndex,
+            "RecordCount" => $RecordCount,
+            "TotalRecordCount" => $TotalRecortCount
+          )
+        ]
+      )
+    );
   }
 }
+
+
+// $projectcode_array = ["20130719", "20130718", "20130717"];
+function change_to_quotes($str)
+{
+  return sprintf("'%s'", $str);
+}
+function changeArr($arr)
+{
+  $new_array =  implode(',', array_map('change_to_quotes', $arr));
+  return $new_array;
+}
+// echo changeArr($projectcode_array);
