@@ -4,8 +4,19 @@ include('./utility/mysql.php');
 $p_name = $_REQUEST['username'];
 $p_pass =  $_REQUEST['password'];
 $flow =  $_REQUEST['flow'];
-// $p_name = "changhekm";
-// $p_pass =  "changhekm";
+$starttime =  $_REQUEST['starttime'];
+$endtime =  $_REQUEST['endtime'];
+
+if(!$starttime){
+  die('开始时间不能为空');
+}
+if(!$endtime){
+  die('结束时间不能为空');
+}
+
+$starttime = date("Y-m-d H:i:s",strtotime($starttime));
+$endtime = date("Y-m-d H:i:s",strtotime($endtime));
+
 
 $json_string = file_get_contents("./getInfo.json");
 
@@ -41,7 +52,7 @@ if (!is_null($company) && $flow == 'getQuestions') {
       if ($conn->affected_rows != 0) {
         while ($tmp_baby = $result_baby->fetch_assoc()) {
           $Id = $tmp_baby['Id'];
-          $sql_qus = "select QuestType,QuestScore,QuestMonth from question where Bid='$Id' and  QuestType='asq3'";
+          $sql_qus = "select QuestType,QuestScore,QuestMonth,CreateTime from question where Bid='$Id' and  QuestType='asq3' and CreateTime between '$starttime' and '$endtime' ";
           $result_qus =  $conn->query($sql_qus);
           if ($conn->affected_rows != 0) {
             while ($tmp_qus = $result_qus->fetch_assoc()) {
