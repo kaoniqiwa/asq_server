@@ -3,6 +3,7 @@ include('./utility/mysql.php');
 
 $p_name = $_REQUEST['username'];
 $p_pass =  $_REQUEST['password'];
+$flow =  $_REQUEST['flow'];
 // $p_name = "changhekm";
 // $p_pass =  "changhekm";
 
@@ -28,104 +29,70 @@ if ($i >= count($grant)) {
 }
 
 $company = getCompany($p_name, $p_pass);
+$questions = array();
 
-if (!is_null($company)) {
-  $sql = "select Id,Phone,Name from member where Did in (  select Id from doctor where Cid='$company[Id]')";
-  $result = $conn->query($sql);
-  $members = [];
+if (!is_null($company) && $flow == 'getQuestions') {
+  $sql_menber = "select Id,Phone,Name,Relation from member where Did in (  select Id from doctor where Cid='$company[Id]')";
+  $result_member = $conn->query($sql_menber);
   if ($conn->affected_rows != 0) {
-    while ($tmp = $result->fetch_assoc()) {
-      array_push($members, $tmp);
-    }
-  }
+    while ($tmp_member = $result_member->fetch_assoc()) {
+      $sql_baby = "select * from baby where Mid='$tmp_member[Id]'";
+      $result_baby =  $conn->query($sql_baby);
+      if ($conn->affected_rows != 0) {
+        while ($tmp_baby = $result_baby->fetch_assoc()) {
+          $Id = $tmp_baby['Id'];
+          $sql_qus = "select QuestType,QuestScore,QuestMonth from question where Bid='$Id' and  QuestType='asq3'";
+          $result_qus =  $conn->query($sql_qus);
+          if ($conn->affected_rows != 0) {
+            while ($tmp_qus = $result_qus->fetch_assoc()) {
+              $tmp_qus['QuestScore'] = json_decode($tmp_qus['QuestScore']);
+              $tmp_qus['babyName'] = $tmp_baby['Name'];
+              $tmp_qus['babyGender'] = $tmp_baby['gender'];
+              $tmp_qus['babyBirthday'] = $tmp_baby['Birthday'];
+              $tmp_qus['babySurveyTime'] = $tmp_baby['SurveyTime'];
+              $tmp_qus['memberName'] = $tmp_member['Name'];
+              $tmp_qus['memberPhone'] = $tmp_member['Phone'];
+              $tmp_qus['memberRelation'] = $tmp_member['Relation'];
+              $tmp_qus['QuestGames'] = getGames($tmp_qus['QuestMonth']);
 
-  for ($i = 0; $i < count($members); $i++) {
-    $member = $members[$i];
-
-    $sql = "select * from baby where Mid='$member[Id]'";
-    $result =  $conn->query($sql);
-    if ($conn->affected_rows != 0) {
-      while ($tmp1 = $result->fetch_assoc()) {
-        $Id = $tmp1['Id'];
-        $sql = "select * from question where Bid='$Id' and  QuestType='asq3'";
-        $result2 =  $conn->query($sql);
-        if ($conn->affected_rows != 0) {
-          while ($tmp2 = $result2->fetch_assoc()) {
-            $tmp1['asq3s'] = array();
-            array_push($tmp1['asq3s'], $tmp2);
+              array_push($questions,$tmp_qus);
+            }
           }
         }
-
-        $member['babys'] = array();
-        array_push($member['babys'], $tmp1);
       }
     }
-    $members[$i] = $member;
   }
+
   echo json_encode(
     [
       "FaultCode" => 0,
       'FaultReason' => 'OK',
-      'Data' => $members
+      'Data' => $questions
     ]
   );
-} else {
+
+}else{
   die("未查询到该机构信息");
 }
 
+//var_dump(getGames(0));
 
-/* if (!is_null($company)) {
-  $sql = "select * from baby where mid in (select id from member where did in (  select id from doctor where cid='$company[id]'))";
-  $result = $conn->query($sql);
-  $babys = [];
+function getGames($monthnum){
+  $mouthArr = [2, 4, 6, 8, 9, 10, 12, 14, 16, 18, 20, 22, 24, 27, 30, 33, 36, 42, 48, 54.60];
+  $month = $mouthArr[$monthnum];
+  $games = array();
+  global $conn;
+  $sql = "select * from games where testid ='$month' and function<>'' order by function DESC";
+  $result =  $conn->query($sql);
+  
   if ($conn->affected_rows != 0) {
     while ($tmp = $result->fetch_assoc()) {
-      array_push($babys, $tmp);
+      array_push($games,$tmp);
     }
   }
-  for ($i = 0; $i < count($babys); $i++) {
-    $baby = &$babys[$i];
 
-    $sql = "select * from asq3_test where bid='$baby[id]'";
-    $asq3Test = [];
-    $result =  $conn->query($sql);
-    if ($conn->affected_rows != 0) {
-      while ($tmp = $result->fetch_assoc()) {
-        array_push($asq3Test, $tmp);
-      }
-    }
-    $baby['asq3Test'] = $asq3Test;
-
-    $sql = "select * from asqse_test where bid='$baby[id]'";
-    $asqseTest = [];
-    $result =  $conn->query($sql);
-    if ($conn->affected_rows != 0) {
-      while ($tmp = $result->fetch_assoc()) {
-        array_push($asqseTest, $tmp);
-      }
-    }
-    $baby['asqseTest'] = $asqseTest;
-
-    $sql = "select * from asqse2_test where bid='$baby[id]'";
-    $asqse2Test = [];
-    $result =  $conn->query($sql);
-    if ($conn->affected_rows != 0) {
-      while ($tmp = $result->fetch_assoc()) {
-        array_push($asqse2Test, $tmp);
-      }
-    }
-    $baby['asqse2Test'] = $asqse2Test;
-  }
-  echo json_encode(
-    [
-      "faultCode" => 0,
-      'faultReason' => 'OK',
-      'data' => $babys
-    ]
-  );
-} else {
-  die("未查询到该机构信息");
-} */
+  return $games;
+}
 
 
 
