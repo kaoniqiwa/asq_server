@@ -90,7 +90,7 @@ if ($method == 'post') {
     $AsqSeTotal = $input->AsqSeTotal;
     $AsqSeLeft = $input->AsqSeLeft;
     $AsqSe2Total = $input->AsqSe2Total;
-    $AsqSe2Left = $input->AsqSe2Total;
+    $AsqSe2Left = $input->AsqSe2Left;
     $CreateTime = date('Y-m-d H:i:s', time());
     $UpdateTime  = date('Y-m-d H:i:s', time());
 
@@ -142,7 +142,7 @@ if ($method == 'post') {
     $AsqSeTotal = $input->AsqSeTotal;
     $AsqSeLeft = $input->AsqSeLeft;
     $AsqSe2Total = $input->AsqSe2Total;
-    $AsqSe2Left = $input->AsqSe2Total;
+    $AsqSe2Left = $input->AsqSe2Left;
     $UpdateTime  = date('Y-m-d H:i:s', time());
 
 
