@@ -87,7 +87,7 @@ if ($method == 'post') {
     $tmp = changeArr($Bids);
 
 
-    $sql  = "select Id,Bid,QuestType,QuestMonth,QuestResult,QuestScore,CreateTime,UpdateTime from question where Bid in ($tmp)";
+    $sql  = "select Id,Bid,QuestType,QuestMonth,QuestResult,QuestScore,CreateTime,UpdateTime from question where Bid in ($tmp) order by CreateTime DESC";
 
 
     // var_dump($sql);
