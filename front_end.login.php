@@ -41,7 +41,7 @@ if (!authenticate($_SERVER["PHP_AUTH_DIGEST"])) {
   die('登录失败');
 } else {
 
-  $sql  = "select Id,Name,Username,Password,CreateTime,UpdateTime from company where Username='$username' and Password='$password' limit 1";
+  $sql  = "select Id,Name,Username,Password,AsqTotal,AsqLeft,AsqSeTotal,AsqSeLeft,AsqSe2Total,AsqSe2Left,CreateTime,UpdateTime from company where Username='$username' and Password='$password' limit 1";
 
 
   $result = $conn->query($sql);

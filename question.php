@@ -28,18 +28,19 @@ if ($method == 'post') {
     $QuestMonth = $input->QuestMonth;
     $QuestResult = json_encode($input->QuestResult);
     $QuestScore = $input->QuestScore;
+    $Source = $input->Source;
     $CreateTime = date('Y-m-d H:i:s', time());
     $UpdateTime  = date('Y-m-d H:i:s', time());
 
     if ($oldId == '') {
-      $sql = "insert into question (Id,Bid,QuestType,QuestMonth,QuestResult,QuestScore,CreateTime,UpdateTime) values ('$Id','$Bid','$QuestType','$QuestMonth','$QuestResult','$QuestScore','$CreateTime','$UpdateTime')";
+      $sql = "insert into question (Id,Bid,QuestType,QuestMonth,QuestResult,QuestScore,Source,CreateTime,UpdateTime) values ('$Id','$Bid','$QuestType','$QuestMonth','$QuestResult','$QuestScore','$Source','$CreateTime','$UpdateTime')";
     } else {
-      $sql = "update question set Bid='$Bid',QuestType='$QuestType',QuestMonth='$QuestMonth',QuestResult='$QuestResult',QuestScore='$QuestScore',UpdateTime='$UpdateTime' where Id='$Id'";
+      $sql = "update question set Bid='$Bid',QuestType='$QuestType',QuestMonth='$QuestMonth',QuestResult='$QuestResult',QuestScore='$QuestScore',Source='$Source',UpdateTime='$UpdateTime' where Id='$Id'";
     }
 
     $conn->query($sql);
 
-    $sql = "select Id,Bid,QuestType,QuestMonth,QuestResult,QuestScore ,CreateTime,UpdateTime from question where Id = '$Id'";
+    $sql = "select Id,Bid,QuestType,QuestMonth,QuestResult,QuestScore,Source,CreateTime,UpdateTime from question where Id = '$Id'";
     $result = $conn->query($sql);
     if ($conn->affected_rows != 0) {
       $model  =  $result->fetch_assoc();
@@ -58,7 +59,7 @@ if ($method == 'post') {
     $QuestMonth =  isset($input->QuestMonth) ? $input->QuestMonth : "";
 
 
-    $sql = "select Id,Bid,QuestType,QuestMonth,QuestResult ,CreateTime,UpdateTime  from question where Bid like '%$Bid%' and QuestType like '%$QuestType%' and QuestMonth like '%$QuestMonth%'";
+    $sql = "select Id,Bid,QuestType,QuestMonth,QuestResult,Source,CreateTime,UpdateTime  from question where Bid like '%$Bid%' and QuestType like '%$QuestType%' and QuestMonth like '%$QuestMonth%'";
 
     $model = [];
 
@@ -87,7 +88,7 @@ if ($method == 'post') {
     $tmp = changeArr($Bids);
 
 
-    $sql  = "select Id,Bid,QuestType,QuestMonth,QuestResult,QuestScore,CreateTime,UpdateTime from question where Bid in ($tmp) order by CreateTime DESC";
+    $sql  = "select Id,Bid,QuestType,QuestMonth,QuestResult,QuestScore,Source,CreateTime,UpdateTime from question where Bid in ($tmp) order by CreateTime DESC";
 
 
     // var_dump($sql);

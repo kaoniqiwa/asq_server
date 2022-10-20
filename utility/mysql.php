@@ -5,9 +5,6 @@ define('DB_PASS', 'root');
 define('DB_NAME', 'asq');
 define('DB_CHAR', 'utf8');
 
-
-
-
 if (!isset($conn)) {
   $conn = new mysqli(DB_HOST, DB_USER, DB_PASS);
   if ($conn->connect_errno) {
