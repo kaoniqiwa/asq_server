@@ -26,25 +26,25 @@ if ($method == 'post') {
     $Bid = $input->Bid;
     $QuestType = $input->QuestType;
     $QuestMonth = $input->QuestMonth;
-    $QuestResult = json_encode($input->QuestResult);
+    $QuestResult = $input->QuestResult;
     $QuestScore = $input->QuestScore;
+    $ZongHe = $input->ZongHe;
     $Source = $input->Source;
     $CreateTime = date('Y-m-d H:i:s', time());
     $UpdateTime  = date('Y-m-d H:i:s', time());
 
     if ($oldId == '') {
-      $sql = "insert into question (Id,Bid,QuestType,QuestMonth,QuestResult,QuestScore,Source,CreateTime,UpdateTime) values ('$Id','$Bid','$QuestType','$QuestMonth','$QuestResult','$QuestScore','$Source','$CreateTime','$UpdateTime')";
+      $sql = "insert into question (Id,Bid,QuestType,QuestMonth,QuestResult,QuestScore,ZongHe,Source,CreateTime,UpdateTime) values ('$Id','$Bid','$QuestType','$QuestMonth','$QuestResult','$QuestScore','$ZongHe','$Source','$CreateTime','$UpdateTime')";
     } else {
-      $sql = "update question set Bid='$Bid',QuestType='$QuestType',QuestMonth='$QuestMonth',QuestResult='$QuestResult',QuestScore='$QuestScore',Source='$Source',UpdateTime='$UpdateTime' where Id='$Id'";
+      $sql = "update question set Bid='$Bid',QuestType='$QuestType',QuestMonth='$QuestMonth',QuestResult='$QuestResult',QuestScore='$QuestScore',ZongHe='$ZongHe',Source='$Source',UpdateTime='$UpdateTime' where Id='$Id'";
     }
 
     $conn->query($sql);
 
-    $sql = "select Id,Bid,QuestType,QuestMonth,QuestResult,QuestScore,Source,CreateTime,UpdateTime from question where Id = '$Id'";
+    $sql = "select Id,Bid,QuestType,QuestMonth,QuestResult,QuestScore,ZongHe,Source,CreateTime,UpdateTime from question where Id = '$Id'";
     $result = $conn->query($sql);
     if ($conn->affected_rows != 0) {
       $model  =  $result->fetch_assoc();
-      //$model['QuestScore'] =  json_decode($model['QuestScore']);
       echo json_encode(
         [
           "FaultCode" => 0,
@@ -59,7 +59,7 @@ if ($method == 'post') {
     $QuestMonth =  isset($input->QuestMonth) ? $input->QuestMonth : "";
 
 
-    $sql = "select Id,Bid,QuestType,QuestMonth,QuestResult,Source,CreateTime,UpdateTime  from question where Bid like '%$Bid%' and QuestType like '%$QuestType%' and QuestMonth like '%$QuestMonth%'";
+    $sql = "select Id,Bid,QuestType,QuestMonth,QuestResult,QuestScore,ZongHe,Source,CreateTime,UpdateTime  from question where Bid like '%$Bid%' and QuestType like '%$QuestType%' and QuestMonth like '%$QuestMonth%'";
 
     $model = [];
 
@@ -76,6 +76,7 @@ if ($method == 'post') {
         'Data' => $model
       ]
     );
+  
   } else if ($Flow == 'listQuestion') {
 
 
@@ -88,7 +89,7 @@ if ($method == 'post') {
     $tmp = changeArr($Bids);
 
 
-    $sql  = "select Id,Bid,QuestType,QuestMonth,QuestResult,QuestScore,Source,CreateTime,UpdateTime from question where Bid in ($tmp) order by CreateTime DESC";
+    $sql  = "select Id,Bid,QuestType,QuestMonth,QuestResult,QuestScore,ZongHe,Source,CreateTime,UpdateTime from question where Bid in ($tmp) order by CreateTime DESC";
 
 
     // var_dump($sql);
@@ -125,6 +126,23 @@ if ($method == 'post') {
       )
     );
   }
+}else if ($method == 'get') {
+  $Id = $_GET['Id'];
+  $baby = null;
+  
+  $sql = "select * from question where Id='$Id' ";
+  $result = $conn->query($sql);
+  if ($conn->affected_rows != 0) {
+    $question =  $result->fetch_assoc();
+  }
+  echo json_encode(
+    [
+      "FaultCode" => 0,
+      'FaultReason' => 'OK',
+      "Data" =>  $question
+    ]
+  );
+
 }
 
 

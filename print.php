@@ -1,29 +1,15 @@
 <?php
 include('./utility/mysql.php');
 
-$p_name = $_REQUEST['username'];
-$p_pass =  $_REQUEST['password'];
-$flow =  $_REQUEST['flow'];
-$starttime =  $_REQUEST['starttime'];
-$endtime =  $_REQUEST['endtime'];
+$uid = $_REQUEST['uid'];
+$did =  $_REQUEST['did'];
+$mid =  $_REQUEST['mid'];
+$bid =  $_REQUEST['bid'];
+$qid =  $_REQUEST['qid'];
 
 if(!$starttime){
   die('开始时间不能为空');
 }
-if(!$endtime){
-  die('结束时间不能为空');
-}
-
-$starttime = date("Y-m-d H:i:s",strtotime($starttime));
-$endtime = date("Y-m-d H:i:s",strtotime($endtime));
-
-
-$json_string = file_get_contents("./getInfo.json");
-
-
-$grant = json_decode($json_string, true);
-
-
 
 for ($i = 0; $i < count($grant); $i++) {
   $account = $grant[$i];

@@ -109,3 +109,29 @@ function patchurl($url, $data)
   $output = json_decode($output);
   return $output;
 }
+
+function getuuid($number)
+{
+  try {
+    $uuidlist = array(); //存放返回uuid的数组
+    for ($i = 0; $i < $number; $i++) {
+      if (function_exists('com_create_guid')) { //php 版本兼容，有些PHP版本自带生成UUID方法，如果存在就直接返回UUID
+        array_push($uuidlist, com_create_guid());
+      } else {
+        mt_srand((float)microtime() * 10000); // mt_srand：随机数播种器  microtime：返回微秒的时间
+        $string = strtoupper(md5(uniqid(rand(), true))); //strtoupper转换大写 uniqid:基于以微秒计的当前时间，生成一个唯一的 ID
+        $separator = chr(45); // "-" chr:转换成16进制，设置分隔符号
+        $uuid =  substr($string, 0, 8) . $separator
+          . substr($string, 8, 4) . $separator
+          . substr($string, 12, 4) . $separator
+          . substr($string, 16, 4) . $separator
+          . substr($string, 20, 12);
+
+        array_push($uuidlist, $uuid);
+      }
+    }
+    return $uuidlist;
+  } catch (Exception $e) {
+    return $uuidlist = null;
+  }
+}

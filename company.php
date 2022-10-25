@@ -132,6 +132,33 @@ if ($method == 'post') {
     //     "Data" => $model
     //   ]
     // );
+  } else if ($Flow == 'getUuid') {
+    $Id = GUID();
+    //$Uid = $input->Uid;
+    //$Did = $input->Did;
+    $Uuid = $Id;
+    $CreateTime = date('Y-m-d H:i:s', time());
+    
+    $sql = "insert into qrcode ( Id,Uuid,CreateTime) values ('$Id','$Uuid','$CreateTime')";
+    $result = $conn->query($sql);
+    if($result){
+      echo json_encode(
+        [
+          "FaultCode" => 0,
+          'FaultReason' => 'OK',
+          'Data' => $Uuid
+        ]
+      );
+    }else{
+      echo json_encode(
+        [
+          "FaultCode" => 1,
+          'FaultReason' => 'error',
+        ]
+      );
+    }
+    
+
   } else if ($Flow == 'editCompany') {
     $Id = $input->Id;
     $Name = $input->Name;
