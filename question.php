@@ -24,24 +24,29 @@ if ($method == 'post') {
     }
 
     $Bid = $input->Bid;
+    $Cid = $input->Cid;
+    $Did = $input->Did;
+    $Mid = $input->Mid;
     $QuestType = $input->QuestType;
     $QuestMonth = $input->QuestMonth;
-    $QuestResult = $input->QuestResult;
+    //$QuestResult = $input->QuestResult;
     $QuestScore = $input->QuestScore;
     $ZongHe = $input->ZongHe;
     $Source = $input->Source;
+    $SurveyTime = $input->SurveyTime;
     $CreateTime = date('Y-m-d H:i:s', time());
     $UpdateTime  = date('Y-m-d H:i:s', time());
 
     if ($oldId == '') {
-      $sql = "insert into question (Id,Bid,QuestType,QuestMonth,QuestResult,QuestScore,ZongHe,Source,CreateTime,UpdateTime) values ('$Id','$Bid','$QuestType','$QuestMonth','$QuestResult','$QuestScore','$ZongHe','$Source','$CreateTime','$UpdateTime')";
+      $sql = "insert into question (Id,Cid,Did,Mid,Bid,QuestType,QuestMonth,QuestScore,ZongHe,Source,SurveyTime,CreateTime,UpdateTime) values ('$Id','$Cid','$Did','$Mid','$Bid','$QuestType','$QuestMonth','$QuestScore','$ZongHe','$Source','$SurveyTime','$CreateTime','$UpdateTime')";
+      //echo $sql.'--------------------------------------------';
     } else {
-      $sql = "update question set Bid='$Bid',QuestType='$QuestType',QuestMonth='$QuestMonth',QuestResult='$QuestResult',QuestScore='$QuestScore',ZongHe='$ZongHe',Source='$Source',UpdateTime='$UpdateTime' where Id='$Id'";
+      $sql = "update question set Cid='$Cid',Did='$Did',Mid='$Mid',Bid='$Bid',QuestType='$QuestType',QuestMonth='$QuestMonth',QuestScore='$QuestScore',ZongHe='$ZongHe',Source='$Source',SurveyTime='$SurveyTime',UpdateTime='$UpdateTime' where Id='$Id'";
     }
 
     $conn->query($sql);
 
-    $sql = "select Id,Bid,QuestType,QuestMonth,QuestResult,QuestScore,ZongHe,Source,CreateTime,UpdateTime from question where Id = '$Id'";
+    $sql = "select Id,Cid,Did,Mid,Bid,QuestType,QuestMonth,QuestScore,ZongHe,Source,SurveyTime,CreateTime,UpdateTime from question where Id = '$Id'";
     $result = $conn->query($sql);
     if ($conn->affected_rows != 0) {
       $model  =  $result->fetch_assoc();
@@ -59,7 +64,7 @@ if ($method == 'post') {
     $QuestMonth =  isset($input->QuestMonth) ? $input->QuestMonth : "";
 
 
-    $sql = "select Id,Bid,QuestType,QuestMonth,QuestResult,QuestScore,ZongHe,Source,CreateTime,UpdateTime  from question where Bid like '%$Bid%' and QuestType like '%$QuestType%' and QuestMonth like '%$QuestMonth%'";
+    $sql = "select Id,Cid,Did,Mid,Bid,QuestType,QuestMonth,QuestScore,ZongHe,Source,SurveyTime,CreateTime,UpdateTime  from question where Bid like '%$Bid%' and QuestType like '%$QuestType%' and QuestMonth like '%$QuestMonth%'";
 
     $model = [];
 
@@ -89,7 +94,7 @@ if ($method == 'post') {
     $tmp = changeArr($Bids);
 
 
-    $sql  = "select Id,Bid,QuestType,QuestMonth,QuestResult,QuestScore,ZongHe,Source,CreateTime,UpdateTime from question where Bid in ($tmp) order by CreateTime DESC";
+    $sql  = "select Id,Cid,Did,Mid,Bid,QuestType,QuestMonth,QuestScore,ZongHe,Source,SurveyTime,CreateTime,UpdateTime from question where Bid in ($tmp) order by CreateTime DESC";
 
 
     // var_dump($sql);

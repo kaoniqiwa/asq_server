@@ -134,19 +134,26 @@ if ($method == 'post') {
     // );
   } else if ($Flow == 'getUuid') {
     $Id = GUID();
-    //$Uid = $input->Uid;
+    $Uid = $input->Uid;
     //$Did = $input->Did;
     $Uuid = $Id;
     $CreateTime = date('Y-m-d H:i:s', time());
     
     $sql = "insert into qrcode ( Id,Uuid,CreateTime) values ('$Id','$Uuid','$CreateTime')";
     $result = $conn->query($sql);
-    if($result){
+    
+    $sql  = "select Id,Name,Username,Password from company where Id='$Uid'";
+    $result =  $conn->query($sql);
+    if ($conn->affected_rows != 0) {
+      $model  =  $result->fetch_assoc();
+      $model['Username'] = urlencode(base64_encode($model['Username']));
+      $model['Password'] = urlencode(base64_encode($model['Password']));
+      $model['Uuid'] = $Uuid;
       echo json_encode(
         [
           "FaultCode" => 0,
           'FaultReason' => 'OK',
-          'Data' => $Uuid
+          'Data' => $model
         ]
       );
     }else{
@@ -157,7 +164,6 @@ if ($method == 'post') {
         ]
       );
     }
-    
 
   } else if ($Flow == 'editCompany') {
     $Id = $input->Id;
