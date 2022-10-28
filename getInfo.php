@@ -52,7 +52,7 @@ if (!is_null($company) && $flow == 'getQuestions') {
       if ($conn->affected_rows != 0) {
         while ($tmp_baby = $result_baby->fetch_assoc()) {
           $Id = $tmp_baby['Id'];
-          $sql_qus = "select QuestType,QuestScore,QuestMonth,ZongHe,CreateTime from question where Bid='$Id' and  QuestType='asq3' and CreateTime between '$starttime' and '$endtime' ";
+          $sql_qus = "select QuestType,QuestScore,QuestMonth,ZongHe,SurveyTime,CreateTime from question where Bid='$Id' and  QuestType='asq3' and CreateTime between '$starttime' and '$endtime' ";
           $result_qus =  $conn->query($sql_qus);
           if ($conn->affected_rows != 0) {
             while ($tmp_qus = $result_qus->fetch_assoc()) {
@@ -61,7 +61,7 @@ if (!is_null($company) && $flow == 'getQuestions') {
               $tmp_qus['babyName'] = $tmp_baby['Name'];
               $tmp_qus['babyGender'] = $tmp_baby['gender'];
               $tmp_qus['babyBirthday'] = $tmp_baby['Birthday'];
-              $tmp_qus['babySurveyTime'] = $tmp_baby['SurveyTime'];
+              $tmp_qus['babySurveyTime'] = $tmp_qus['SurveyTime'];
               $tmp_qus['memberName'] = $tmp_member['Name'];
               $tmp_qus['memberPhone'] = $tmp_member['Phone'];
               $tmp_qus['memberRelation'] = $tmp_member['Relation'];

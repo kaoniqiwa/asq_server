@@ -81,6 +81,29 @@ if ($method == 'post') {
         'Data' => $model
       ]
     );
+  } else if ($Flow == 'getQuestionByBaby') {
+    $Bids = isset($input->Bids) ? $input->Bids : [];
+    $tmp = changeArr($Bids);
+
+    $sql = "select Id,Cid,Did,Mid,Bid,QuestType,QuestMonth,Source,SurveyTime,CreateTime,UpdateTime  from question where Bid in ($tmp) ";
+
+    //echo $sql;
+
+    $model = [];
+
+    $result = $conn->query($sql);
+    if ($conn->affected_rows != 0) {
+      while ($tmp = $result->fetch_assoc()) {
+        array_push($model, $tmp);
+      }
+    }
+    echo json_encode(
+      [
+        "FaultCode" => 0,
+        'FaultReason' => 'OK',
+        'Data' => $model
+      ]
+    );
   
   } else if ($Flow == 'listQuestion') {
 
