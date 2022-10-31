@@ -112,15 +112,50 @@ if ($method == 'post') {
     $PageIndex = isset($input->PageIndex) ? $input->PageIndex : 1;
     $Start = ($PageIndex - 1) * $PageSize;
     // $Bids = ['a26584f8-aa79-48b9-8fee-906025cd983c', 'c0a81994-8c98-4d8c-bff6-188f99503c11'];
-    $Bids = isset($input->Bids) ? $input->Bids : [];
+    $Uid = isset($input->Uid) ? $input->Uid : '';
+    $Dids = isset($input->Dids) ? $input->Dids : [];
+    $Name = isset($input->Name) ? $input->Name : '';
+    $QuestMonth = isset($input->QuestMonth) ? $input->QuestMonth : '';
+    $Status = isset($input->Status) ? $input->Status : '';
+    $BeginTime = isset($input->BeginTime) ? $input->BeginTime : '';
+    $EndTime = isset($input->EndTime) ? $input->EndTime : '';
+    
+    $nameStr = '';
+    if($Name != ''){
+      $nameStr = "and baby.Name like '%".$Name."%'";
+    }
+    $didstr = '';
+    if(count($Dids) > 0 && $Dids != ''){
+      $tmpp = changeArr($Dids);
+      $didstr = "and question.Did in ($tmpp)";
+    }
+    $statusStr = '';
+    if($Status != '' && $Status != 3){
+      $statusStr = "and question.Status='".$Status."'";
+    }
+    $questmonthStr = '';
+    if($QuestMonth != ''){
+      $questmonthStr = "and question.QuestMonth='".$QuestMonth."'";
+    }
+    $timeStr = '';
+    if($BeginTime != '' && $EndTime != ''){
+      $timeStr = "and question.SurveyTime between '$BeginTime' and '$EndTime'";
+    }
 
-    $tmp = changeArr($Bids);
+    //echo count($Dids)."--".$Dids."--".$nameStr."--".$statusStr."--".$questmonthStr."--".$timeStr;
+    
+    $sql = '';
+    $sql= "select question.Id,question.Bid,question.Mid,question.Did,question.Cid,question.QuestMonth,question.Status,baby.Name,baby.Birthday,question.SurveyTime,member.Name as Mname from question,baby,member where question.Cid='$Uid' and question.Bid=baby.Id and question.Mid=member.Id ".$didstr." ".$nameStr." ".$statusStr." ".$questmonthStr." ".$timeStr." order by question.CreateTime DESC";
 
-
-    $sql  = "select Id,Cid,Did,Mid,Bid,QuestType,QuestMonth,QuestScore,ZongHe,Source,SurveyTime,CreateTime,UpdateTime from question where Bid in ($tmp) order by CreateTime DESC";
-
-
-    // var_dump($sql);
+    /* if($Uid != ''){
+      $sql= "select question.Id,question.Bid,question.Mid,question.Did,question.Cid,question.QuestMonth,question.Status,baby.Name,baby.Birthday,question.SurveyTime,member.Name as Mname from question,baby,member where question.Cid='$Uid' and question.Bid=baby.Id and question.Mid=member.Id ".$nameStr." order by question.CreateTime DESC";
+    }else{
+      
+      $sql= "select question.Id,question.Bid,question.Mid,question.Did,question.Cid,question.QuestMonth,question.Status,baby.Name,baby.Birthday,question.SurveyTime,member.Name as Mname from question,baby,member where question.Cid='$Uid' and question.Bid=baby.Id and question.Mid=member.Id ".$didstr." ".$nameStr." ".$statusStr." ".$questmonthStr." ".$timeStr." order by question.CreateTime DESC";
+      
+    } */
+    //echo "--".$sql;
+    
     $result = $conn->query($sql);
     $tmp = [];
 
@@ -153,12 +188,36 @@ if ($method == 'post') {
         ]
       )
     );
+  } else if ($Flow == 'changeStatus') {
+
+
+    $Qid = isset($input->Qid) ? $input->Qid : '';
+    $Status = isset($input->Status) ? $input->Status : 0;
+
+    //echo $Qid."---".$Status."<br>";
+    
+    $sql = "update question set Status='$Status' where Id='$Qid'";
+    $model = array();
+    $model['Status'] = $Status;
+    $result = $conn->query($sql);
+    $model['result'] = $result;
+    //if ($conn->affected_rows != 0) {
+      //$model  =  $result->fetch_assoc();
+      echo json_encode(
+        [
+          "FaultCode" => 0,
+          'FaultReason' => 'OK',
+          'Data' => $model
+        ]
+      );
+    //}
   }
 }else if ($method == 'get') {
   $Id = $_GET['Id'];
   $baby = null;
   
   $sql = "select * from question where Id='$Id' ";
+  //$sql= "select a.Id,a.Bid,a.Did,a.Uid,b.Name from question as a, baby as b where a.Bid=b.id and a.Id='$Id'";
   $result = $conn->query($sql);
   if ($conn->affected_rows != 0) {
     $question =  $result->fetch_assoc();

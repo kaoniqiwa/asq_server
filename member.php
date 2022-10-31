@@ -35,7 +35,9 @@ if ($method == 'post') {
       }
     }
 
-    if (count($Dids) == 0) {
+    $tmp2 = $tmp;
+
+    /* if (count($Dids) == 0) {
       $tmp2 = $tmp;
     } else {
       $tmp2 = [];
@@ -47,7 +49,7 @@ if ($method == 'post') {
           }
         }
       }
-    }
+    } */
 
     if (count($Ids) == 0) {
       $tmp3 = $tmp2;
