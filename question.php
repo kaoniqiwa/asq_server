@@ -83,9 +83,14 @@ if ($method == 'post') {
     );
   } else if ($Flow == 'getQuestionByBaby') {
     $Bids = isset($input->Bids) ? $input->Bids : [];
+    $Uid = isset($input->Uid) ? $input->Uid : '';
     $tmp = changeArr($Bids);
+    $uidStr = '';
+    if($Uid != ''){
+      $uidStr = "and question.Cid='".$Uid."'";
+    }
 
-    $sql = "select Id,Cid,Did,Mid,Bid,QuestType,QuestMonth,Source,SurveyTime,CreateTime,UpdateTime  from question where Bid in ($tmp) ";
+    $sql = "select Id,Cid,Did,Mid,Bid,QuestType,QuestMonth,Source,SurveyTime,CreateTime,UpdateTime  from question where Bid in ($tmp) ".$nameStr." order by CreateTime DESC";
 
     //echo $sql;
 

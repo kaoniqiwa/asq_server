@@ -159,14 +159,49 @@ if ($method == 'post') {
     //     "Data" => $model
     //   ]
     // );
+  } else if ($Flow == 'updateLeft') {
+    $Id = $input->uid;
+    $asqtype = $input->type;
+    $UpdateTime  = date('Y-m-d H:i:s', time());
+
+    $sql  = "select ".$asqtype." from company where Id='$Id'";
+    $result =  $conn->query($sql);
+    if ($conn->affected_rows != 0) {
+      $model = $result->fetch_assoc();
+    }
+    //echo json_encode($model[$asqtype]); 
+    if((int)$model[$asqtype] <= 0){
+      echo json_encode(
+        [
+          "FaultCode" => 0,
+          'FaultReason' => 'OK',
+          'Data' => false
+        ]
+      );
+      exit;
+    }
+
+    $sql  = "update company set ".$asqtype."=".$asqtype."-1,UpdateTime='$UpdateTime' where Id='$Id' and ".$asqtype.">0";
+    //echo $sql;
+    $result = $conn->query($sql);
+    echo json_encode(
+      [
+        "FaultCode" => 0,
+        'FaultReason' => 'OK',
+        'Data' => $result
+      ]
+    );
+
+    
   } else if ($Flow == 'getUuid') {
     $Id = GUID();
     $Uid = $input->Uid;
     //$Did = $input->Did;
     $Uuid = $Id;
     $CreateTime = date('Y-m-d H:i:s', time());
+    $Status = 0;
     
-    $sql = "insert into qrcode ( Id,Uuid,CreateTime) values ('$Id','$Uuid','$CreateTime')";
+    $sql = "insert into qrcode ( Id,Uuid,Status,CreateTime) values ('$Id','$Uuid','$Status','$CreateTime')";
     $result = $conn->query($sql);
     
     $sql  = "select Id,Name,Username,Password from company where Id='$Uid'";
@@ -191,6 +226,40 @@ if ($method == 'post') {
         ]
       );
     }
+  } else if ($Flow == 'checkUuid') {
+    
+    $Uuid = $input->Uuid;
+    $EndTime = date('Y-m-d H:i:s', time());
+
+    $sql  = "select Status from qrcode where Uuid='$Uuid'";
+    $result = $conn->query($sql);
+    //$rs = $conn->field_count();
+    if ($conn->affected_rows != 0) {
+      $rs = $result->fetch_assoc();
+      
+      if((int)$rs['Status'] == 0){
+       
+        $sql = "update qrcode set Status=Status+1,EndTime='$EndTime' where Uuid='$Uuid'";
+        //echo $sql;
+        $result = $conn->query($sql);
+        
+        echo json_encode(
+          [
+            "FaultCode" => 0,
+            'FaultReason' => 'OK',
+            'Data' => true
+          ]
+        );
+      }else{
+        echo json_encode(
+          [
+            "FaultCode" => 0,
+            'FaultReason' => 'OK',
+            'Data' => false
+          ]
+        );
+      }
+    }
 
   } else if ($Flow == 'editCompany') {
     $Id = $input->Id;
@@ -206,7 +275,7 @@ if ($method == 'post') {
     $UpdateTime  = date('Y-m-d H:i:s', time());
 
 
-    $sql  = "update  company set Name='$Name',Username='$Username',Password='$Password',AsqTotal='$AsqTotal',AsqLeft='$AsqLeft',AsqSeTotal='$AsqSeTotal',AsqSeLeft='$AsqSeLeft',AsqSe2Total='$AsqSe2Total',
+    $sql  = "update company set Name='$Name',Username='$Username',Password='$Password',AsqTotal='$AsqTotal',AsqLeft='$AsqLeft',AsqSeTotal='$AsqSeTotal',AsqSeLeft='$AsqSeLeft',AsqSe2Total='$AsqSe2Total',
     AsqSe2Left='$AsqSe2Left',UpdateTime='$UpdateTime' where Id='$Id'";
     $conn->query($sql);
 

@@ -79,47 +79,6 @@ if (!is_null($company) && $flow == 'getQuestions') {
   );
 
 
-  /* $sql_menber = "select Id,Phone,Name,Relation from member where Did in (  select Id from doctor where Cid='$company[Id]')";
-  $result_member = $conn->query($sql_menber);
-  if ($conn->affected_rows != 0) {
-    while ($tmp_member = $result_member->fetch_assoc()) {
-      $sql_baby = "select * from baby where Mid='$tmp_member[Id]'";
-      $result_baby =  $conn->query($sql_baby);
-      if ($conn->affected_rows != 0) {
-        while ($tmp_baby = $result_baby->fetch_assoc()) {
-          $Id = $tmp_baby['Id'];
-          $sql_qus = "select QuestType,QuestScore,QuestMonth,ZongHe,SurveyTime,CreateTime from question where Bid='$Id' and  QuestType='asq3' and CreateTime between '$starttime' and '$endtime' ";
-          $result_qus =  $conn->query($sql_qus);
-          if ($conn->affected_rows != 0) {
-            while ($tmp_qus = $result_qus->fetch_assoc()) {
-              $tmp_qus['QuestScore'] = json_decode($tmp_qus['QuestScore']);
-              $tmp_qus['ZongHe'] = json_decode($tmp_qus['ZongHe']);
-              $tmp_qus['babyName'] = $tmp_baby['Name'];
-              $tmp_qus['babyGender'] = $tmp_baby['gender'];
-              $tmp_qus['babyBirthday'] = $tmp_baby['Birthday'];
-              $tmp_qus['babySurveyTime'] = $tmp_qus['SurveyTime'];
-              $tmp_qus['memberName'] = $tmp_member['Name'];
-              $tmp_qus['memberPhone'] = $tmp_member['Phone'];
-              $tmp_qus['memberRelation'] = $tmp_member['Relation'];
-              $tmp_qus['QuestGames'] = getGames($tmp_qus['QuestMonth']);
-              $tmp_qus['QuestReport'] = setReport($company['Id'],);
-
-              array_push($questions,$tmp_qus);
-            }
-          }
-        }
-      }
-    }
-  }
-
-  echo json_encode(
-    [
-      "FaultCode" => 0,
-      'FaultReason' => 'OK',
-      'Data' => $questions
-    ]
-  ); */
-
 }else{
   die("未查询到该机构信息");
 }
@@ -129,7 +88,7 @@ function setReport($uid,$did,$bid,$qid,$type){
   $host = $_SERVER['HTTP_HOST'];
   $status = explode($host,'localhost');
   $self = '';
-  if(count($status)<1){
+  if(count($status)<=1){
     $self = '/app/asq_frontend';
   }else{
     $host = 'localhost:9200/';
