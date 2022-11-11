@@ -1,9 +1,26 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title> show_pape </title>
+  <meta name="Generator" content="EditPlus">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+ </head>
+ <body>
 <?php
+header("Content-Type:text/html;charset=utf-8");
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASS', 'root');
-define('DB_NAME', 'asq_1019');
+define('DB_NAME', 'asq');
 define('DB_CHAR', 'utf8');
+
+error_reporting(1);
+ini_set("display_errors","on");
+
+include('./utility/tool.php');
 
 if (!isset($conn)) {
   $conn = new mysqli(DB_HOST, DB_USER, DB_PASS);
@@ -15,15 +32,19 @@ if (!isset($conn)) {
   $conn->select_db(DB_NAME);
 }
 
+$json_string = file_get_contents("./test221111.json");
+$grant = json_decode($json_string, true);
 
-//$json_string = file_get_contents("./test.json");
-//$grant = json_decode($json_string, true);
+$json_zh = file_get_contents("./data.json");
+$zh_data = json_decode($json_zh, true);
 
 $Cid = 'adbcb86a-d694-4c84-83cc-541a3d8604d9';
 $QuestType = 'asq3';
 $mouthArr = [2, 4, 6, 8, 9, 10, 12, 14, 16, 18, 20, 22, 24, 27, 30, 33, 36, 42, 48, 54.60];
-for ($i = 0; $i < count($grant); $i++) {
-  $account = $grant[$i];
+echo '$grant_length:'.count($grant).'<br>';
+for ($k = 0; $k < count($grant); $k++) {
+  $account = $grant[$k];
+  
   
   $Did = GUId();
   $Cid = $Cid;
@@ -34,15 +55,20 @@ for ($i = 0; $i < count($grant); $i++) {
   $CreateTime = date('Y-m-d H:i:s', time());
   $UpdateTime  = date('Y-m-d H:i:s', time());
 
-  $sql = "select * from doctor where Name='$Name' and Cid='$Cid'";
-  $db->query($sql);
-  $rs = $db->fetch_array();
-  if($rs[0] > 0){
-    
+  
+  $sql = "select * from doctor where Name='$Name' and Cid='$Cid' LIMIT 1";
+  $result = $conn->query($sql);
+  if($conn->affected_rows > 0){
+    echo 'doctor<br>';
+    $doctor =  $result->fetch_assoc();
+    $Did = $doctor['Id'];
   }else{
     $sql = "insert into doctor (Id,Cid,Name,Level,Dept,Phone,CreateTime,UpdateTime) values ('$Did','$Cid','$Name','$Level','$Dept','$Phone','$CreateTime','$UpdateTime')";
     $conn->query($sql);
   }
+
+  //echo $account['A88'].'阿萨德<br>';
+  //exit();
 
   $Mid = GUID();
   //$Did = $input->Did;
@@ -68,10 +94,11 @@ for ($i = 0; $i < count($grant); $i++) {
   $UpdateTime  = date('Y-m-d H:i:s', time());
 
   $sql = "select * from member where Phone='$Phone' and Did='$Did'";
-  $db->query($sql);
-  $rs = $db->fetch_array();
-  if($rs[0] > 0){
-    
+  $result = $conn->query($sql);
+  if($conn->affected_rows > 0){
+    echo 'member<br>';
+    $member =  $result->fetch_assoc();
+    $Mid = $member['Id'];
   }else{
     $sql = "insert into member ( Id,Did,Name,Phone,Relation,Province,City,County,Email,IsHelp,HelpInfo,PostCode,Address,MotherJob,FatherJob,MotherDegree,FatherDegree,OtherDegree,MotherBirth,FatherBirth,CreateTime,UpdateTime) values ('$Mid','$Did','$Name','$Phone','$Relation','$Province','$City','$County','$Email','$IsHelp','$HelpInfo','$PostCode','$Address','$MotherJob','$FatherJob','$MotherDegree','$FatherDegree','$OtherDegree','$MotherBirth','$FatherBirth','$CreateTime','$UpdateTime')";
     $conn->query($sql);
@@ -79,57 +106,111 @@ for ($i = 0; $i < count($grant); $i++) {
 
   $Bid = GUID();
   //$Mid = $Mid;
-  $Name = $account['A3'];
+  $Bname = $account['A3'];
   $Gender = $account['A4'];
   $Birthday = $account['A5'];
-  $SurveyTime =  $account['A6'];
+  $SurveyTime =  substr($account['A6'],0,10);
   $Premature =  $account['A9'];
   $Prematrueweek =  $account['A7'];
   $Prematrueday =  $account['A8'];
-  $Rectifyage =  '';
+  $Rectifyage =  $account['A10'].'月'.$account['A11'].'天';
   $IsShun =  $account['A12']=='v'?'是':'否';
   $IdentityInfo =  $account['A91'];
   $IdentityType =  $account['A90'];
   $Weight = $account['A19'];
   $IsChanqian =  $account['A14']=='v'?'是':'否';
   $IsMulti =  $account['A16']=='v'?'是':'';
-  $OtherAbnormal =  $input->OtherAbnormal;
+  $OtherAbnormal =  '';
   $CreateTime = date('Y-m-d H:i:s', time());
   $UpdateTime  = date('Y-m-d H:i:s', time());
 
-  $sql = "select * from baby where Name='$Name' and Mid='$Mid'";
-  $db->query($sql);
-  $rs = $db->fetch_array();
-  if($rs[0] > 0){
-    
+  $sql = "select * from baby where Name='$Bname' and Mid='$Mid'";
+  $result = $conn->query($sql);
+  if($conn->affected_rows > 0){
+    echo 'baby<br>';
+    $baby =  $result->fetch_assoc();
+    $Bid = $baby['Id'];
   }else{
-    $sql = "insert into baby (Id,Mid,Name,Gender,Birthday,SurveyTime,Premature,Prematrueweek,Prematrueday,Rectifyage,IsShun,IdentityInfo,IdentityType,Weight,IsChanqian,IsMulti,OtherAbnormal,CreateTime,UpdateTime) values ('$Bid','$Mid','$Name','$Gender','$Birthday','$SurveyTime','$Premature','$Prematrueweek','$Prematrueday','$Rectifyage','$IsShun','$IdentityInfo','$IdentityType','$Weight','$IsChanqian','$IsMulti','$OtherAbnormal','$CreateTime','$UpdateTime')";
+    $sql = "insert into baby (Id,Mid,Name,Gender,Birthday,SurveyTime,Premature,Prematrueweek,Prematrueday,Rectifyage,IsShun,IdentityInfo,IdentityType,Weight,IsChanqian,IsMulti,OtherAbnormal,CreateTime,UpdateTime) values ('$Bid','$Mid','$Bname','$Gender','$Birthday','$SurveyTime','$Premature','$Prematrueweek','$Prematrueday','$Rectifyage','$IsShun','$IdentityInfo','$IdentityType','$Weight','$IsChanqian','$IsMulti','$OtherAbnormal','$CreateTime','$UpdateTime')";
     $conn->query($sql);
+
+    //echo $sql.'<br>';
+
+  }
+  
+  $QuestScore_arr = array();
+  for($i=0;$i<5;$i++){
+    $answer_arr = array();
+    $result_arr = array();
+    $nq_arr = array();
+    for($j=0;$j<8;$j++){
+      if($j<6){
+        array_push($answer_arr,getAnswer($account['A'.(37+$j+$i*8)]));
+      }
+      if($j == 6){
+        //echo 'AA'.(37+$j+$i*5).'<br>';
+        $nq_arr['score'] = $account['A'.(37+$j+$i*8)];
+      }
+      if($j == 7){
+        //echo 'AA'.(37+$j+$i*5).'<br>';
+        $nq_arr['jiezhi'] = $account['A'.(37+$j+$i*8)];
+      }
+    }
+
+    $nq_arr['nextStatus'] = true;
+    $nq_arr['prevStatus'] = true;
+    $nq_arr['answer'] = $answer_arr;
+    $nq_arr['result'] = $result_arr;
+
+    if($i==0){
+      $nq_arr['nengqu'] = '沟通';
+      $nq_arr['prevStatus'] = false;
+    }else if($i==1){
+      $nq_arr['nengqu'] = '粗大动作';
+    }else if($i==2){
+      $nq_arr['nengqu'] = '精细动作';
+    }else if($i==3){
+      $nq_arr['nengqu'] = '解决问题';
+    }else if($i==4){
+      $nq_arr['nengqu'] = '个人-社会';
+    }
+    
+    array_push($QuestScore_arr,$nq_arr);
   }
 
-  //$Bid = $input->Bid;
-  $QuestType = $QuestType;
   $QuestMonth = getMonthNumber($account['A36']);
-  $QuestResult = json_encode($input->QuestResult);
-  $QuestScore = $input->QuestScore;
+  $ZongHe_arr = array();
+  $ZongHe_arr['question'] = getZongHe($QuestMonth);
+  $zh_result_arr = [];
+  $zh_answer_arr = [];
+  for($n=0;$n< count($ZongHe_arr['question'])-1;$n++){
+    
+    array_push($zh_result_arr,$account['A'.(77+$n)]==null?'':$account['A'.(77+$n)]);
+    array_push($zh_answer_arr,0);
+  }
+  $ZongHe_arr['result'] = $zh_result_arr;
+  $ZongHe_arr['answer'] = $zh_answer_arr;
+
+  $Qid = GUID();
+  $QuestScore = json_encode($QuestScore_arr,JSON_UNESCAPED_UNICODE);
+  $ZongHe = json_encode($ZongHe_arr,JSON_UNESCAPED_UNICODE);
   $Source = getSource($account['A22']);
-  $CreateTime = $account['A6'];
+  $Status = 0;
+  $Importid = $account['A2'];
+  $CreateTime = substr($account['A6'],0,10);
   $UpdateTime  = date('Y-m-d H:i:s', time());
 
-  $sql = "select * from question where Name='$Name' and Mid='$Mid'";
-  $db->query($sql);
-  $rs = $db->fetch_array();
-  if($rs[0] > 0){
-    
+  $sql = "select * from question where Importid='$Importid' and Bid='$Bid'";
+  $result = $conn->query($sql);
+  if($conn->affected_rows > 0){
+    echo 'question<br>';
+    $question =  $result->fetch_assoc();
+    $Qid = $question['Id'];
   }else{
-    $sql = "insert into question (Id,Bid,QuestType,QuestMonth,QuestResult,QuestScore,Source,CreateTime,UpdateTime) values ('$Id','$Bid','$QuestType','$QuestMonth','$QuestResult','$QuestScore','$Source','$CreateTime','$UpdateTime')";
+    $sql = "insert into question (Id,Importid,Cid,Did,Mid,Bid,QuestType,QuestMonth,QuestScore,ZongHe,Source,SurveyTime,CreateTime,UpdateTime) values ('$Qid','$Importid','$Cid','$Did','$Mid','$Bid','$QuestType','$QuestMonth','$QuestScore','$ZongHe','$Source','$SurveyTime','$CreateTime','$UpdateTime')";
     $conn->query($sql);
+    //echo $sql;
   }
-
-
-
-
-
 
 }
 
@@ -143,6 +224,16 @@ function getMonthNumber($num){
   }
 }
 
+function getAnswer($str){
+  if($str == '是'){
+    return 1;
+  }else if($str == '有时是'){
+    return 2;
+  }else{
+    return 3;
+  }
+}
+
 function getSource($str){
   if($str == '直接答题'){
     return 1;
@@ -153,109 +244,16 @@ function getSource($str){
   }
 }
 
-//$sql = "insert into question (Id,Bid,QuestType,QuestMonth,QuestResult,QuestScore,CreateTime,UpdateTime) values ('$Id','$Bid','$QuestType','$QuestMonth','$QuestResult','$QuestScore','$CreateTime','$UpdateTime')";
-//$sql = "insert into baby (Id,Mid,Name,Gender,Birthday,SurveyTime,Premature,Prematrueweek,Prematrueday,Rectifyage,IsShun,IdentityInfo,IdentityType,Weight,IsChanqian,IsMulti,OtherAbnormal,CreateTime,UpdateTime) values ('$Id','$Mid','$Name','$Gender','$Birthday','$SurveyTime','$Premature','$Prematrueweek','$Prematrueday','$Rectifyage','$IsShun','$IdentityInfo','$IdentityType','$Weight','$IsChanqian','$IsMulti','$OtherAbnormal','$CreateTime','$UpdateTime')";
-//$sql = "insert into member ( Id,Did,Name,Phone,Relation,Province,City,County,Email,IsHelp,HelpInfo,PostCode,Address,MotherJob,FatherJob,MotherDegree,FatherDegree,OtherDegree,MotherBirth,FatherBirth,CreateTime,UpdateTime) values ('$Id','$Did','$Name','$Phone','$Relation','$Province','$City','$County','$Email','$IsHelp','$HelpInfo','$PostCode','$Address','$MotherJob','$FatherJob','$MotherDegree','$FatherDegree','$OtherDegree','$MotherBirth','$FatherBirth','$CreateTime','$UpdateTime')";
-//$sql = "insert into doctor (Id,Cid,Name,Level,Dept,Phone,CreateTime,UpdateTime) values ('$Id','$Cid','$Name','$Level','$Dept','$Phone','$CreateTime','$UpdateTime')";
-
-/* for ($i = 0; $i < count($grant); $i++) {
-  $account = $grant[$i];
-  $A1 = $account['A1'];
-  $A2 = $account['A2'];
-
-} */
-
-/* 
-if (!is_null($company) && $flow == 'getQuestions') {
-  $sql_menber = "select Id,Phone,Name,Relation from member where Did in (  select Id from doctor where Cid='$company[Id]')";
-  $result_member = $conn->query($sql_menber);
-  if ($conn->affected_rows != 0) {
-    while ($tmp_member = $result_member->fetch_assoc()) {
-      $sql_baby = "select * from baby where Mid='$tmp_member[Id]'";
-      $result_baby =  $conn->query($sql_baby);
-      if ($conn->affected_rows != 0) {
-        while ($tmp_baby = $result_baby->fetch_assoc()) {
-          $Id = $tmp_baby['Id'];
-          $sql_qus = "select QuestType,QuestScore,QuestMonth,CreateTime from question where Bid='$Id' and  QuestType='asq3' and CreateTime between '$starttime' and '$endtime' ";
-          $result_qus =  $conn->query($sql_qus);
-          if ($conn->affected_rows != 0) {
-            while ($tmp_qus = $result_qus->fetch_assoc()) {
-              $tmp_qus['QuestScore'] = json_decode($tmp_qus['QuestScore']);
-              $tmp_qus['babyName'] = $tmp_baby['Name'];
-              $tmp_qus['babyGender'] = $tmp_baby['gender'];
-              $tmp_qus['babyBirthday'] = $tmp_baby['Birthday'];
-              $tmp_qus['babySurveyTime'] = $tmp_baby['SurveyTime'];
-              $tmp_qus['memberName'] = $tmp_member['Name'];
-              $tmp_qus['memberPhone'] = $tmp_member['Phone'];
-              $tmp_qus['memberRelation'] = $tmp_member['Relation'];
-              $tmp_qus['QuestGames'] = getGames($tmp_qus['QuestMonth']);
-
-              array_push($questions,$tmp_qus);
-            }
-          }
-        }
-      }
-    }
+function getZongHe($monthNum){
+  global $zh_data;
+  $this_zh = $zh_data[$monthNum]['data'];
+  $zonghe_arr = [];
+  for ($z = 41; $z < count($this_zh); $z++) {
+    array_push($zonghe_arr,$this_zh[$z]);
   }
-
-  echo json_encode(
-    [
-      "FaultCode" => 0,
-      'FaultReason' => 'OK',
-      'Data' => $questions
-    ]
-  );
-
-}else{
-  die("未查询到该机构信息");
+  return $zonghe_arr;
 }
 
-//var_dump(getGames(0));
-
-function getGames($monthnum){
-  $mouthArr = [2, 4, 6, 8, 9, 10, 12, 14, 16, 18, 20, 22, 24, 27, 30, 33, 36, 42, 48, 54.60];
-  $month = $mouthArr[$monthnum];
-  $games = array();
-  global $conn;
-  $sql = "select * from games where testid ='$month' and function<>'' order by function DESC";
-  $result =  $conn->query($sql);
-  
-  if ($conn->affected_rows != 0) {
-    while ($tmp = $result->fetch_assoc()) {
-      array_push($games,$tmp);
-    }
-  }
-
-  return $games;
-}
-
-
-
-function getCompany($username, $password)
-{
-
-  global $conn;
-  $res = null;
-  $sql = "select Id,Name from company where Username ='$username' and  Password='$password'";
-  $result =  $conn->query($sql);
-  if ($conn->affected_rows != 0) {
-    $res = $result->fetch_assoc();
-  }
-  return $res;
-}
-
-function getDoctor($cId)
-{
-  $res = [];
-
-  global $conn;
-  $sql = "select Id,Name from doctor where cId='$cId'";
-  $result =  $conn->query($sql);
-  if ($conn->affected_rows != 0) {
-    while ($tmp = $result->fetch_assoc()) {
-      array_push($res, $tmp);
-    }
-  }
-  return $res;
-}
- */
+?>
+</body>
+</html>

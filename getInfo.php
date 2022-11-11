@@ -36,39 +36,47 @@ for ($i = 0; $i < count($grant); $i++) {
 }
 
 if ($i >= count($grant)) {
-  die('不在名单里');
+  die('没有权限');
 }
 
 $company = getCompany($p_name, $p_pass);
 $questions = array();
 
 if (!is_null($company) && $flow == 'getQuestions') {
+  $mphone = $_REQUEST['mphone'];
+  $mphoneStr = '';
+  if($mphone != ''){
+    $mphoneStr = "and member.Phone='".$mphone."'";
+  }
+
   $Uid = $company['Id'];
-  $sql_qus= "select question.Id,question.Bid,question.Mid,question.Did,question.Cid,question.QuestMonth,question.QuestScore,question.ZongHe,question.Status,baby.Name as Bname,baby.Birthday,baby.gender,question.SurveyTime as QsurveyTime,member.Name as Mname,member.Relation,member.Phone from question,baby,member,doctor,company where company.Id='$Uid' and question.Cid='$Uid' and question.Bid=baby.Id and question.Did=doctor.Id and question.Mid=member.Id order by question.CreateTime DESC";
+  $sql_qus= "select question.Id,question.Bid,question.Mid,question.Did,question.Cid,question.QuestMonth,question.QuestScore,question.ZongHe,question.Status,question.QuestType,baby.Name as Bname,baby.Birthday,baby.gender,question.SurveyTime as QsurveyTime,member.Name as Mname,member.Relation,member.Phone from question,baby,member,doctor,company where company.Id='$Uid' and question.Cid='$Uid' and question.Bid=baby.Id and question.Did=doctor.Id and question.Mid=member.Id ".$mphoneStr." order by question.CreateTime DESC";
   
   //echo $sql_qus;
 
   $result_qus =  $conn->query($sql_qus);
   if ($conn->affected_rows != 0) {
     while ($tmp_qus = $result_qus->fetch_assoc()) {
-      $tmp_qus['QuestScore'] = json_decode($tmp_qus['QuestScore']);
-      $tmp_qus['ZongHe'] = json_decode($tmp_qus['ZongHe']);
-      $tmp_qus['babyName'] = $tmp_qus['Bname'];
-      $tmp_qus['babyGender'] = $tmp_qus['gender'];
-      $tmp_qus['babyBirthday'] = $tmp_qus['Birthday'];
-      $tmp_qus['babySurveyTime'] = $tmp_qus['QsurveyTime'];
-      $tmp_qus['memberName'] = $tmp_qus['Mname'];
-      $tmp_qus['memberPhone'] = $tmp_qus['Phone'];
-      $tmp_qus['memberRelation'] = $tmp_qus['Relation'];
-      $tmp_qus['QuestGames'] = getGames($tmp_qus['QuestMonth']);
-      $tmp_qus['QuestReport1'] = setReport($tmp_qus['Cid'],$tmp_qus['Did'],$tmp_qus['Bid'],$tmp_qus['Id'],1);
-      $tmp_qus['QuestReport2'] = setReport($tmp_qus['Cid'],$tmp_qus['Did'],$tmp_qus['Bid'],$tmp_qus['Id'],2);
+      $question = array();
 
-      array_push($questions,$tmp_qus);
+      $question['babyName'] = $tmp_qus['Bname'];
+      $question['babyGender'] = $tmp_qus['gender'];
+      $question['babyBirthday'] = $tmp_qus['Birthday'];
+      $question['babySurveyTime'] = $tmp_qus['QsurveyTime'];
+      $question['memberName'] = $tmp_qus['Mname'];
+      $question['memberPhone'] = $tmp_qus['Phone'];
+      $question['memberRelation'] = $tmp_qus['Relation'];
+      $question['QuestType'] = $tmp_qus['QuestType'];
+      $question['QuestMonth'] = $tmp_qus['QuestMonth'];
+      $question['QuestGames'] = getGames($tmp_qus['QuestMonth']);
+      $question['QuestScore'] = json_decode($tmp_qus['QuestScore']);
+      $question['ZongHe'] = json_decode($tmp_qus['ZongHe']);
+      $question['QuestReport1'] = setReport($tmp_qus['Cid'],$tmp_qus['Did'],$tmp_qus['Bid'],$tmp_qus['Id'],1);
+      $question['QuestReport2'] = setReport($tmp_qus['Cid'],$tmp_qus['Did'],$tmp_qus['Bid'],$tmp_qus['Id'],2);
+
+      array_push($questions,$question);
     }
   }
-
-
 
   echo json_encode(
     [

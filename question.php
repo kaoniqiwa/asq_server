@@ -37,13 +37,16 @@ if ($method == 'post') {
     $CreateTime = date('Y-m-d H:i:s', time());
     $UpdateTime  = date('Y-m-d H:i:s', time());
 
-    if ($oldId == '') {
+    //if ($oldId == '') {
       $sql = "insert into question (Id,Cid,Did,Mid,Bid,QuestType,QuestMonth,QuestScore,ZongHe,Source,SurveyTime,CreateTime,UpdateTime) values ('$Id','$Cid','$Did','$Mid','$Bid','$QuestType','$QuestMonth','$QuestScore','$ZongHe','$Source','$SurveyTime','$CreateTime','$UpdateTime')";
       //echo $sql.'--------------------------------------------';
-    } else {
+    /* } else {
       $sql = "update question set Cid='$Cid',Did='$Did',Mid='$Mid',Bid='$Bid',QuestType='$QuestType',QuestMonth='$QuestMonth',QuestScore='$QuestScore',ZongHe='$ZongHe',Source='$Source',SurveyTime='$SurveyTime',UpdateTime='$UpdateTime' where Id='$Id'";
-    }
+    } */
 
+    $conn->query($sql);
+    
+    $sql = "update baby set Isanswer=1 where Id='$Bid'";
     $conn->query($sql);
 
     $sql = "select Id,Cid,Did,Mid,Bid,QuestType,QuestMonth,QuestScore,ZongHe,Source,SurveyTime,CreateTime,UpdateTime from question where Id = '$Id'";

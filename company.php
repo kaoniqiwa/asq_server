@@ -7,7 +7,14 @@ include('./utility/mysql.php');
 
 session_start();
 $method = strtolower($_SERVER['REQUEST_METHOD']);
-
+$aliyunParams = array(
+  "name"=>"《ASQ系统中文版》内部示教账号",
+  "accessKeyId"=>"LTAIjBOUDhzisb91",
+  "accessKeySecret"=>"Enzsps9cknVvbMCMfRuKymrnHHmhCh",
+  "security"=>false,
+  "tc1"=>'SMS_48075026',
+  "tc2"=>'SMS_257857761',
+);
 
 if ($method == 'post') {
   $input = json_decode(file_get_contents('php://input'));
@@ -107,6 +114,35 @@ if ($method == 'post') {
   } else if ($Flow == 'sendSms') {
     $phone = $input->phone;
     $model = sendSms($phone);
+    echo json_encode(
+      [
+        "FaultCode" => 0,
+        'FaultReason' => 'OK',
+        'Data' => $model
+      ]
+    );
+  } else if ($Flow == 'sendUrl') {
+    $phone = $input->phone;
+    $type = $input->type;
+    $uid = $input->uid;
+    $did = $input->did;
+    $un = $input->un;
+    $pw = $input->pw;
+    $sn = $input->sn;
+
+    $sql  = "select * message where Uid='$Uid' and Did='$Did' and Did='$Did' and Mphone='$phone' and Typeid='$type'";
+    $result =  $conn->query($sql);
+
+    if ($conn->affected_rows != 0) {
+      //$rs  =  $result->fetch_assoc();
+      $sql  = "update message set Status=0 where where Uid='$Uid' and Did='$Did' and Did='$Did' and Mphone='$phone' and Typeid='$type'";
+      $conn->query($sql);
+    }else{
+      $sql = "insert into message ( Id,Uid,Did,Mphone,Status,CreateTime) values ('$Id','$Uid','$Did','$phone',0,'$CreateTime')";
+      $conn->query($sql);
+    }
+    
+    $model = sendUrl($phone,$type,$uid,$did,$un,$pw,$sn);
     echo json_encode(
       [
         "FaultCode" => 0,
@@ -404,6 +440,67 @@ function sendSms($phone) {
   $model = array();
 
   $model['code'] = $code;
+  $model['content'] = $content;
+
+  return $model;
+}
+
+
+function sendUrl($phone,$type,$uid,$did,$un,$pw,$sn) {
+  //http://asq.neoballoon.com/app/asq_frontend/#/mlogin?uid=${uid}&did=${did}&username=${un}&password=${pw}&phone=${phone}&type=${type}
+  global $aliyunParams;
+  $params = array ();
+
+  // *** 需用户填写部分 ***
+  // fixme 必填：是否启用https
+  $security = $aliyunParams['security'];
+
+  // fixme 必填: 请参阅 https://ak-console.aliyun.com/ 取得您的AK信息
+  $accessKeyId = $aliyunParams['accessKeyId'];
+  $accessKeySecret = $aliyunParams['accessKeySecret'];
+
+  // fixme 必填: 短信接收号码
+  $params["PhoneNumbers"] = $phone;
+
+  // fixme 必填: 短信签名，应严格按"签名名称"填写，请参考: https://dysms.console.aliyun.com/dysms.htm#/develop/sign
+  $params["SignName"] = $sn;
+
+  // fixme 必填: 短信模板Code，应严格按"模板CODE"填写, 请参考: https://dysms.console.aliyun.com/dysms.htm#/develop/template
+  $params["TemplateCode"] = $aliyunParams['tc2'];
+
+  // fixme 可选: 设置模板参数, 假如模板中存在变量需要替换则为必填项
+  $params['TemplateParam'] = Array (
+      "typename" => $type,
+      "type" => $type,
+      "uid" => $uid,
+      "did" => $did,
+      "un" => $un,
+      "pw" => $pw,
+      "name" => $aliyunParams['name'],
+      "product" => "阿里通信"
+  );
+  // *** 需用户填写部分结束, 以下代码若无必要无需更改 ***
+  if(!empty($params["TemplateParam"]) && is_array($params["TemplateParam"])) {
+      $params["TemplateParam"] = json_encode($params["TemplateParam"], JSON_UNESCAPED_UNICODE);
+  }
+
+  // 初始化SignatureHelper实例用于设置参数，签名以及发送请求
+  $helper = new SignatureHelper();
+
+  // 此处可能会抛出异常，注意catch
+  $content = $helper->request(
+      $accessKeyId,
+      $accessKeySecret,
+      "dysmsapi.aliyuncs.com",
+      array_merge($params, array(
+          "RegionId" => "cn-hangzhou",
+          "Action" => "SendSms",
+          "Version" => "2017-05-25",
+      )),
+      $security
+  );
+
+  $model = array();
   $model['content'] = $content;
 
   return $model;

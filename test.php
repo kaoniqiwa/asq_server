@@ -1,39 +1,22 @@
 <?php
-
 include('./utility/tool.php');
+include('./utility/mysql.php');
 
+error_reporting(1);
+ini_set("display_errors","on");
 
-// $data =
-//   [
-//     "name" => "pm121x"
-//   ];
-// var_dump(posturl("http://localhost:8888/Project/asq_server/curl.php", $data));
-
-
-$arr = [
-  "Name" => "pmx",
-  "auth" => 'han'
-];
-
-$arr  = array_change_key_case($arr, CASE_LOWER);
-
-// var_dump($arr);
-
-// var_dump(
-//   date('Y-m-d H:i:s', time())
-// );
-
-if (!function_exists('getallheaders')) {
-  function getallheaders()
-  {
-    foreach ($_SERVER as $name => $value) {
-      if (substr($name, 0, 5) == 'HTTP_') {
-        $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
-      }
+$sql = "select * from baby";
+$result = $conn->query($sql);
+if ($conn->affected_rows != 0) {
+  while ($rs = $result->fetch_assoc()) {
+    $Bid = $rs['Id'];
+    $sql = "select * from question where Bid = '$Bid'";
+    $resultb = $conn->query($sql);
+    if ($conn->affected_rows != 0) {
+      //$model  =  $result->fetch_assoc();
+      $sql = "update baby set Isanswer=1 where Id='$Bid'";
+      $conn->query($sql);
     }
-    return $headers;
+
   }
 }
-
-$str = "inser" . date('Y-m-d H:i:s', time());
-var_dump($str);

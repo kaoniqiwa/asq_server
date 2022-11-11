@@ -26,7 +26,7 @@ if ($method == 'post') {
     $Ids = isset($input->Ids) ? $input->Ids : [];
 
 
-    $sql = "select Id,Mid,Name,Gender,Birthday,SurveyTime,Premature,Prematrueweek,Prematrueday,Rectifyage,IsShun,IdentityInfo,IdentityType,Weight,IsChanqian,IsMulti,OtherAbnormal,CreateTime,UpdateTime from baby where Name like '%$Name%'";
+    $sql = "select * from baby where Name like '%$Name%'";
 
 
     $result = $conn->query($sql);
@@ -111,12 +111,11 @@ if ($method == 'post') {
     $CreateTime = date('Y-m-d H:i:s', time());
     $UpdateTime  = date('Y-m-d H:i:s', time());
 
-
     $sql = "insert into baby (Id,Mid,Name,Gender,Birthday,SurveyTime,Premature,Prematrueweek,Prematrueday,Rectifyage,IsShun,IdentityInfo,IdentityType,Weight,IsChanqian,IsMulti,OtherAbnormal,CreateTime,UpdateTime) values ('$Id','$Mid','$Name','$Gender','$Birthday','$SurveyTime','$Premature','$Prematrueweek','$Prematrueday','$Rectifyage','$IsShun','$IdentityInfo','$IdentityType','$Weight','$IsChanqian','$IsMulti','$OtherAbnormal','$CreateTime','$UpdateTime')";
 
 
     $conn->query($sql);
-    $result = $conn->query("select Id,Mid,Name,Gender,Birthday,SurveyTime,Premature,Prematrueweek,Prematrueday,Rectifyage,IsShun,IdentityInfo,IdentityType,Weight,IsChanqian,IsMulti,OtherAbnormal,CreateTime,UpdateTime from baby where Id='$Id'");
+    $result = $conn->query("select * from baby where Id='$Id'");
 
     if ($conn->affected_rows != 0) {
       $model  =  $result->fetch_assoc();
@@ -156,12 +155,12 @@ if ($method == 'post') {
     $UpdateTime  = date('Y-m-d H:i:s', time());
 
 
-    $sql  = "update  baby set Name='$Name',Gender='$Gender',Birthday='$Birthday',SurveyTime='$SurveyTime',Premature='$Premature',Prematrueweek='$Prematrueweek',Prematrueday='$Prematrueday',Rectifyage='$Rectifyage',IsShun='$IsShun',IdentityType='$IdentityType',IdentityInfo='$IdentityInfo',Weight='$Weight',IsChanqian='$IsChanqian',IsMulti='$IsMulti',OtherAbnormal='$OtherAbnormal',UpdateTime='$UpdateTime' where Id='$Id'";
+    $sql  = "update baby set Name='$Name',Gender='$Gender',Birthday='$Birthday',SurveyTime='$SurveyTime',Premature='$Premature',Prematrueweek='$Prematrueweek',Prematrueday='$Prematrueday',Rectifyage='$Rectifyage',IsShun='$IsShun',IdentityType='$IdentityType',IdentityInfo='$IdentityInfo',Weight='$Weight',IsChanqian='$IsChanqian',IsMulti='$IsMulti',OtherAbnormal='$OtherAbnormal',UpdateTime='$UpdateTime' where Id='$Id'";
 
     $conn->query($sql);
 
 
-    $sql  = " select Id,Mid,Name,Gender,Birthday,SurveyTime,Premature,Prematrueweek,Prematrueday,Rectifyage,IsShun,IdentityInfo,IdentityType,Weight,IsChanqian,IsMulti,OtherAbnormal,CreateTime,UpdateTime from baby where Id='$Id'";
+    $sql  = " select * from baby where Id='$Id'";
     $result =  $conn->query($sql);
     if ($conn->affected_rows != 0) {
       $model  =  $result->fetch_assoc();
@@ -180,7 +179,7 @@ if ($method == 'post') {
   $Id = $_GET['Id'];
   $baby = null;
 
-  $sql =  "select Id,Mid,Name,Gender,Birthday,SurveyTime,Premature,Prematrueweek,Prematrueday,Rectifyage,IsShun,IdentityInfo,IdentityType,Weight,IsChanqian,IsMulti,OtherAbnormal,CreateTime,UpdateTime from baby where Id='$Id'";
+  $sql =  "select * from baby where Id='$Id'";
   $result = $conn->query($sql);
   if ($conn->affected_rows != 0) {
     $baby =  $result->fetch_assoc();
