@@ -25,8 +25,11 @@ if ($method == 'post') {
 
     $Bid = $input->Bid;
     $Cid = $input->Cid;
+    $Cseq = $input->Cseq;
     $Did = $input->Did;
+    $Dseq = $input->Dseq;
     $Mid = $input->Mid;
+    $Mphone = $input->Mphone;
     $QuestType = $input->QuestType;
     $QuestMonth = $input->QuestMonth;
     //$QuestResult = $input->QuestResult;
@@ -45,6 +48,12 @@ if ($method == 'post') {
     } */
 
     $conn->query($sql);
+
+    if($Source == 3){
+      $sql = "update message set Status=1 where Uid='$Cseq' and Did='$Dseq' and Mphone='$Mphone' and Typeid='$QuestType'";
+      //echo $sql;
+      $conn->query($sql);
+    }
     
     $sql = "update baby set Isanswer=1 where Id='$Bid'";
     $conn->query($sql);

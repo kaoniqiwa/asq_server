@@ -8,7 +8,6 @@ include('./utility/mysql.php');
 session_start();
 $method = strtolower($_SERVER['REQUEST_METHOD']);
 $aliyunParams = array(
-  "name"=>"《ASQ系统中文版》内部示教账号",
   "accessKeyId"=>"LTAIjBOUDhzisb91",
   "accessKeySecret"=>"Enzsps9cknVvbMCMfRuKymrnHHmhCh",
   "security"=>false,
@@ -33,7 +32,7 @@ if ($method == 'post') {
     $Start = ($PageIndex - 1) * $PageSize;
 
 
-    $sql = "select Id,Name,Username,Password,AsqTotal,AsqLeft,AsqSeTotal,AsqSeLeft,AsqSe2Total,AsqSe2Left,CreateTime,UpdateTime from company  where Name like '%$Name%'  or Username like '%$Name%'";
+    $sql = "select Seq,Id,Name,Username,Password,AsqTotal,AsqLeft,AsqSeTotal,AsqSeLeft,AsqSe2Total,AsqSe2Left,CreateTime,UpdateTime from company  where Name like '%$Name%'  or Username like '%$Name%'";
 
 
     $result = $conn->query($sql);
@@ -99,7 +98,7 @@ if ($method == 'post') {
 
     $result = $conn->query($sql);
 
-    $sql  = "select Id,Name,Username,Password,AsqTotal,AsqLeft,AsqSeTotal,AsqSeLeft,AsqSe2Total,AsqSe2Left,CreateTime,UpdateTime from company where Id='$Id'";
+    $sql  = "select Seq,Id,Name,Username,Password,AsqTotal,AsqLeft,AsqSeTotal,AsqSeLeft,AsqSe2Total,AsqSe2Left,CreateTime,UpdateTime from company where Id='$Id'";
     $result =  $conn->query($sql);
     if ($conn->affected_rows != 0) {
       $model  =  $result->fetch_assoc();
@@ -129,25 +128,57 @@ if ($method == 'post') {
     $un = $input->un;
     $pw = $input->pw;
     $sn = $input->sn;
+    $name = $input->name;
+    $Id = GUID();
 
-    $sql  = "select * message where Uid='$Uid' and Did='$Did' and Did='$Did' and Mphone='$phone' and Typeid='$type'";
+    $CreateTime = date('Y-m-d H:i:s', time());
+    $UpdateTime = date('Y-m-d H:i:s', time());
+
+    $sql  = "select * from message where Uid='$uid' and Did='$did' and Mphone='$phone' and Typeid='$type'";
     $result =  $conn->query($sql);
 
     if ($conn->affected_rows != 0) {
       //$rs  =  $result->fetch_assoc();
-      $sql  = "update message set Status=0 where where Uid='$Uid' and Did='$Did' and Did='$Did' and Mphone='$phone' and Typeid='$type'";
+      $sql  = "update message set Status=0,UpdateTime='$UpdateTime' where Uid='$uid' and Did='$did' and Mphone='$phone' and Typeid='$type'";
       $conn->query($sql);
     }else{
-      $sql = "insert into message ( Id,Uid,Did,Mphone,Status,CreateTime) values ('$Id','$Uid','$Did','$phone',0,'$CreateTime')";
+      $sql = "insert into message ( Id,Uid,Did,Typeid,Mphone,Status,CreateTime) values ('$Id','$uid','$did','$type','$phone',0,'$CreateTime')";
       $conn->query($sql);
     }
     
-    $model = sendUrl($phone,$type,$uid,$did,$un,$pw,$sn);
+    $model = sendUrl($phone,$type,$uid,$did,$un,$pw,$sn,$name);
     echo json_encode(
       [
         "FaultCode" => 0,
         'FaultReason' => 'OK',
         'Data' => $model
+      ]
+    );
+  } else if ($Flow == 'getStatus') {
+    $phone = $input->phone;
+    $type = $input->type;
+    $uid = $input->uid;
+    $did = $input->did;
+
+    $sql  = "select * from message where Uid='$uid' and Did='$did' and Mphone='$phone' and Typeid='$type'";
+    $result =  $conn->query($sql);
+
+    //echo $sql;
+    $Status = true;
+    if ($conn->affected_rows != 0) {
+      $model  =  $result->fetch_assoc();
+      if($model['Status'] == 0){
+        $Status = true;
+      }else{
+        $Status = false;
+      }
+    }
+    
+    echo json_encode(
+      [
+        "FaultCode" => 0,
+        'FaultReason' => 'OK',
+        'Data' => $Status
       ]
     );
   } else if ($Flow == 'yzSms') {
@@ -330,6 +361,21 @@ if ($method == 'post') {
         ]
       );
     }
+  } else if ($Flow == 'getUserBySeq') {
+    $Seq = $input->Seq;
+
+    $sql  = "select Seq,Id,Name,Username,Password,AsqTotal,AsqLeft,AsqSeTotal,AsqSeLeft,AsqSe2Total,AsqSe2Left,CreateTime,UpdateTime from company where Seq='$Seq'";
+    $result =  $conn->query($sql);
+    if ($conn->affected_rows != 0) {
+      $model  =  $result->fetch_assoc();
+      echo json_encode(
+        [
+          "FaultCode" => 0,
+          'FaultReason' => 'OK',
+          'Data' => $model
+        ]
+      );
+    }
   } else if ($Flow == 'exportCompany') {
     $beginTime = getTime($input->beginTime);
     $endTime = getTime($input->endTime);
@@ -363,7 +409,7 @@ if ($method == 'post') {
   }
 } else if ($method == 'get') {
   $Id = $_GET['Id'];
-  $sql = "select Id,Name,Username,Password,AsqTotal,AsqLeft,AsqSeTotal,AsqSeLeft,AsqSe2Total,AsqSe2Left,CreateTime,UpdateTime from company where Id='$Id'";
+  $sql = "select Seq,Id,Name,Username,Password,AsqTotal,AsqLeft,AsqSeTotal,AsqSeLeft,AsqSe2Total,AsqSe2Left,CreateTime,UpdateTime from company where Id='$Id'";
 
   $result = $conn->query($sql);
   if ($conn->affected_rows != 0) {
@@ -446,7 +492,7 @@ function sendSms($phone) {
 }
 
 
-function sendUrl($phone,$type,$uid,$did,$un,$pw,$sn) {
+function sendUrl($phone,$type,$uid,$did,$un,$pw,$sn,$name) {
   //http://asq.neoballoon.com/app/asq_frontend/#/mlogin?uid=${uid}&did=${did}&username=${un}&password=${pw}&phone=${phone}&type=${type}
   global $aliyunParams;
   $params = array ();
@@ -476,7 +522,8 @@ function sendUrl($phone,$type,$uid,$did,$un,$pw,$sn) {
       "did" => $did,
       "un" => $un,
       "pw" => $pw,
-      "name" => $aliyunParams['name'],
+      "name" => $name,
+      "phone" => $phone,
       "product" => "阿里通信"
   );
   // *** 需用户填写部分结束, 以下代码若无必要无需更改 ***
