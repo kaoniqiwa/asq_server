@@ -36,32 +36,41 @@ if ($method == 'post') {
     $QuestScore = $input->QuestScore;
     $ZongHe = $input->ZongHe;
     $Source = $input->Source;
+    $Uuid = $input->uuid;
+    $Seq = $input->seq;
+    $Am = $input->Am;
     $SurveyTime = $input->SurveyTime;
+    $Rectifyage = $input->Rectifyage;
     $CreateTime = date('Y-m-d H:i:s', time());
     $UpdateTime  = date('Y-m-d H:i:s', time());
+    $EndTime = date('Y-m-d H:i:s', time());
+    
 
     //if ($oldId == '') {
-      $sql = "insert into question (Id,Cid,Did,Mid,Bid,QuestType,QuestMonth,QuestScore,ZongHe,Source,SurveyTime,CreateTime,UpdateTime) values ('$Id','$Cid','$Did','$Mid','$Bid','$QuestType','$QuestMonth','$QuestScore','$ZongHe','$Source','$SurveyTime','$CreateTime','$UpdateTime')";
+      $sql = "insert into question (Id,Cid,Did,Mid,Bid,QuestType,QuestMonth,QuestScore,ZongHe,Source,Am,SurveyTime,Rectifyage,CreateTime,UpdateTime) values ('$Id','$Cid','$Did','$Mid','$Bid','$QuestType','$QuestMonth','$QuestScore','$ZongHe','$Source','$Am','$SurveyTime','$Rectifyage','$CreateTime','$UpdateTime')";
       //echo $sql.'--------------------------------------------';
     /* } else {
       $sql = "update question set Cid='$Cid',Did='$Did',Mid='$Mid',Bid='$Bid',QuestType='$QuestType',QuestMonth='$QuestMonth',QuestScore='$QuestScore',ZongHe='$ZongHe',Source='$Source',SurveyTime='$SurveyTime',UpdateTime='$UpdateTime' where Id='$Id'";
     } */
 
     $conn->query($sql);
+    if($Source == 2){
+      $sql = "update qrcode set Status=1,EndTime='$EndTime' where Uuid='$Uuid'";
+      $conn->query($sql);
+    }
 
     if($Source == 3){
-      $sql = "update message set Status=1 where Uid='$Cseq' and Did='$Dseq' and Mphone='$Mphone' and Typeid='$QuestType'";
-      //echo $sql;
+      $sql = "update message set Status=1,UpdateTime='$EndTime' where Seq='$Seq'";
       $conn->query($sql);
     }
     
     $sql = "update baby set Isanswer=1 where Id='$Bid'";
     $conn->query($sql);
 
-    $sql = "select Id,Cid,Did,Mid,Bid,QuestType,QuestMonth,QuestScore,ZongHe,Source,SurveyTime,CreateTime,UpdateTime from question where Id = '$Id'";
+    $sql = "select * from question where Id = '$Id'";
     $result = $conn->query($sql);
     if ($conn->affected_rows != 0) {
-      $model  =  $result->fetch_assoc();
+      $model = $result->fetch_assoc();
       echo json_encode(
         [
           "FaultCode" => 0,
@@ -76,10 +85,27 @@ if ($method == 'post') {
     $QuestMonth =  isset($input->QuestMonth) ? $input->QuestMonth : "";
 
 
-    $sql = "select Id,Cid,Did,Mid,Bid,QuestType,QuestMonth,QuestScore,ZongHe,Source,SurveyTime,CreateTime,UpdateTime  from question where Bid like '%$Bid%' and QuestType like '%$QuestType%' and QuestMonth like '%$QuestMonth%'";
+    $sql = "select * from question where Bid like '%$Bid%' and QuestType like '%$QuestType%' and QuestMonth like '%$QuestMonth%'";
 
     $model = [];
 
+    $result = $conn->query($sql);
+    if ($conn->affected_rows != 0) {
+      while ($tmp = $result->fetch_assoc()) {
+        array_push($model, $tmp);
+      }
+    }
+    echo json_encode(
+      [
+        "FaultReason" => 0,
+        'FaultReason' => 'OK',
+        'Data' => $model
+      ]
+    );
+  } else if ($Flow == 'getQuestionsByMonth') {
+    $testid = isset($input->testid) ? $input->testid : "";
+    $sql = "select * from questiontest where testid= '$testid'";
+    $model = [];
     $result = $conn->query($sql);
     if ($conn->affected_rows != 0) {
       while ($tmp = $result->fetch_assoc()) {
@@ -102,7 +128,7 @@ if ($method == 'post') {
       $uidStr = "and question.Cid='".$Uid."'";
     }
 
-    $sql = "select Id,Cid,Did,Mid,Bid,QuestType,QuestMonth,Source,SurveyTime,CreateTime,UpdateTime  from question where Bid in ($tmp) ".$nameStr." order by CreateTime DESC";
+    $sql = "select * from question where Bid in ($tmp) ".$nameStr." order by CreateTime DESC";
 
     //echo $sql;
 
@@ -132,6 +158,7 @@ if ($method == 'post') {
     $Uid = isset($input->Uid) ? $input->Uid : '';
     $Dids = isset($input->Dids) ? $input->Dids : [];
     $Name = isset($input->Name) ? $input->Name : '';
+    $QuestType = isset($input->QuestType) ? $input->QuestType : 'ASQ-3';
     $QuestMonth = isset($input->QuestMonth) ? $input->QuestMonth : '';
     $Status = isset($input->Status) ? $input->Status : '';
     $BeginTime = isset($input->BeginTime) ? $input->BeginTime : '';
@@ -162,7 +189,7 @@ if ($method == 'post') {
     //echo count($Dids)."--".$Dids."--".$nameStr."--".$statusStr."--".$questmonthStr."--".$timeStr;
     
     $sql = '';
-    $sql= "select question.Id,question.Bid,question.Mid,question.Did,question.Cid,question.QuestMonth,question.Status,baby.Name,baby.Birthday,question.SurveyTime,member.Name as Mname from question,baby,member where question.Cid='$Uid' and question.Bid=baby.Id and question.Mid=member.Id ".$didstr." ".$nameStr." ".$statusStr." ".$questmonthStr." ".$timeStr." order by question.CreateTime DESC";
+    $sql= "select question.Id,question.Bid,question.Mid,question.Did,question.Cid,question.QuestMonth,question.QuestType,question.Status,baby.Name,baby.Birthday,question.SurveyTime,question.Rectifyage,member.Name as Mname from question,baby,member where question.QuestType='$QuestType' and question.Cid='$Uid' and question.Bid=baby.Id and question.Mid=member.Id ".$didstr." ".$nameStr." ".$statusStr." ".$questmonthStr." ".$timeStr." order by question.CreateTime DESC";
 
     /* if($Uid != ''){
       $sql= "select question.Id,question.Bid,question.Mid,question.Did,question.Cid,question.QuestMonth,question.Status,baby.Name,baby.Birthday,question.SurveyTime,member.Name as Mname from question,baby,member where question.Cid='$Uid' and question.Bid=baby.Id and question.Mid=member.Id ".$nameStr." order by question.CreateTime DESC";

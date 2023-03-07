@@ -50,7 +50,7 @@ if (!is_null($company) && $flow == 'getQuestions') {
   }
 
   $Uid = $company['Id'];
-  $sql_qus= "select question.Id,question.Bid,question.Mid,question.Did,question.Cid,question.QuestMonth,question.QuestScore,question.ZongHe,question.Status,question.QuestType,baby.Name as Bname,baby.Birthday,baby.gender,question.SurveyTime as QsurveyTime,member.Name as Mname,member.Relation,member.Phone from question,baby,member,doctor,company where company.Id='$Uid' and question.Cid='$Uid' and question.Bid=baby.Id and question.Did=doctor.Id and question.Mid=member.Id ".$mphoneStr." order by question.CreateTime DESC";
+  $sql_qus= "select question.Id,question.Bid,question.Mid,question.Did,question.Cid,question.QuestMonth,question.QuestScore,question.ZongHe,question.Status,question.QuestType,baby.Name as Bname,baby.Birthday,baby.gender,question.SurveyTime as QsurveyTime,member.Name as Mname,member.Relation,member.Phone from question,baby,member,doctor,company where company.Id='$Uid' and question.Cid='$Uid' and question.Bid=baby.Id and question.Did=doctor.Id and question.Mid=member.Id ".$mphoneStr." and question.SurveyTime between '$starttime' and '$endtime' order by question.CreateTime DESC";
   
   //echo $sql_qus;
 

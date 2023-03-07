@@ -32,15 +32,20 @@ if (!isset($conn)) {
   $conn->select_db(DB_NAME);
 }
 
-$json_string = file_get_contents("./test221111.json");
+$json_string = file_get_contents("./SE2_fl83_230307.json");
 $grant = json_decode($json_string, true);
 
-$json_zh = file_get_contents("./data.json");
+$json_zh = file_get_contents("./dataSE2.json");
 $zh_data = json_decode($json_zh, true);
 
 $Cid = '5f499207-afc2-4963-8440-94213b3e6641';
-$QuestType = 'ASQ-3';
-$mouthArr = [2, 4, 6, 8, 9, 10, 12, 14, 16, 18, 20, 22, 24, 27, 30, 33, 36, 42, 48, 54,60];
+$QuestType = 'ASQ:SE-2';
+$mouthArr = [2, 6, 12, 18, 24, 30, 36, 48, 60];
+
+
+/* echo json_encode(getZongHe(0));
+
+die(); */
 echo '$grant_length:'.count($grant).'<br>';
 for ($k = 0; $k < count($grant); $k++) {
   $account = $grant[$k];
@@ -48,7 +53,7 @@ for ($k = 0; $k < count($grant); $k++) {
   
   $Did = GUId();
   $Cid = $Cid;
-  $Name = $account['A88'];
+  $Name = $account['A126'];
   $Level = '';
   $Dept = '';
   $Phone =  '';
@@ -72,28 +77,28 @@ for ($k = 0; $k < count($grant); $k++) {
 
   $Mid = GUID();
   //$Did = $input->Did;
-  $Name = $account['A20'];
-  $Phone = $account['A23'];
-  $Relation = $account['A21'];
-  $Province  = $account['A24'];
-  $City  = $account['A25'];
-  $County  = $account['A26'];
-  $Email  = $account['A29'];
-  $PostCode  = $account['A28'];
-  $Address  = $account['A27'];
+  $Name = $account['A127'];
+  $Phone = $account['A24'];
+  $Relation = $account['A22'];
+  $Province  = $account['A25'];
+  $City  = $account['A26'];
+  $County  = $account['A27'];
+  $Email  = $account['A30'];
+  $PostCode  = $account['A29'];
+  $Address  = $account['A28'];
   $IsHelp  = '';
-  $HelpInfo  = $account['A30'];
+  $HelpInfo  = $account['A31'];
   $MotherJob  = '';
   $FatherJob  = '';
-  $MotherDegree  = $account['A31'];
-  $FatherDegree  = $account['A33'];
-  $OtherDegree  = $account['A35'];
-  $MotherBirth  = $account['A32'];
-  $FatherBirth  = $account['A34'];
+  $MotherDegree  = $account['A32'];
+  $FatherDegree  = $account['A34'];
+  $OtherDegree  = $account['A36'];
+  $MotherBirth  = $account['A33'];
+  $FatherBirth  = $account['A35'];
   $CreateTime = date('Y-m-d H:i:s', time());
   $UpdateTime  = date('Y-m-d H:i:s', time());
 
-  $sql = "select * from member where Phone='$Phone' and Did='$Did'";
+  $sql = "select * from member where Phone='$Phone'";
   $result = $conn->query($sql);
   if($conn->affected_rows > 0){
     echo 'member<br>';
@@ -106,20 +111,20 @@ for ($k = 0; $k < count($grant); $k++) {
 
   $Bid = GUID();
   //$Mid = $Mid;
-  $Bname = $account['A3'];
-  $Gender = $account['A4'];
-  $Birthday = $account['A5'];
-  $SurveyTime =  substr($account['A6'],0,10);
-  $Premature =  $account['A9'];
-  $Prematrueweek =  $account['A7'];
-  $Prematrueday =  $account['A8'];
-  $Rectifyage =  $account['A10'].'月'.$account['A11'].'天';
-  $IsShun =  $account['A12']=='v'?'是':'否';
-  $IdentityInfo =  $account['A91'];
-  $IdentityType =  $account['A90'];
-  $Weight = $account['A19'];
-  $IsChanqian =  $account['A14']=='v'?'是':'否';
-  $IsMulti =  $account['A16']=='v'?'是':'';
+  $Bname = $account['A4'];
+  $Gender = $account['A5'];
+  $Birthday = $account['A6'];
+  $SurveyTime =  (substr($account['A7'],0,10).' '.substr($account['A7'],10,18));//substr($account['A7'],0,10);
+  $Premature =  $account['A10'];
+  $Prematrueweek =  $account['A8'];
+  $Prematrueday =  $account['A9'];
+  $Rectifyage =  $account['A11'].'月'.$account['A12'].'天';
+  $IsShun =  $account['A13']=='v'?'是':'否';
+  $IdentityInfo =  $account['A129'];
+  $IdentityType =  $account['A128'];
+  $Weight = $account['A20'];
+  $IsChanqian =  $account['A15']=='v'?'是':'否';
+  $IsMulti =  $account['A17']=='v'?'是':'';
   $OtherAbnormal =  '';
   $CreateTime = date('Y-m-d H:i:s', time());
   $UpdateTime  = date('Y-m-d H:i:s', time());
@@ -137,67 +142,61 @@ for ($k = 0; $k < count($grant); $k++) {
     //echo $sql.'<br>';
 
   }
-  
+
   $QuestScore_arr = array();
-  for($i=0;$i<5;$i++){
-    $answer_arr = array();
-    $result_arr = array();
-    $nq_arr = array();
-    for($j=0;$j<8;$j++){
-      if($j<6){
-        array_push($answer_arr,getAnswer($account['A'.(37+$j+$i*8)]));
-      }
-      if($j == 6){
-        //echo 'AA'.(37+$j+$i*5).'<br>';
-        $nq_arr['score'] = $account['A'.(37+$j+$i*8)];
-      }
-      if($j == 7){
-        //echo 'AA'.(37+$j+$i*5).'<br>';
-        $nq_arr['jiezhi'] = $account['A'.(37+$j+$i*8)];
-      }
+  $answer_arr = array();
+  $worry_arr = array();
+  $result_arr = array();
+  $nq_arr = array();
+  for($j=0;$j<36;$j++){
+    if($account['A'.(39+$j*2)] != ''){
+      array_push($answer_arr,getAnswer($account['A'.(39+$j*2)]));
     }
-
-    $nq_arr['nextStatus'] = true;
-    $nq_arr['prevStatus'] = true;
-    $nq_arr['answer'] = $answer_arr;
-    $nq_arr['result'] = $result_arr;
-
-    if($i==0){
-      $nq_arr['nengqu'] = '沟通';
-      $nq_arr['prevStatus'] = false;
-    }else if($i==1){
-      $nq_arr['nengqu'] = '粗大动作';
-    }else if($i==2){
-      $nq_arr['nengqu'] = '精细动作';
-    }else if($i==3){
-      $nq_arr['nengqu'] = '解决问题';
-    }else if($i==4){
-      $nq_arr['nengqu'] = '个人-社会';
+    if($account['A'.(39+$j*2+1)] != ''){
+      array_push($worry_arr,getWorry($account['A'.(39+$j*2+1)]));
     }
-    
-    array_push($QuestScore_arr,$nq_arr);
   }
+  $nq_arr['nextStatus'] = true;
+  $nq_arr['prevStatus'] = false;
+  $nq_arr['result'] = $result_arr;
+  $nq_arr['answer'] = $answer_arr;
+  $nq_arr['worry'] = $worry_arr;
+  $nq_arr['score'] = $account['A111'];
+  $nq_arr['jiezhi'] = $account['A112'];
+  array_push($QuestScore_arr,$nq_arr);
 
-  $QuestMonth = getMonthNumber($account['A36']);
+
+  $QuestMonth = getMonthNumber($account['A38']);
   $ZongHe_arr = array();
   $ZongHe_arr['question'] = getZongHe($QuestMonth);
-  $zh_result_arr = [];
-  $zh_answer_arr = [];
-  for($n=0;$n< count($ZongHe_arr['question'])-1;$n++){
-    
-    array_push($zh_result_arr,$account['A'.(77+$n)]==null?'':$account['A'.(77+$n)]);
-    array_push($zh_answer_arr,0);
-  }
-  $ZongHe_arr['result'] = $zh_result_arr;
+  $zh_result_arr = array();
+  $zh_answer_arr = array();
+
+  array_push($zh_answer_arr,getZhAnswer($account['A130']));
+  array_push($zh_answer_arr,getZhAnswer($account['A132']));
+  array_push($zh_answer_arr,getZhAnswer($account['A134']));
+  array_push($zh_answer_arr,getZhAnswer($account['A131']));
+  array_push($zh_answer_arr,getZhAnswer($account['A133']));
+  array_push($zh_answer_arr,getZhAnswer($account['A135']));
+
+  array_push($zh_result_arr,getZhResult($account['A130']));
+  array_push($zh_result_arr,getZhResult($account['A132']));
+  array_push($zh_result_arr,getZhResult($account['A134']));
+  array_push($zh_result_arr,getZhResult($account['A131']));
+  array_push($zh_result_arr,getZhResult($account['A133']));
+  array_push($zh_result_arr,getZhResult($account['A135']));
+
   $ZongHe_arr['answer'] = $zh_answer_arr;
+  $ZongHe_arr['result'] = $zh_result_arr;
+  
 
   $Qid = GUID();
   $QuestScore = json_encode($QuestScore_arr,JSON_UNESCAPED_UNICODE);
   $ZongHe = json_encode($ZongHe_arr,JSON_UNESCAPED_UNICODE);
-  $Source = getSource($account['A22']);
+  $Source = getSource($account['A23']);
   $Status = 0;
   $Importid = $account['A2'];
-  $CreateTime = substr($account['A6'],0,10);
+  $CreateTime = (substr($account['A7'],0,10).' '.substr($account['A7'],10,18));
   $UpdateTime  = date('Y-m-d H:i:s', time());
 
   $sql = "select * from question where Importid='$Importid' and Bid='$Bid'";
@@ -212,11 +211,13 @@ for ($k = 0; $k < count($grant); $k++) {
     //echo $sql;
   }
 
+  echo 'success';
+
 }
 
 
 function getMonthNumber($num){
-  $mouthArr = [2, 4, 6, 8, 9, 10, 12, 14, 16, 18, 20, 22, 24, 27, 30, 33, 36, 42, 48, 54,60];
+  $mouthArr = [2, 6, 12, 18, 24, 30, 36, 48, 60];
   for($i=0;$i<count($mouthArr);$i++){
     if($mouthArr[$i] == $num){
       return $i;
@@ -225,12 +226,36 @@ function getMonthNumber($num){
 }
 
 function getAnswer($str){
-  if($str == '是'){
+  if($str == 'z'){
     return '1';
-  }else if($str == '有时是'){
+  }else if($str == 'v'){
     return '2';
   }else{
     return '3';
+  }
+}
+
+function getZhAnswer($str){
+  if($str == '是'){
+    return '1';
+  }else{
+    return '3';
+  }
+}
+
+function getZhResult($str){
+  if($str != '是' && $str !=''){
+    return $str;
+  }else{
+    return '';
+  }
+}
+
+function getWorry($str){
+  if($str == 'no'){
+    return 0;
+  }else if($str == 'yes'){
+    return true;
   }
 }
 
@@ -248,8 +273,16 @@ function getZongHe($monthNum){
   global $zh_data;
   $this_zh = $zh_data[$monthNum]['data'];
   $zonghe_arr = [];
-  for ($z = 41; $z < count($this_zh); $z++) {
-    array_push($zonghe_arr,$this_zh[$z]);
+  for ($z = 0; $z < count($this_zh); $z++) {
+    if($this_zh[$z][0] == '综合问题'){
+      array_push($zonghe_arr,$this_zh[$z+1]);
+      array_push($zonghe_arr,$this_zh[$z+2]);
+      array_push($zonghe_arr,$this_zh[$z+3]);
+      array_push($zonghe_arr,$this_zh[$z+5]);
+      array_push($zonghe_arr,$this_zh[$z+6]);
+      array_push($zonghe_arr,$this_zh[$z+7]);
+    }
+    //array_push($zonghe_arr,$this_zh[$z]);
   }
   return $zonghe_arr;
 }

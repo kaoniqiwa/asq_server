@@ -23,7 +23,7 @@ if ($method == 'post') {
 
     $Start = ($PageIndex - 1) * $PageSize;
 
-    $sql = "select Id,Did,Name,Phone,Relation,Province,City,County,Email,PostCode,IsHelp,HelpInfo,Address,MotherJob,FatherJob,MotherDegree,FatherDegree,OtherDegree,MotherBirth,FatherBirth,CreateTime,UpdateTime from member  where Name like '%$Name%' ";
+    $sql = "select Id,Did,Name,Phone,Relation,Province,City,County,Email,PostCode,IsHelp,HelpInfo,Address,MotherJob,FatherJob,MotherDegree,FatherDegree,OtherDegree,MotherBirth,FatherBirth,CreateTime,UpdateTime from member where Name like '%$Name%' or Phone like '%$Name%' ";
     $result = $conn->query($sql);
 
     $tmp = array();

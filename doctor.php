@@ -110,17 +110,21 @@ if ($method == 'post') {
       );
     }
   } else if ($Flow == 'deleteDoctor') {
-    $Id = $input->Id;
-    $Cid = $input->Cid;
 
-    $sql = "delete from doctor where Id='$Id'";
-    $result = $conn->query($sql);
+    $Ids = $input->Ids;
+
+    for($i=0;$i<count($Ids);$i++){
+      $conn->query("delete from doctor where Id='$Ids[$i]'");
+    }
+
     echo json_encode(
       [
         "FaultCode" => 0,
         'FaultReason' => 'OK',
+        "Data" => $Ids
       ]
     );
+    
   } else if ($Flow == 'editDoctor') {
     $Id = $input->Id;
     $Name = $input->Name;
