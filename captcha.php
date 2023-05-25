@@ -51,5 +51,5 @@ for($i = 0; $i < 4; $i ++) {
 }
 
 header ( "content-type:image/png" );
-imagepng ( $image );
+$backimage =  imagepng ( $image );
 imagedestroy ( $image );

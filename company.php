@@ -1,5 +1,6 @@
 <?php
 require_once "./SignatureHelper.php";
+
 use Aliyun\DySDKLite\SignatureHelper;
 
 include('./utility/tool.php');
@@ -8,11 +9,11 @@ include('./utility/mysql.php');
 session_start();
 $method = strtolower($_SERVER['REQUEST_METHOD']);
 $aliyunParams = array(
-  "accessKeyId"=>"LTAIjBOUDhzisb91",
-  "accessKeySecret"=>"Enzsps9cknVvbMCMfRuKymrnHHmhCh",
-  "security"=>false,
-  "tc1"=>'SMS_48075026',
-  "tc2"=>'SMS_270835012',
+  "accessKeyId" => "LTAIjBOUDhzisb91",
+  "accessKeySecret" => "Enzsps9cknVvbMCMfRuKymrnHHmhCh",
+  "security" => false,
+  "tc1" => 'SMS_48075026',
+  "tc2" => 'SMS_270835012',
 );
 
 if ($method == 'post') {
@@ -152,8 +153,8 @@ if ($method == 'post') {
     $conn->query($sql);
 
     $seq = mysqli_insert_id($conn);
-    
-    $model = sendUrl($phone,$type,$uid,$did,$un,$pw,$sn,$Am,$At,$name,$seq);
+
+    $model = sendUrl($phone, $type, $uid, $did, $un, $pw, $sn, $Am, $At, $name, $seq);
     echo json_encode(
       [
         "FaultCode" => 0,
@@ -175,13 +176,32 @@ if ($method == 'post') {
     $Status = true;
     if ($conn->affected_rows != 0) {
       $model  =  $result->fetch_assoc();
-      if($model['Status'] == 0){
+      if ($model['Status'] == 0) {
         $Status = true;
-      }else{
+      } else {
         $Status = false;
       }
     }
-    
+
+    echo json_encode(
+      [
+        "FaultCode" => 0,
+        'FaultReason' => 'OK',
+        'Data' => $Status
+      ]
+    );
+  } else if ($Flow == 'checkCode') {
+    $status = 0;
+    if (isset($_REQUEST['auto_code'])) {
+      session_start();
+
+      if (strtolower($_REQUEST['auto_code']) == strtolower($_SESSION['auto_code'])) {
+        $status = 1;
+      } else {
+        $status = 0;
+      }
+    }
+
     echo json_encode(
       [
         "FaultCode" => 0,
@@ -193,15 +213,15 @@ if ($method == 'post') {
     $code = $input->code;
     $str = '';
     //$model = array();
-    if(isset($code)){ 
-      session_start(); 
-      if(strtolower($code)==strtolower($_SESSION['code'])){ 
+    if (isset($code)) {
+      session_start();
+      if (strtolower($code) == strtolower($_SESSION['code'])) {
         $model['message'] = '正确';
         $model['code'] = 0;
-      }else{ 
+      } else {
         $model['message'] = '错误';
         $model['code'] = 1;
-      } 
+      }
       $model['message'] = '验证码未传值';
       $model['code'] = 1;
     }
@@ -215,7 +235,7 @@ if ($method == 'post') {
   } else if ($Flow == 'deleteCompany') {
     $Ids = $input->Ids;
 
-    for($i=0;$i<count($Ids);$i++){
+    for ($i = 0; $i < count($Ids); $i++) {
       //$sql = "select * from company where Id='$Id'";
       //$conn->query("delete from doctor where cid='$Ids[$i]'");
       $conn->query("delete from company where Id='$Ids[$i]'");
@@ -233,13 +253,13 @@ if ($method == 'post') {
     $asqtype = $input->type;
     $UpdateTime  = date('Y-m-d H:i:s', time());
 
-    $sql  = "select ".$asqtype." from company where Id='$Id'";
+    $sql  = "select " . $asqtype . " from company where Id='$Id'";
     $result =  $conn->query($sql);
     if ($conn->affected_rows != 0) {
       $model = $result->fetch_assoc();
     }
     //echo json_encode($model[$asqtype]); 
-    if((int)$model[$asqtype] <= 0){
+    if ((int)$model[$asqtype] <= 0) {
       echo json_encode(
         [
           "FaultCode" => 0,
@@ -250,7 +270,7 @@ if ($method == 'post') {
       exit;
     }
 
-    $sql  = "update company set ".$asqtype."=".$asqtype."-1,UpdateTime='$UpdateTime' where Id='$Id' and ".$asqtype.">0";
+    $sql  = "update company set " . $asqtype . "=" . $asqtype . "-1,UpdateTime='$UpdateTime' where Id='$Id' and " . $asqtype . ">0";
     //echo $sql;
     $result = $conn->query($sql);
     echo json_encode(
@@ -260,19 +280,18 @@ if ($method == 'post') {
         'Data' => $result
       ]
     );
-
   } else if ($Flow == 'checkLeft') {
     $Id = $input->uid;
     $asqtype = $input->type;
     $UpdateTime  = date('Y-m-d H:i:s', time());
 
-    $sql  = "select ".$asqtype." from company where Id='$Id'";
+    $sql  = "select " . $asqtype . " from company where Id='$Id'";
     $result =  $conn->query($sql);
     if ($conn->affected_rows != 0) {
       $model = $result->fetch_assoc();
     }
     //echo json_encode($model[$asqtype]); 
-    if((int)$model[$asqtype] <= 0){
+    if ((int)$model[$asqtype] <= 0) {
       echo json_encode(
         [
           "FaultCode" => 0,
@@ -280,7 +299,7 @@ if ($method == 'post') {
           'Data' => false
         ]
       );
-    }else{
+    } else {
       echo json_encode(
         [
           "FaultCode" => 0,
@@ -289,7 +308,6 @@ if ($method == 'post') {
         ]
       );
     }
-    
   } else if ($Flow == 'getUuid') {
     $Id = GUID();
     $Uid = $input->Uid;
@@ -297,10 +315,10 @@ if ($method == 'post') {
     $Uuid = $Id;
     $CreateTime = date('Y-m-d H:i:s', time());
     $Status = 0;
-    
+
     $sql = "insert into qrcode ( Id,Uuid,Status,CreateTime) values ('$Id','$Uuid','$Status','$CreateTime')";
     $result = $conn->query($sql);
-    
+
     $sql  = "select Id,Name,Username,Password from company where Id='$Uid'";
     $result =  $conn->query($sql);
     if ($conn->affected_rows != 0) {
@@ -315,7 +333,7 @@ if ($method == 'post') {
           'Data' => $model
         ]
       );
-    }else{
+    } else {
       echo json_encode(
         [
           "FaultCode" => 1,
@@ -324,7 +342,7 @@ if ($method == 'post') {
       );
     }
   } else if ($Flow == 'checkUuid') {
-    
+
     $Uuid = $input->Uuid;
     $EndTime = date('Y-m-d H:i:s', time());
 
@@ -333,12 +351,12 @@ if ($method == 'post') {
     //$rs = $conn->field_count();
     if ($conn->affected_rows != 0) {
       $rs = $result->fetch_assoc();
-      
-      if((int)$rs['Status'] == 0){
-       
+
+      if ((int)$rs['Status'] == 0) {
+
         /* $sql = "update qrcode set Status=Status+1,EndTime='$EndTime' where Uuid='$Uuid'";
         $result = $conn->query($sql); */
-        
+
         echo json_encode(
           [
             "FaultCode" => 0,
@@ -346,7 +364,7 @@ if ($method == 'post') {
             'Data' => true
           ]
         );
-      }else{
+      } else {
         echo json_encode(
           [
             "FaultCode" => 0,
@@ -356,7 +374,6 @@ if ($method == 'post') {
         );
       }
     }
-
   } else if ($Flow == 'editCompany') {
     $Id = $input->Id;
     $Name = $input->Name;
@@ -423,7 +440,7 @@ if ($method == 'post') {
       }
     }
 
-/* 
+    /* 
     foreach ($Data as &$value) {
       $Id = $value['Id'];
       $doctors = getDoctor($Id);
@@ -457,7 +474,7 @@ if ($method == 'post') {
 
     //$sql  = "select company.Name as Uname,doctor.Name as Dname,question.Id,baby.Name as Bname,baby.IdentityInfo,baby.IdentityType,baby.Gender,baby.Birthday,baby.SurveyTime,baby.Premature,baby.Weight,baby.Prematureweek,baby.Prematureday,question.Rectifyage,baby.IsShun,baby.IsChanqian,baby.IsMulti,member.Relation,question.Source,member.Phone,member.Province,member.City,member.County,member.Address,member.PostCode,member.Email,member.Name as Mname,member.MotherJob,member.FatherJob,member.MotherDegree,member.MotherBirth,member.FatherDegree,member.FatherBirth,member.OtherDegree,question.QuestMonth,question.QuestScore,question.ZongHe from company,doctor,member,baby,question where company.Seq='$useq' and question.Cid=company.Id and question.Did=doctor.Id and question.Mid=member.Id and question.Bid=baby.Id and question.QuestType='$type' and question.CreateTime between '$beginTime' and '$endTime'";
 
-    $sql  = "select c.Name as Uname,d.Name as Dname,q.Id,b.Name as Bname,b.IdentityInfo,b.IdentityType,b.Gender,b.Birthday,b.SurveyTime,b.Premature,b.Weight,b.Prematureweek,b.Prematureday,q.Rectifyage,b.IsShun,b.IsChanqian,b.IsMulti,m.Relation,q.Source,m.Phone,m.Province,m.City,m.County,m.Address,m.PostCode,m.Email,m.Name as Mname,m.MotherJob,m.FatherJob,m.MotherDegree,m.MotherBirth,m.FatherDegree,m.FatherBirth,m.OtherDegree,q.QuestMonth,q.QuestScore,q.ZongHe from question q INNER JOIN company c ON q.Cid = c.Id INNER JOIN member m ON q.Mid = m.Id INNER JOIN baby b ON q.Bid = b.Id INNER JOIN doctor d ON q.Did = d.Id where c.Seq='$useq' and q.QuestType='$type' and q.CreateTime between '$beginTime' and '$endTime'";
+    $sql  = "select c.Name as Uname,d.Name as Dname,q.Id,b.Name as Bname,b.IdentityInfo,b.IdentityType,b.Gender,b.Birthday,b.SurveyTime,b.Premature,b.Weight,b.Prematureweek,b.Prematureday,q.Rectifyage,b.IsShun,b.IsChanqian,b.IsMulti,m.Relation,q.Source,m.Phone,m.Province,m.City,m.County,m.Address,m.PostCode,m.Email,m.Name as Mname,m.MotherJob,m.FatherJob,m.MotherDegree,m.MotherBirth,m.FatherDegree,m.FatherBirth,m.OtherDegree,q.QuestMonth,q.QuestScore,q.ZongHe from question q INNER JOIN company c ON q.Cid = c.Id INNER JOIN member m ON q.Mid = m.Id INNER JOIN baby b ON q.Bid = b.Id INNER JOIN doctor d ON q.Did = d.Id where c.Seq='$useq' and q.QuestType='$type' and q.is_delete = 0 and q.CreateTime between '$beginTime' and '$endTime'";
 
     //echo $sql;
 
@@ -500,7 +517,7 @@ if ($method == 'post') {
 
     //$sql  = "select company.Name as Uname,doctor.Name as Dname,question.Id,baby.Name as Bname,baby.IdentityInfo,baby.IdentityType,baby.Gender,baby.Birthday,baby.SurveyTime,baby.Premature,baby.Weight,baby.Prematureweek,baby.Prematureday,question.Rectifyage,baby.IsShun,baby.IsChanqian,baby.IsMulti,member.Relation,question.Source,member.Phone,member.Province,member.City,member.County,member.Address,member.PostCode,member.Email,member.Name as Mname,member.MotherJob,member.FatherJob,member.MotherDegree,member.MotherBirth,member.FatherDegree,member.FatherBirth,member.OtherDegree,question.QuestMonth,question.QuestScore,question.ZongHe from company,doctor,member,baby,question where company.Seq='$useq' and question.Cid=company.Id and question.Did=doctor.Id and question.Mid=member.Id and question.Bid=baby.Id and question.QuestType='$type' and question.CreateTime between '$beginTime' and '$endTime'";
 
-    $sql  = "select c.Name as Uname,d.Name as Dname,q.Id,b.Name as Bname,b.IdentityInfo,b.IdentityType,b.Gender,b.Birthday,b.SurveyTime,b.Premature,b.Weight,b.Prematureweek,b.Prematureday,q.Rectifyage,b.IsShun,b.IsChanqian,b.IsMulti,m.Relation,q.Source,m.Phone,m.Province,m.City,m.County,m.Address,m.PostCode,m.Email,m.Name as Mname,m.MotherJob,m.FatherJob,m.MotherDegree,m.MotherBirth,m.FatherDegree,m.FatherBirth,m.OtherDegree,q.QuestMonth,q.QuestScore,q.ZongHe from question q INNER JOIN company c ON q.Cid = c.Id INNER JOIN member m ON q.Mid = m.Id INNER JOIN baby b ON q.Bid = b.Id INNER JOIN doctor d ON q.Did = d.Id where c.Seq='$useq' and q.QuestType='$type' and q.CreateTime between '$beginTime' and '$endTime'";
+    $sql  = "select c.Name as Uname,d.Name as Dname,q.Id,b.Name as Bname,b.IdentityInfo,b.IdentityType,b.Gender,b.Birthday,b.SurveyTime,b.Premature,b.Weight,b.Prematureweek,b.Prematureday,q.Rectifyage,b.IsShun,b.IsChanqian,b.IsMulti,m.Relation,q.Source,m.Phone,m.Province,m.City,m.County,m.Address,m.PostCode,m.Email,m.Name as Mname,m.MotherJob,m.FatherJob,m.MotherDegree,m.MotherBirth,m.FatherDegree,m.FatherBirth,m.OtherDegree,q.QuestMonth,q.QuestScore,q.ZongHe from question q INNER JOIN company c ON q.Cid = c.Id INNER JOIN member m ON q.Mid = m.Id INNER JOIN baby b ON q.Bid = b.Id INNER JOIN doctor d ON q.Did = d.Id where c.Seq='$useq' and q.QuestType='$type' and q.is_delete = 0 and q.CreateTime between '$beginTime' and '$endTime'";
 
     //echo $sql;
 
@@ -546,9 +563,10 @@ if ($method == 'post') {
 }
 
 
-function sendSms($phone) {
+function sendSms($phone)
+{
 
-  $params = array ();
+  $params = array();
 
   // *** 需用户填写部分 ***
   // fixme 必填：是否启用https
@@ -558,7 +576,7 @@ function sendSms($phone) {
   $accessKeyId = "LTAIjBOUDhzisb91";
   $accessKeySecret = "Enzsps9cknVvbMCMfRuKymrnHHmhCh";
 
-  $code = rand ( 100000, 999999 );
+  $code = rand(100000, 999999);
   $_SESSION['code'] = $code;
 
   // fixme 必填: 短信接收号码
@@ -571,9 +589,9 @@ function sendSms($phone) {
   $params["TemplateCode"] = "SMS_48075026";
 
   // fixme 可选: 设置模板参数, 假如模板中存在变量需要替换则为必填项
-  $params['TemplateParam'] = Array (
-      "code" => $code,
-      "product" => "阿里通信"
+  $params['TemplateParam'] = array(
+    "code" => $code,
+    "product" => "阿里通信"
   );
 
   // fixme 可选: 设置发送短信流水号
@@ -584,8 +602,8 @@ function sendSms($phone) {
 
 
   // *** 需用户填写部分结束, 以下代码若无必要无需更改 ***
-  if(!empty($params["TemplateParam"]) && is_array($params["TemplateParam"])) {
-      $params["TemplateParam"] = json_encode($params["TemplateParam"], JSON_UNESCAPED_UNICODE);
+  if (!empty($params["TemplateParam"]) && is_array($params["TemplateParam"])) {
+    $params["TemplateParam"] = json_encode($params["TemplateParam"], JSON_UNESCAPED_UNICODE);
   }
 
   // 初始化SignatureHelper实例用于设置参数，签名以及发送请求
@@ -593,15 +611,15 @@ function sendSms($phone) {
 
   // 此处可能会抛出异常，注意catch
   $content = $helper->request(
-      $accessKeyId,
-      $accessKeySecret,
-      "dysmsapi.aliyuncs.com",
-      array_merge($params, array(
-          "RegionId" => "cn-hangzhou",
-          "Action" => "SendSms",
-          "Version" => "2017-05-25",
-      )),
-      $security
+    $accessKeyId,
+    $accessKeySecret,
+    "dysmsapi.aliyuncs.com",
+    array_merge($params, array(
+      "RegionId" => "cn-hangzhou",
+      "Action" => "SendSms",
+      "Version" => "2017-05-25",
+    )),
+    $security
   );
 
   $model = array();
@@ -613,10 +631,11 @@ function sendSms($phone) {
 }
 
 
-function sendUrl($phone,$type,$uid,$did,$un,$pw,$sn,$Am,$At,$name,$seq) {
+function sendUrl($phone, $type, $uid, $did, $un, $pw, $sn, $Am, $At, $name, $seq)
+{
   //http://asq.neoballoon.com/app/asq_frontend/#/mlogin?uid=${uid}&did=${did}&username=${un}&password=${pw}&phone=${phone}&type=${type}
   global $aliyunParams;
-  $params = array ();
+  $params = array();
 
   // *** 需用户填写部分 ***
   // fixme 必填：是否启用https
@@ -636,23 +655,23 @@ function sendUrl($phone,$type,$uid,$did,$un,$pw,$sn,$Am,$At,$name,$seq) {
   $params["TemplateCode"] = $aliyunParams['tc2'];
 
   // fixme 可选: 设置模板参数, 假如模板中存在变量需要替换则为必填项
-  $params['TemplateParam'] = Array (
-      "typename" => urldecode($type),
-      "type" => $type,
-      "uid" => $uid,
-      "did" => $did,
-      "un" => $un,
-      "pw" => $pw,
-      "name" => $name,
-      "Am" => $Am,
-      "At" => $At,
-      "phone" => $phone,
-      "seq" => $seq,
-      "product" => "阿里通信"
+  $params['TemplateParam'] = array(
+    "typename" => urldecode($type),
+    "type" => $type,
+    "uid" => $uid,
+    "did" => $did,
+    "un" => $un,
+    "pw" => $pw,
+    "name" => $name,
+    "Am" => $Am,
+    "At" => $At,
+    "phone" => $phone,
+    "seq" => $seq,
+    "product" => "阿里通信"
   );
   // *** 需用户填写部分结束, 以下代码若无必要无需更改 ***
-  if(!empty($params["TemplateParam"]) && is_array($params["TemplateParam"])) {
-      $params["TemplateParam"] = json_encode($params["TemplateParam"], JSON_UNESCAPED_UNICODE);
+  if (!empty($params["TemplateParam"]) && is_array($params["TemplateParam"])) {
+    $params["TemplateParam"] = json_encode($params["TemplateParam"], JSON_UNESCAPED_UNICODE);
   }
 
   // 初始化SignatureHelper实例用于设置参数，签名以及发送请求
@@ -660,15 +679,15 @@ function sendUrl($phone,$type,$uid,$did,$un,$pw,$sn,$Am,$At,$name,$seq) {
 
   // 此处可能会抛出异常，注意catch
   $content = $helper->request(
-      $accessKeyId,
-      $accessKeySecret,
-      "dysmsapi.aliyuncs.com",
-      array_merge($params, array(
-          "RegionId" => "cn-hangzhou",
-          "Action" => "SendSms",
-          "Version" => "2017-05-25",
-      )),
-      $security
+    $accessKeyId,
+    $accessKeySecret,
+    "dysmsapi.aliyuncs.com",
+    array_merge($params, array(
+      "RegionId" => "cn-hangzhou",
+      "Action" => "SendSms",
+      "Version" => "2017-05-25",
+    )),
+    $security
   );
 
   $model = array();
@@ -677,10 +696,11 @@ function sendUrl($phone,$type,$uid,$did,$un,$pw,$sn,$Am,$At,$name,$seq) {
   return $model;
 }
 
-function sendBatchUrl($phones,$type,$uid,$did,$un,$pw,$sn,$Am,$At,$name) {
+function sendBatchUrl($phones, $type, $uid, $did, $un, $pw, $sn, $Am, $At, $name)
+{
 
   global $aliyunParams;
-  $params = array ();
+  $params = array();
 
   // *** 需用户填写部分 ***
   // fixme 必填：是否启用https
@@ -702,7 +722,7 @@ function sendBatchUrl($phones,$type,$uid,$did,$un,$pw,$sn,$Am,$At,$name) {
       "云通信2",
   ); */
 
-  
+
 
   // fixme 必填: 模板中的变量替换JSON串,如模板内容为"亲爱的${name},您的验证码为${code}"时,此处的值为
   // 友情提示:如果JSON中需要带换行符,请参照标准的JSON协议对换行符的要求,比如短信内容中包含\r\n的情况在JSON中需要表示成\\r\\n,否则会导致JSON在服务端解析失败
@@ -717,7 +737,7 @@ function sendBatchUrl($phones,$type,$uid,$did,$un,$pw,$sn,$Am,$At,$name) {
       ),
   ); */
 
-  $params['TemplateParam'] = Array (
+  $params['TemplateParam'] = array(
     "typename" => $type,
     "type" => $type,
     "uid" => $uid,
@@ -729,16 +749,15 @@ function sendBatchUrl($phones,$type,$uid,$did,$un,$pw,$sn,$Am,$At,$name) {
     "At" => $At,
     "phone" => '',
     "product" => "阿里通信"
-);
+  );
 
   $params["SignNameJson"] = array();
   $params["TemplateParamJson"] = $params['TemplateParam'];
 
-  for($i=0;$i<count($phones);$i++){
+  for ($i = 0; $i < count($phones); $i++) {
     array_push($params["SignNameJson"], $sn);
     //array_push($params["TemplateParamJson"], $sn);
     $params["TemplateParamJson"]['phone'] = $phones[$i];
-
   }
 
   // todo 可选: 上行短信扩展码, 扩展码字段控制在7位或以下，无特殊需求用户请忽略此字段
@@ -750,8 +769,8 @@ function sendBatchUrl($phones,$type,$uid,$did,$un,$pw,$sn,$Am,$At,$name) {
   $params["SignNameJson"] = json_encode($params["SignNameJson"], JSON_UNESCAPED_UNICODE);
   $params["PhoneNumberJson"] = json_encode($params["PhoneNumberJson"], JSON_UNESCAPED_UNICODE);
 
-  if(!empty($params["SmsUpExtendCodeJson"]) && is_array($params["SmsUpExtendCodeJson"])) {
-      $params["SmsUpExtendCodeJson"] = json_encode($params["SmsUpExtendCodeJson"], JSON_UNESCAPED_UNICODE);
+  if (!empty($params["SmsUpExtendCodeJson"]) && is_array($params["SmsUpExtendCodeJson"])) {
+    $params["SmsUpExtendCodeJson"] = json_encode($params["SmsUpExtendCodeJson"], JSON_UNESCAPED_UNICODE);
   }
 
   // 初始化SignatureHelper实例用于设置参数，签名以及发送请求
@@ -759,15 +778,15 @@ function sendBatchUrl($phones,$type,$uid,$did,$un,$pw,$sn,$Am,$At,$name) {
 
   // 此处可能会抛出异常，注意catch
   $content = $helper->request(
-      $accessKeyId,
-      $accessKeySecret,
-      "dysmsapi.aliyuncs.com",
-      array_merge($params, array(
-          "RegionId" => "cn-hangzhou",
-          "Action" => "SendBatchSms",
-          "Version" => "2017-05-25",
-      )),
-      $security
+    $accessKeyId,
+    $accessKeySecret,
+    "dysmsapi.aliyuncs.com",
+    array_merge($params, array(
+      "RegionId" => "cn-hangzhou",
+      "Action" => "SendBatchSms",
+      "Version" => "2017-05-25",
+    )),
+    $security
   );
 
   $model = array();

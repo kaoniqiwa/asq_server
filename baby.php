@@ -19,7 +19,7 @@ if ($method == 'post') {
     $Mid = isset($input->Mid) ? $input->Mid : '';
     $babys = [];
     if($Mid != ''){
-      $sql = "select * from baby where Mid= '$Mid'";
+      $sql = "select * from baby where Mid= '$Mid' and is_delete = 0";
       $result = $conn->query($sql);
       
       if ($conn->affected_rows != 0) {
@@ -58,7 +58,7 @@ if ($method == 'post') {
     $Ids = isset($input->Ids) ? $input->Ids : [];
 
 
-    $sql = "select * from baby where Name like '%$Name%'";
+    $sql = "select * from baby where Name like '%$Name%' and is_delete = 0";
 
 
     $result = $conn->query($sql);
@@ -147,7 +147,7 @@ if ($method == 'post') {
 
 
     $conn->query($sql);
-    $result = $conn->query("select * from baby where Id='$Id'");
+    $result = $conn->query("select * from baby where Id='$Id' and is_delete = 0");
 
     if ($conn->affected_rows != 0) {
       $model  =  $result->fetch_assoc();
@@ -163,7 +163,9 @@ if ($method == 'post') {
     $Ids = $input->Ids;
 
     for($i=0;$i<count($Ids);$i++){
-      $conn->query("delete from baby where Id='$Ids[$i]'");
+      $sql = "update baby set is_delete=1 where Id='$Ids[$i]'";
+      $conn->query($sql);
+      //$conn->query("delete from baby where Id='$Ids[$i]'");
     }
 
     echo json_encode(
@@ -203,7 +205,7 @@ if ($method == 'post') {
     $conn->query($sql);
 
 
-    $sql  = " select * from baby where Id='$Id'";
+    $sql  = " select * from baby where Id='$Id' and is_delete = 0";
     $result =  $conn->query($sql);
     if ($conn->affected_rows != 0) {
       $model  =  $result->fetch_assoc();
