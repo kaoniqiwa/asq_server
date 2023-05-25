@@ -19,6 +19,9 @@ define('DB_CHAR', 'utf8');
 
 error_reporting(1);
 ini_set("display_errors","on");
+ini_set('max_execution_time',7200);
+ini_set('memory_limit',-1);
+//C(‘REST_TIMEOUT’,360);
 
 include('./utility/tool.php');
 
@@ -32,13 +35,13 @@ if (!isset($conn)) {
   $conn->select_db(DB_NAME);
 }
 
-$json_string = file_get_contents("./test221111.json");
+$json_string = file_get_contents("./Xxjd20230318.json");
 $grant = json_decode($json_string, true);
 
 $json_zh = file_get_contents("./data.json");
 $zh_data = json_decode($json_zh, true);
 
-$Cid = '5f499207-afc2-4963-8440-94213b3e6641';
+$Cid = '3b897c6b-53c0-415d-9080-cd530b769da1';
 $QuestType = 'ASQ-3';
 $mouthArr = [2, 4, 6, 8, 9, 10, 12, 14, 16, 18, 20, 22, 24, 27, 30, 33, 36, 42, 48, 54,60];
 echo '$grant_length:'.count($grant).'<br>';
@@ -93,7 +96,7 @@ for ($k = 0; $k < count($grant); $k++) {
   $CreateTime = date('Y-m-d H:i:s', time());
   $UpdateTime  = date('Y-m-d H:i:s', time());
 
-  $sql = "select * from member where Phone='$Phone' and Did='$Did'";
+  $sql = "select * from member where Phone='$Phone'";
   $result = $conn->query($sql);
   if($conn->affected_rows > 0){
     echo 'member<br>';
@@ -109,10 +112,11 @@ for ($k = 0; $k < count($grant); $k++) {
   $Bname = $account['A3'];
   $Gender = $account['A4'];
   $Birthday = $account['A5'];
-  $SurveyTime =  substr($account['A6'],0,10);
+  //$SurveyTime =  substr($account['A6'],0,10);
+  $SurveyTime =  $account['A6'];
   $Premature =  $account['A9'];
-  $Prematrueweek =  $account['A7'];
-  $Prematrueday =  $account['A8'];
+  $Prematureweek =  $account['A7'];
+  $Prematureday =  $account['A8'];
   $Rectifyage =  $account['A10'].'月'.$account['A11'].'天';
   $IsShun =  $account['A12']=='v'?'是':'否';
   $IdentityInfo =  $account['A91'];
@@ -131,7 +135,7 @@ for ($k = 0; $k < count($grant); $k++) {
     $baby =  $result->fetch_assoc();
     $Bid = $baby['Id'];
   }else{
-    $sql = "insert into baby (Id,Mid,Name,Gender,Birthday,SurveyTime,Premature,Prematrueweek,Prematrueday,Rectifyage,IsShun,IdentityInfo,IdentityType,Weight,IsChanqian,IsMulti,OtherAbnormal,CreateTime,UpdateTime) values ('$Bid','$Mid','$Bname','$Gender','$Birthday','$SurveyTime','$Premature','$Prematrueweek','$Prematrueday','$Rectifyage','$IsShun','$IdentityInfo','$IdentityType','$Weight','$IsChanqian','$IsMulti','$OtherAbnormal','$CreateTime','$UpdateTime')";
+    $sql = "insert into baby (Id,Mid,Name,Gender,Birthday,SurveyTime,Premature,Prematureweek,Prematureday,Rectifyage,IsShun,IdentityInfo,IdentityType,Weight,IsChanqian,IsMulti,OtherAbnormal,CreateTime,UpdateTime) values ('$Bid','$Mid','$Bname','$Gender','$Birthday','$SurveyTime','$Premature','$Prematureweek','$Prematureday','$Rectifyage','$IsShun','$IdentityInfo','$IdentityType','$Weight','$IsChanqian','$IsMulti','$OtherAbnormal','$CreateTime','$UpdateTime')";
     $conn->query($sql);
 
     //echo $sql.'<br>';
@@ -186,7 +190,7 @@ for ($k = 0; $k < count($grant); $k++) {
   for($n=0;$n< count($ZongHe_arr['question'])-1;$n++){
     
     array_push($zh_result_arr,$account['A'.(77+$n)]==null?'':$account['A'.(77+$n)]);
-    array_push($zh_answer_arr,0);
+    array_push($zh_answer_arr,setZongHeAn($account['A'.(77+$n)],$ZongHe_arr['question'][$n+1][2]));
   }
   $ZongHe_arr['result'] = $zh_result_arr;
   $ZongHe_arr['answer'] = $zh_answer_arr;
@@ -197,7 +201,8 @@ for ($k = 0; $k < count($grant); $k++) {
   $Source = getSource($account['A22']);
   $Status = 0;
   $Importid = $account['A2'];
-  $CreateTime = substr($account['A6'],0,10);
+  //$CreateTime = substr($account['A6'],0,10);
+  $CreateTime = $account['A6'];
   $UpdateTime  = date('Y-m-d H:i:s', time());
 
   $sql = "select * from question where Importid='$Importid' and Bid='$Bid'";
@@ -252,6 +257,22 @@ function getZongHe($monthNum){
     array_push($zonghe_arr,$this_zh[$z]);
   }
   return $zonghe_arr;
+}
+
+function setZongHeAn($con,$an){
+  if($con!=null){
+    if($an=='是'){
+      return 1;
+    }else{
+      return 3;
+    }
+  }else{
+    if($an=='是'){
+      return 3;
+    }else{
+      return 1;
+    }
+  }
 }
 
 ?>

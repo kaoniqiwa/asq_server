@@ -116,8 +116,8 @@ for ($k = 0; $k < count($grant); $k++) {
   $Birthday = $account['A6'];
   $SurveyTime =  (substr($account['A7'],0,10).' '.substr($account['A7'],10,18));//substr($account['A7'],0,10);
   $Premature =  $account['A10'];
-  $Prematrueweek =  $account['A8'];
-  $Prematrueday =  $account['A9'];
+  $Prematureweek =  $account['A8'];
+  $Prematureday =  $account['A9'];
   $Rectifyage =  $account['A11'].'月'.$account['A12'].'天';
   $IsShun =  $account['A13']=='v'?'是':'否';
   $IdentityInfo =  $account['A129'];
@@ -136,7 +136,7 @@ for ($k = 0; $k < count($grant); $k++) {
     $baby =  $result->fetch_assoc();
     $Bid = $baby['Id'];
   }else{
-    $sql = "insert into baby (Id,Mid,Name,Gender,Birthday,SurveyTime,Premature,Prematrueweek,Prematrueday,Rectifyage,IsShun,IdentityInfo,IdentityType,Weight,IsChanqian,IsMulti,OtherAbnormal,CreateTime,UpdateTime) values ('$Bid','$Mid','$Bname','$Gender','$Birthday','$SurveyTime','$Premature','$Prematrueweek','$Prematrueday','$Rectifyage','$IsShun','$IdentityInfo','$IdentityType','$Weight','$IsChanqian','$IsMulti','$OtherAbnormal','$CreateTime','$UpdateTime')";
+    $sql = "insert into baby (Id,Mid,Name,Gender,Birthday,SurveyTime,Premature,Prematureweek,Prematureday,Rectifyage,IsShun,IdentityInfo,IdentityType,Weight,IsChanqian,IsMulti,OtherAbnormal,CreateTime,UpdateTime) values ('$Bid','$Mid','$Bname','$Gender','$Birthday','$SurveyTime','$Premature','$Prematureweek','$Prematureday','$Rectifyage','$IsShun','$IdentityInfo','$IdentityType','$Weight','$IsChanqian','$IsMulti','$OtherAbnormal','$CreateTime','$UpdateTime')";
     $conn->query($sql);
 
     //echo $sql.'<br>';

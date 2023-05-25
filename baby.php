@@ -15,7 +15,39 @@ if ($method == 'post') {
 
   $Flow = $input->Flow;
 
-  if ($Flow == 'listBaby') {
+  if ($Flow == 'getBabys') {
+    $Mid = isset($input->Mid) ? $input->Mid : '';
+    $babys = [];
+    if($Mid != ''){
+      $sql = "select * from baby where Mid= '$Mid'";
+      $result = $conn->query($sql);
+      
+      if ($conn->affected_rows != 0) {
+        while ($rs = $result->fetch_assoc()) {
+          array_push($babys, $rs);
+        }   
+      }
+      echo json_encode(
+        [
+          "FaultCode" => 0,
+          'FaultReason' => 'OK',
+          "Data" =>  $babys
+        ]
+      );
+    }else{
+      echo json_encode(
+        [
+          "FaultCode" => 0,
+          'FaultReason' => 'OK',
+          "Data" => $babys
+        ]
+      );
+    }
+    
+    
+
+
+  }else if ($Flow == 'listBaby') {
 
     $PageSize = isset($input->PageSize) ? $input->PageSize : 99999;
     $PageIndex = isset($input->PageIndex) ? $input->PageIndex : 1;
@@ -38,11 +70,11 @@ if ($method == 'post') {
       }
     }
 
-
+    $tmp2 = [];
     if (count($Mids) == 0) {
       $tmp2 = $tmp;
     } else {
-      $tmp2 = [];
+      //$tmp2 = [];
       for ($i = 0; $i < count($tmp); $i++) {
         for ($j = 0; $j < count($Mids); $j++) {
           if ($tmp[$i]['Mid'] == $Mids[$j]) {
@@ -96,8 +128,8 @@ if ($method == 'post') {
     $Birthday = getTime($input->Birthday);
     $SurveyTime =  getTime($input->SurveyTime);
     $Premature =  $input->Premature;
-    $Prematrueweek =  $input->Prematrueweek;
-    $Prematrueday =  $input->Prematrueday;
+    $Prematureweek =  $input->Prematureweek;
+    $Prematureday =  $input->Prematureday;
     $Rectifyage =  $input->Rectifyage;
     $IsShun =  $input->IsShun;
 
@@ -111,7 +143,7 @@ if ($method == 'post') {
     $CreateTime = date('Y-m-d H:i:s', time());
     $UpdateTime  = date('Y-m-d H:i:s', time());
 
-    $sql = "insert into baby (Id,Mid,Name,Gender,Birthday,SurveyTime,Premature,Prematrueweek,Prematrueday,Rectifyage,IsShun,IdentityInfo,IdentityType,Weight,IsChanqian,IsMulti,OtherAbnormal,CreateTime,UpdateTime) values ('$Id','$Mid','$Name','$Gender','$Birthday','$SurveyTime','$Premature','$Prematrueweek','$Prematrueday','$Rectifyage','$IsShun','$IdentityInfo','$IdentityType','$Weight','$IsChanqian','$IsMulti','$OtherAbnormal','$CreateTime','$UpdateTime')";
+    $sql = "insert into baby (Id,Mid,Name,Gender,Birthday,SurveyTime,Premature,Prematureweek,Prematureday,Rectifyage,IsShun,IdentityInfo,IdentityType,Weight,IsChanqian,IsMulti,OtherAbnormal,CreateTime,UpdateTime) values ('$Id','$Mid','$Name','$Gender','$Birthday','$SurveyTime','$Premature','$Prematureweek','$Prematureday','$Rectifyage','$IsShun','$IdentityInfo','$IdentityType','$Weight','$IsChanqian','$IsMulti','$OtherAbnormal','$CreateTime','$UpdateTime')";
 
 
     $conn->query($sql);
@@ -128,8 +160,19 @@ if ($method == 'post') {
       );
     }
   } else if ($Flow == 'deleteBaby') {
-    var_dump('delete');
     $Ids = $input->Ids;
+
+    for($i=0;$i<count($Ids);$i++){
+      $conn->query("delete from baby where Id='$Ids[$i]'");
+    }
+
+    echo json_encode(
+      [
+        "FaultCode" => 0,
+        'FaultReason' => 'OK',
+        "Data" => $Ids
+      ]
+    );
 
     // $sql = 
   } else if ($Flow == 'updateBaby') {
@@ -140,8 +183,8 @@ if ($method == 'post') {
     $Birthday = getTime($input->Birthday);
     $SurveyTime =  getTime($input->SurveyTime);
     $Premature =  $input->Premature;
-    $Prematrueweek =  $input->Prematrueweek;
-    $Prematrueday =  $input->Prematrueday;
+    $Prematureweek =  $input->Prematureweek;
+    $Prematureday =  $input->Prematureday;
     $Rectifyage =  $input->Rectifyage;
     $IsShun =  $input->IsShun;
 
@@ -155,7 +198,7 @@ if ($method == 'post') {
     $UpdateTime  = date('Y-m-d H:i:s', time());
 
 
-    $sql  = "update baby set Name='$Name',Gender='$Gender',Birthday='$Birthday',SurveyTime='$SurveyTime',Premature='$Premature',Prematrueweek='$Prematrueweek',Prematrueday='$Prematrueday',Rectifyage='$Rectifyage',IsShun='$IsShun',IdentityType='$IdentityType',IdentityInfo='$IdentityInfo',Weight='$Weight',IsChanqian='$IsChanqian',IsMulti='$IsMulti',OtherAbnormal='$OtherAbnormal',UpdateTime='$UpdateTime' where Id='$Id'";
+    $sql  = "update baby set Name='$Name',Gender='$Gender',Birthday='$Birthday',SurveyTime='$SurveyTime',Premature='$Premature',Prematureweek='$Prematureweek',Prematureday='$Prematureday',Rectifyage='$Rectifyage',IsShun='$IsShun',IdentityType='$IdentityType',IdentityInfo='$IdentityInfo',Weight='$Weight',IsChanqian='$IsChanqian',IsMulti='$IsMulti',OtherAbnormal='$OtherAbnormal',UpdateTime='$UpdateTime' where Id='$Id'";
 
     $conn->query($sql);
 

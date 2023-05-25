@@ -13,19 +13,55 @@ if ($method == 'post') {
 
   $Flow = $input->Flow;
 
-  if ($Flow == 'listMember') {
+  if ($Flow == 'getMember') {
+    
+    $Phone = isset($input->Phone) ? $input->Phone : '';
+    $model = [];
+    
+    if($Phone != ''){
+      $sql = "select * from member where Phone = '$Phone' ";
+      $result = $conn->query($sql);
+     
+      if ($conn->affected_rows != 0) {
+        //$model  = $result->fetch_assoc();
+        while ($rs = $result->fetch_assoc()) {
+          array_push($model, $rs);
+        }   
+      }
+      echo json_encode(
+        [
+          "FaultCode" => 0,
+          'FaultReason' => 'OK',
+          "Data" =>  $model
+        ]
+      );
+    }else{
+      echo json_encode(
+        [
+          "FaultCode" => 0,
+          'FaultReason' => 'OK',
+          "Data" =>  $model
+        ]
+      );
+    }
+
+    
+
+
+  }else if ($Flow == 'listMember') {
     $PageSize = $input->PageSize;
     $PageIndex = $input->PageIndex;
     $Name = isset($input->Name) ? $input->Name : "";
-    $Dids = isset($input->Dids) ? $input->Dids : [];
+    //$Dids = isset($input->Dids) ? $input->Dids : [];
     $Ids = isset($input->Ids) ? $input->Ids : [];
     $Phones = isset($input->Phones) ? $input->Phones : [];
 
     $Start = ($PageIndex - 1) * $PageSize;
 
-    $sql = "select Id,Did,Name,Phone,Relation,Province,City,County,Email,PostCode,IsHelp,HelpInfo,Address,MotherJob,FatherJob,MotherDegree,FatherDegree,OtherDegree,MotherBirth,FatherBirth,CreateTime,UpdateTime from member where Name like '%$Name%' or Phone like '%$Name%' ";
+    $sql = "select * from member where Name like '%$Name%' or Phone like '%$Name%' ";
     $result = $conn->query($sql);
 
+    
     $tmp = array();
 
     if ($conn->affected_rows != 0) {

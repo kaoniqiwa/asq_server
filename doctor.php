@@ -21,7 +21,7 @@ if ($method == 'post') {
     $Cids = isset($input->Cids) ? $input->Cids : [];
     $Ids = isset($input->Ids) ? $input->Ids : [];
 
-    $sql = "select Seq,Id,Cid,Name,Level,Dept,Phone,CreateTime,UpdateTime from doctor  where Name like '%$Name%'";
+    $sql = "select * from doctor  where Name like '%$Name%'";
 
     $Start = ($PageIndex - 1) * $PageSize;
     $result = $conn->query($sql);
@@ -97,7 +97,7 @@ if ($method == 'post') {
 
     // var_dump($sql);
     $conn->query($sql);
-    $result = $conn->query("select Seq,Id,Cid,Name,Level,Dept,Phone,CreateTime,UpdateTime from doctor where Id='$Id'");
+    $result = $conn->query("select * from doctor where Id='$Id'");
 
     if ($conn->affected_rows != 0) {
       $model  =  $result->fetch_assoc();
@@ -138,7 +138,29 @@ if ($method == 'post') {
     $sql  = "update doctor set Name='$Name',Level='$Level',Dept='$Dept',Phone='$Phone',UpdateTime='$UpdateTime' where Id='$Id'";
     $conn->query($sql);
 
-    $result = $conn->query("select Seq,Id,Cid,Name,Level,Dept,Phone,CreateTime,UpdateTime from doctor where Id='$Id'");
+    $result = $conn->query("select * from doctor where Id='$Id'");
+
+    if ($conn->affected_rows != 0) {
+      $model  =  $result->fetch_assoc();
+      echo json_encode(
+        [
+          "FaultCode" => 0,
+          'FaultReason' => 'OK',
+          'Data' => $model
+        ]
+      );
+    }
+  } else if ($Flow == 'atDoctor') {
+    $Id = $input->Id;
+    $Name = $input->At;
+    $UpdateTime  = date('Y-m-d H:i:s', time());
+
+
+
+    $sql  = "update doctor set At='$Name',UpdateTime='$UpdateTime' where Id='$Id'";
+    $conn->query($sql);
+
+    $result = $conn->query("select * from doctor where Id='$Id'");
 
     if ($conn->affected_rows != 0) {
       $model  =  $result->fetch_assoc();
@@ -153,7 +175,7 @@ if ($method == 'post') {
   } else if ($Flow == 'getDoctorBySeq') {
     $Seq = $input->Seq;
 
-    $result = $conn->query("select Seq,Id,Cid,Name,Level,Dept,Phone,CreateTime,UpdateTime from doctor where Seq='$Seq'");
+    $result = $conn->query("select * from doctor where Seq='$Seq'");
 
     if ($conn->affected_rows != 0) {
       $model  =  $result->fetch_assoc();
@@ -182,7 +204,7 @@ if ($method == 'post') {
   $Id = $_GET['Id'];
   $doctor  = null;
 
-  $sql =  "select Seq,Id,Cid,Name,Level,Dept,Phone,CreateTime,UpdateTime from doctor where Id='$Id'";
+  $sql =  "select * from doctor where Id='$Id'";
   $result = $conn->query($sql);
   if ($conn->affected_rows != 0) {
     $doctor =  $result->fetch_assoc();

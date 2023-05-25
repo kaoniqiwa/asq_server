@@ -50,7 +50,9 @@ if (!is_null($company) && $flow == 'getQuestions') {
   }
 
   $Uid = $company['Id'];
-  $sql_qus= "select question.Id,question.Bid,question.Mid,question.Did,question.Cid,question.QuestMonth,question.QuestScore,question.ZongHe,question.Status,question.QuestType,baby.Name as Bname,baby.Birthday,baby.gender,question.SurveyTime as QsurveyTime,member.Name as Mname,member.Relation,member.Phone from question,baby,member,doctor,company where company.Id='$Uid' and question.Cid='$Uid' and question.Bid=baby.Id and question.Did=doctor.Id and question.Mid=member.Id ".$mphoneStr." and question.SurveyTime between '$starttime' and '$endtime' order by question.CreateTime DESC";
+  //$sql_qus= "select question.Id,question.Bid,question.Mid,question.Did,question.Cid,question.QuestMonth,question.QuestScore,question.ZongHe,question.Status,question.QuestType,baby.Name as Bname,baby.Birthday,baby.gender,question.SurveyTime as QsurveyTime,member.Name as Mname,member.Relation,member.Phone from question,baby,member,doctor,company where company.Id='$Uid' and question.Cid='$Uid' and question.Bid=baby.Id and question.Did=doctor.Id and question.Mid=member.Id ".$mphoneStr." and question.SurveyTime between '$starttime' and '$endtime' order by question.CreateTime DESC";
+
+  $sql_qus= "select q.Id,q.Bid,q.Mid,q.Did,q.Cid,q.QuestMonth,q.QuestScore,q.ZongHe,q.Status,q.QuestType,b.Name as Bname,b.Birthday,b.gender,q.SurveyTime as QsurveyTime,m.Name as Mname,m.Relation,m.Phone from question q INNER JOIN company c ON q.Cid = c.Id INNER JOIN baby b ON q.Bid = b.Id INNER JOIN doctor d ON q.Did = d.Id INNER JOIN member m ON q.Mid = m.Id where q.Cid='$Uid' and ".$mphoneStr." and q.SurveyTime between '$starttime' and '$endtime' order by q.CreateTime DESC";
   
   //echo $sql_qus;
 
@@ -109,7 +111,7 @@ function setReport($uid,$did,$bid,$qid,$type){
 //var_dump(getGames(0));
 
 function getGames($monthnum){
-  $mouthArr = [2, 4, 6, 8, 9, 10, 12, 14, 16, 18, 20, 22, 24, 27, 30, 33, 36, 42, 48, 54.60];
+  $mouthArr = [2, 4, 6, 8, 9, 10, 12, 14, 16, 18, 20, 22, 24, 27, 30, 33, 36, 42, 48, 54,60];
   $month = $mouthArr[$monthnum];
   $games = array();
   global $conn;

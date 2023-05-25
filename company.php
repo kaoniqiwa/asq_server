@@ -217,7 +217,7 @@ if ($method == 'post') {
 
     for($i=0;$i<count($Ids);$i++){
       //$sql = "select * from company where Id='$Id'";
-      $conn->query("delete from doctor where cid='$Ids[$i]'");
+      //$conn->query("delete from doctor where cid='$Ids[$i]'");
       $conn->query("delete from company where Id='$Ids[$i]'");
     }
 
@@ -406,10 +406,12 @@ if ($method == 'post') {
       );
     }
   } else if ($Flow == 'exportCompany') {
-    $beginTime = getTime($input->beginTime);
-    $endTime = getTime($input->endTime);
+    $beginTime = getTime($input->BeginTime);
+    $endTime = getTime($input->EndTime);
 
-    $sql  = "select Id,Name,Username,Password,AsqTotal,AsqLeft,AsqSeTotal,AsqSeLeft,AsqSe2Total,AsqSe2Left,CreateTime,UpdateTime from company where CreateTime between '$beginTime' and '$endTime'";
+    $sql  = "select Seq,Id,Name,Username,AsqTotal,AsqLeft,AsqSeTotal,AsqSeLeft,AsqSe2Total,AsqSe2Left,CreateTime,UpdateTime from company where CreateTime between '$beginTime' and '$endTime'";
+
+    //echo $sql;
 
     $result = $conn->query($sql);
     $Data = [];
@@ -421,12 +423,12 @@ if ($method == 'post') {
       }
     }
 
-
+/* 
     foreach ($Data as &$value) {
       $Id = $value['Id'];
       $doctors = getDoctor($Id);
       $value['doctors'] = $doctors;
-    }
+    } */
 
     echo json_encode(
       array(
@@ -435,6 +437,96 @@ if ($method == 'post') {
         "Data" => $Data
       )
     );
+  } else if ($Flow == 'exportAsq3') {
+    $beginTime = getTime($input->BeginTime);
+    $endTime = getTime($input->EndTime);
+    $useq = $input->Useq;
+    $type = $input->QuestType;
+
+    //$barr = array('机构名称','子账号','问卷编号','宝宝姓名','身份信息','身份类型','性别','出生年月日','完成问卷的时间','是否早产','体重（g）','孕周','孕周+天', '月龄','月龄+天','顺产','剖腹产','产钳助产','吸引器助产','双胞胎','多胎','完成问卷人姓名','关系','答题方式','手机','省','市','地区（县）','地址','邮政编码','电子邮箱','协助人的姓名或身份','母亲职业','父亲职业','母亲文化程度','母亲出生日期','父亲文化程度','父亲出生日期','主要照顾者文化程度', '问卷月龄组','CM-1','CM-2','CM-3','CM-4','CM-5','CM-6','沟通能区总分','沟通能区结果','GM-1','GM-2','GM-3','GM-4','GM-5','GM-6','粗大动作能区总分','粗大动作能区结果','FM-1','FM-2','FM-3','FM-4','FM-5','FM-6','精细动作能区总分','精细动作能区结果','CG-1', 'CG-2','CG-3','CG-4','CG-5','CG-6','解决问题能区总分','解决问题能区结果','PS-1','PS-2','PS-3','PS-4','PS-5','PS-6','个人-社会总分','个人-社会结果','综合问题1选项','综合问题1','综合问题2选项','综合问题2','综合问题3选项','综合问题3','综合问题4选项','综合问题4','综合问题5选项','综合问题5','综合问题6选项', '综合问题6','综合问题7选项','综合问题7','综合问题8选项','综合问题8','综合问题9选项','综合问题9','综合问题10选项','综合问题10');
+
+    $sql  = "select * from company where Seq='$useq'";
+    $result = $conn->query($sql);
+    $c = [];
+    if ($conn->affected_rows != 0) {
+      $RecordCount = $conn->affected_rows;
+      while ($rs = $result->fetch_assoc()) {
+        array_push($c, $rs);
+      }
+    }
+
+    //$sql  = "select company.Name as Uname,doctor.Name as Dname,question.Id,baby.Name as Bname,baby.IdentityInfo,baby.IdentityType,baby.Gender,baby.Birthday,baby.SurveyTime,baby.Premature,baby.Weight,baby.Prematureweek,baby.Prematureday,question.Rectifyage,baby.IsShun,baby.IsChanqian,baby.IsMulti,member.Relation,question.Source,member.Phone,member.Province,member.City,member.County,member.Address,member.PostCode,member.Email,member.Name as Mname,member.MotherJob,member.FatherJob,member.MotherDegree,member.MotherBirth,member.FatherDegree,member.FatherBirth,member.OtherDegree,question.QuestMonth,question.QuestScore,question.ZongHe from company,doctor,member,baby,question where company.Seq='$useq' and question.Cid=company.Id and question.Did=doctor.Id and question.Mid=member.Id and question.Bid=baby.Id and question.QuestType='$type' and question.CreateTime between '$beginTime' and '$endTime'";
+
+    $sql  = "select c.Name as Uname,d.Name as Dname,q.Id,b.Name as Bname,b.IdentityInfo,b.IdentityType,b.Gender,b.Birthday,b.SurveyTime,b.Premature,b.Weight,b.Prematureweek,b.Prematureday,q.Rectifyage,b.IsShun,b.IsChanqian,b.IsMulti,m.Relation,q.Source,m.Phone,m.Province,m.City,m.County,m.Address,m.PostCode,m.Email,m.Name as Mname,m.MotherJob,m.FatherJob,m.MotherDegree,m.MotherBirth,m.FatherDegree,m.FatherBirth,m.OtherDegree,q.QuestMonth,q.QuestScore,q.ZongHe from question q INNER JOIN company c ON q.Cid = c.Id INNER JOIN member m ON q.Mid = m.Id INNER JOIN baby b ON q.Bid = b.Id INNER JOIN doctor d ON q.Did = d.Id where c.Seq='$useq' and q.QuestType='$type' and q.CreateTime between '$beginTime' and '$endTime'";
+
+    //echo $sql;
+
+    $result = $conn->query($sql);
+    $Data = [];
+
+    if ($conn->affected_rows != 0) {
+      $RecordCount = $conn->affected_rows;
+      while ($rs = $result->fetch_assoc()) {
+        array_push($Data, $rs);
+      }
+    }
+
+    $result = array();
+    $result['data'] = $Data;
+    $result['company'] = $c;
+
+    echo json_encode(
+      array(
+        "FaultCode" => 0,
+        'FaultReason' => 'OK',
+        "Data" => $result
+      )
+    );
+  } else if ($Flow == 'exportAsqse2') {
+    $beginTime = getTime($input->BeginTime);
+    $endTime = getTime($input->EndTime);
+    $useq = $input->Useq;
+    $type = $input->QuestType;
+
+    $sql  = "select * from company where Seq='$useq'";
+    $result = $conn->query($sql);
+    $c = [];
+    if ($conn->affected_rows != 0) {
+      $RecordCount = $conn->affected_rows;
+      while ($rs = $result->fetch_assoc()) {
+        array_push($c, $rs);
+      }
+    }
+
+    //$sql  = "select company.Name as Uname,doctor.Name as Dname,question.Id,baby.Name as Bname,baby.IdentityInfo,baby.IdentityType,baby.Gender,baby.Birthday,baby.SurveyTime,baby.Premature,baby.Weight,baby.Prematureweek,baby.Prematureday,question.Rectifyage,baby.IsShun,baby.IsChanqian,baby.IsMulti,member.Relation,question.Source,member.Phone,member.Province,member.City,member.County,member.Address,member.PostCode,member.Email,member.Name as Mname,member.MotherJob,member.FatherJob,member.MotherDegree,member.MotherBirth,member.FatherDegree,member.FatherBirth,member.OtherDegree,question.QuestMonth,question.QuestScore,question.ZongHe from company,doctor,member,baby,question where company.Seq='$useq' and question.Cid=company.Id and question.Did=doctor.Id and question.Mid=member.Id and question.Bid=baby.Id and question.QuestType='$type' and question.CreateTime between '$beginTime' and '$endTime'";
+
+    $sql  = "select c.Name as Uname,d.Name as Dname,q.Id,b.Name as Bname,b.IdentityInfo,b.IdentityType,b.Gender,b.Birthday,b.SurveyTime,b.Premature,b.Weight,b.Prematureweek,b.Prematureday,q.Rectifyage,b.IsShun,b.IsChanqian,b.IsMulti,m.Relation,q.Source,m.Phone,m.Province,m.City,m.County,m.Address,m.PostCode,m.Email,m.Name as Mname,m.MotherJob,m.FatherJob,m.MotherDegree,m.MotherBirth,m.FatherDegree,m.FatherBirth,m.OtherDegree,q.QuestMonth,q.QuestScore,q.ZongHe from question q INNER JOIN company c ON q.Cid = c.Id INNER JOIN member m ON q.Mid = m.Id INNER JOIN baby b ON q.Bid = b.Id INNER JOIN doctor d ON q.Did = d.Id where c.Seq='$useq' and q.QuestType='$type' and q.CreateTime between '$beginTime' and '$endTime'";
+
+    //echo $sql;
+
+    $result = $conn->query($sql);
+    $Data = [];
+
+    if ($conn->affected_rows != 0) {
+      $RecordCount = $conn->affected_rows;
+      while ($rs = $result->fetch_assoc()) {
+        array_push($Data, $rs);
+      }
+    }
+
+    $result = array();
+    $result['data'] = $Data;
+    $result['company'] = $c;
+
+    echo json_encode(
+      array(
+        "FaultCode" => 0,
+        'FaultReason' => 'OK',
+        "Data" => $result
+      )
+    );
+  } else if ($Flow == 'otherCompany') {
+    //
   }
 } else if ($method == 'get') {
   $Id = $_GET['Id'];

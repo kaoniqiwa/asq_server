@@ -77,7 +77,7 @@ if ($method == 'post') {
 
     $testid = isset($input->TestId) ? $input->TestId : 2;
     $typeid = isset($input->TypeId) ? $input->TypeId : 1;
-    $sql = "select * from dividing where testid='$testid' and typeid='$typeid' ";
+    $sql = "select * from dividing where testid='$testid' and typeid='$typeid' order by id DESC";
     $result = $conn->query($sql);
 
     if ($conn->affected_rows != 0) {
@@ -117,13 +117,16 @@ if ($method == 'post') {
 }
 
 
-function getGames($conn,$row,$Arr,$num){
+function getGames($conn,$row,$Arr,$num){//$gt = getGames($conn,$row,$gt,1);
   if($row['function'] == $num){//standardbak1
-    $sql1 = "select * from games where testid=".$row['standardbak1']." and function='$num' order by function ASC";
-    $result1 = $conn->query($sql1);
-    while($row1 = mysqli_fetch_assoc($result1)){
-      array_push($Arr,$row1['standard']);
+    if($row['standardbak1']!=0){
+      $sql1 = "select * from games where testid=".$row['standardbak1']." and function='$num' order by function ASC";
+      $result1 = $conn->query($sql1);
+      while($row1 = mysqli_fetch_assoc($result1)){
+        array_push($Arr,$row1['standard']);
+      }
     }
+    
 
     $sql3 = "select * from games where testid=".$row['bak']." and function='$num' order by function ASC";
     $result3 = $conn->query($sql3);

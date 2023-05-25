@@ -38,7 +38,7 @@ if (!authenticate($_SERVER["PHP_AUTH_DIGEST"])) {
   die('登录失败');
 } else {
 
-  $result = $conn->query("select Id,Username,Name,Password,CreateTime,UpdateTime from adminuser where Username='$username' and Password='$password' limit 1");
+  $result = $conn->query("select Seq,Id,Username,Name,Password,CreateTime,UpdateTime from adminuser where Username='$username' and Password='$password' limit 1");
 
 
 

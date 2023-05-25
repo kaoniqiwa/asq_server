@@ -34,7 +34,9 @@ if ($method == 'post') {
     $QuestMonth = $input->QuestMonth;
     //$QuestResult = $input->QuestResult;
     $QuestScore = $input->QuestScore;
+    //$QuestScore = preg_replace("/\s/","",$QuestScore);
     $ZongHe = $input->ZongHe;
+    //$ZongHe = preg_replace("/\s/","",$ZongHe);
     $Source = $input->Source;
     $Uuid = $input->uuid;
     $Seq = $input->seq;
@@ -125,10 +127,10 @@ if ($method == 'post') {
     $tmp = changeArr($Bids);
     $uidStr = '';
     if($Uid != ''){
-      $uidStr = "and question.Cid='".$Uid."'";
+      $uidStr = " and question.Cid='".$Uid."'";
     }
 
-    $sql = "select * from question where Bid in ($tmp) ".$nameStr." order by CreateTime DESC";
+    $sql = "select * from question where Bid in ($tmp) ".$nameStr.$uidStr." order by CreateTime DESC";
 
     //echo $sql;
 
@@ -166,30 +168,34 @@ if ($method == 'post') {
     
     $nameStr = '';
     if($Name != ''){
-      $nameStr = "and baby.Name like '%".$Name."%'";
+      $nameStr = "and b.Name like '%".$Name."%'";
     }
     $didstr = '';
     if(count($Dids) > 0 && $Dids != ''){
       $tmpp = changeArr($Dids);
-      $didstr = "and question.Did in ($tmpp)";
+      $didstr = "and q.Did in ($tmpp)";
     }
     $statusStr = '';
     if($Status != '' && $Status != 3){
-      $statusStr = "and question.Status='".$Status."'";
+      $statusStr = "and q.Status='".$Status."'";
     }
     $questmonthStr = '';
     if($QuestMonth != ''){
-      $questmonthStr = "and question.QuestMonth='".$QuestMonth."'";
+      $questmonthStr = "and q.QuestMonth='".$QuestMonth."'";
     }
     $timeStr = '';
     if($BeginTime != '' && $EndTime != ''){
-      $timeStr = "and question.SurveyTime between '$BeginTime' and '$EndTime'";
+      $timeStr = "and q.SurveyTime between '$BeginTime' and '$EndTime'";
     }
 
     //echo count($Dids)."--".$Dids."--".$nameStr."--".$statusStr."--".$questmonthStr."--".$timeStr;
     
     $sql = '';
-    $sql= "select question.Id,question.Bid,question.Mid,question.Did,question.Cid,question.QuestMonth,question.QuestType,question.Status,baby.Name,baby.Birthday,question.SurveyTime,question.Rectifyage,member.Name as Mname from question,baby,member where question.QuestType='$QuestType' and question.Cid='$Uid' and question.Bid=baby.Id and question.Mid=member.Id ".$didstr." ".$nameStr." ".$statusStr." ".$questmonthStr." ".$timeStr." order by question.CreateTime DESC";
+    //$sql= "select question.Id,question.Bid,question.Mid,question.Did,question.Cid,question.QuestMonth,question.QuestType,question.Status,baby.Name,baby.Birthday,question.SurveyTime,question.Rectifyage,member.Name as Mname from question,baby,member where question.QuestType='$QuestType' and question.Cid='$Uid' and question.Bid=baby.Id and question.Mid=member.Id ".$didstr." ".$nameStr." ".$statusStr." ".$questmonthStr." ".$timeStr." order by question.CreateTime DESC";
+
+    $sql= "select q.Id,q.Bid,q.Mid,q.Did,q.Cid,q.QuestMonth,q.QuestType,q.Status,b.Name,b.Birthday,q.SurveyTime,q.Rectifyage,m.Name as Mname from question q INNER JOIN baby b ON q.Bid = b.Id INNER JOIN member m ON q.Mid = m.Id where q.QuestType='$QuestType' and q.Cid='$Uid' ".$didstr." ".$nameStr." ".$statusStr." ".$questmonthStr." ".$timeStr." order by q.CreateTime DESC";
+
+    //echo $sql;
 
     /* if($Uid != ''){
       $sql= "select question.Id,question.Bid,question.Mid,question.Did,question.Cid,question.QuestMonth,question.Status,baby.Name,baby.Birthday,question.SurveyTime,member.Name as Mname from question,baby,member where question.Cid='$Uid' and question.Bid=baby.Id and question.Mid=member.Id ".$nameStr." order by question.CreateTime DESC";
